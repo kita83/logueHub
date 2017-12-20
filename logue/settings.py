@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -145,7 +146,7 @@ LOGIN_REDIRECT_URL = '/feed/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' 
 
 # 継承したユーザークラスを定義
-AUTH_USER_MODEL = 'accounts.EpisodeUser'
+# AUTH_USER_MODEL = 'accounts.EpisodeUser'
 
 # django-debug-toolbar の設定
 DEBUG_TOOLBAR_PANELS = (
