@@ -16,12 +16,15 @@ Including another URLconf
 from django.urls import include, path
 from django.contrib import admin
 from django.conf import settings
+from . import accounts
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls')),
+    path('signup/', accounts.views.signup, name='signup'),
+    path('login/', accounts.views.login, name='login'),
+    path('logout/', accounts.views.logout, name='logout'),
     path('feed/', include('feed.urls')),
-    path('^$', include('feed.urls')),
+    path('', include('feed.urls')),
 ]
 
 if settings.DEBUG:
