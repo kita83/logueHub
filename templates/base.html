@@ -26,7 +26,7 @@
     <div id="wrapper">
       <nav class="navbar navbar-default navbar-static-top manager-nav no-margin" role="navigation">
         <div class="navbar-header">
-          <a href="{% url 'feed:index' %}" class="navbar-brand">episodes</a>
+          <a href="{% url 'feed:index' %}" class="navbar-brand">logue</a>
         </div>
 
         <!-- ヘッダナビゲーション -->
@@ -39,10 +39,10 @@
             <ul class="nav" id="side-menu">
               {% if user.is_authenticated %}
                 <li>{{ user.username }}</li>
-                <li><a href="{% url 'account_logout' %}">ログアウト</a></li>
+                <li><a href="{% url 'logout' %}">ログアウト</a></li>
               {% else %}
-                <li><a href="{% url 'account_login' %}">ログイン</a></li>
-                <li><a href="{% url 'account_signup' %}">サインアップ</a></li>
+                <li><a href="{% url 'login' %}">ログイン</a></li>
+                <li><a href="{% url 'signup' %}">サインアップ</a></li>
               {% endif %}
             </ul>
           </div>

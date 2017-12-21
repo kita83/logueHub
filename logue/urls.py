@@ -25,7 +25,7 @@ urlpatterns = [
     path('logue/signup/', views.signup, name='signup'),
     path('logue/login/', views.login, name='login'),
     path('logue/logout/', views.logout, name='logout'),
-    path('', RedirectView.as_view(url='/feed/', permanent=True)),
+    path('', RedirectView.as_view(url='/logue', permanent=True)),
 ]
 
 if settings.DEBUG:
