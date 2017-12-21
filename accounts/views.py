@@ -6,7 +6,7 @@ class LoginView(views.LoginView):
     """
     ログインページへ遷移
     """
-    template_name = 'login.html'
+    template_name = 'accounts/login.html'
     ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
 
     def dispatch(self, request, *args, **kwargs):
@@ -24,7 +24,7 @@ class LogoutView(views.LogoutView):
     """
     ログアウトページへ遷移
     """
-    template_name = 'logout.html'
+    template_name = 'accounts/logout.html'
     def get(self, *args, **kwargs):
         return self.post(*args, **kwargs)
 
@@ -41,7 +41,7 @@ class SignupView(views.SignupView):
     """
     サインアップページへ遷移
     """
-    template_name = 'signup.html'
+    template_name = 'accounts/signup.html'
     ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
 
     def get_context_data(self, **kwargs):

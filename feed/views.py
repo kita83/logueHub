@@ -43,4 +43,4 @@ def index(request):
         'feeds': feeds
     }
 
-    return render(request, 'index.html', context)
+    return render(request, 'feed/index.html', context=context)
