@@ -148,7 +148,7 @@ LOGIN_REDIRECT_URL = '/feed/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' 
 
 # 継承したユーザークラスを定義
-# AUTH_USER_MODEL = 'accounts.LogueUser'
+AUTH_USER_MODEL = 'accounts.LogueUser'
 
 # django-debug-toolbar の設定
 DEBUG_TOOLBAR_PANELS = (
