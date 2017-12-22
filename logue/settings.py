@@ -141,11 +141,17 @@ AUTHENTICATION_BACKENDS = (
 
 SITE_ID = 1
 
-LOGIN_URL = 'feed:login/'
-LOGIN_REDIRECT_URL = '/feed/'
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/logue/'
 
 # django-allauth でSMTPサーバー認証を不要にする
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' 
+
+# django-allauth でカスタムユーザーモデル使用時に username を使わない設定
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 # 継承したユーザークラスを定義
 AUTH_USER_MODEL = 'accounts.LogueUser'
