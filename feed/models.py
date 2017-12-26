@@ -29,7 +29,7 @@ class Channel(TimeStampModel):
     """
     チャンネル情報を保持する
     """
-    cd = models.IntegerField(primary_key=True)
+    code = models.IntegerField(primary_key=True)
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
     title = models.CharField(max_length=100)
     author_name = models.CharField(max_length=100)
@@ -44,7 +44,7 @@ class Episode(TimeStampModel):
     """
     エピソード情報を保持する
     """
-    cd = models.IntegerField(primary_key=True)
+    code = models.IntegerField(primary_key=True)
     channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
     title = models.CharField(max_length=200)
     link = models.URLField(max_length=200)
@@ -56,56 +56,63 @@ class Episode(TimeStampModel):
         return self.title
 
 
-class Like(TimeStampModel):
+class Subscribe(TimeStampModel):
     """
-    Likeされたエピソードとユーザー情報を関連づける
+    登録されたチャンネルを保持する
     """
+    channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.episode
+        return self.channel
 
-class Stock(TimeStampModel):
+
+class Star(TimeStampModel):
     """
-    Stockされたエピソードとユーザー情報を関連づける
+    starされたエピソードとユーザー情報を関連づける
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    item_cd = models.CharField(max_length=50)
+    type_cd = models.CharField(max_length=1)
     episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.episode
-
-
-class Follow(TimeStampModel):
-    """
-    Followされたエピソードとユーザー情報を関連づける
-    """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.episode
 
 
-class MstTag(TimeStampModel):
+class MstPlaylist(TimeStampModel):
     """
-    タグのマスタ情報を保持する
+    プレイリスト情報を保持する
     """
-    name = models.CharField(max_length=100)
+    code = models.IntegerField(primary_key=True)
+    title = models.CharField(max_length=100)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    is_public = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name
+        return self.title
 
 
-class Tag(TimeStampModel):
+class Playlist(TimeStampModel):
     """
-    タグ付けされたエピソードとユーザー情報を関連づける
+    プレイリストに入れるエピソードを管理する
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    mst_tag = models.ForeignKey(MstTag, on_delete=models.CASCADE)
+    mstplaylist_cd = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
+    play_order = models.IntegerField()
 
     def __str__(self):
-        return self.mst_tag
+        return self.episode
+
+
+class Tags(TimeStampModel):
+    """
+    タグ付けされた情報を管理する
+    """
+    name = models.CharField(max_length=50)
+    episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return self.name
