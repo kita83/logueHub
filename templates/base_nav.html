@@ -4,7 +4,7 @@
 <ul class="nav navbar-top-links navbar-right">
     <li class="dropdown">
       {% if user.is_authenticated %}
-        <li>{{ user.username }}</li>
+        <li>{{ user.email }}</li>
         <li><a href="{% url 'account_logout' %}">マイページ</a></li>
       {% else %}
         <li><a href="{% url 'account_login' %}">ログイン</a></li>
