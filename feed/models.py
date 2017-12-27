@@ -67,9 +67,9 @@ class Subscribe(TimeStampModel):
         return self.channel
 
 
-class Star(TimeStampModel):
+class Like(TimeStampModel):
     """
-    starされたエピソードとユーザー情報を関連づける
+    likeされたエピソードとユーザー情報を関連づける
     """
     item_cd = models.CharField(max_length=50)
     type_cd = models.CharField(max_length=1)
@@ -106,7 +106,7 @@ class Playlist(TimeStampModel):
         return self.episode
 
 
-class Tags(TimeStampModel):
+class Tag(TimeStampModel):
     """
     タグ付けされた情報を管理する
     """
