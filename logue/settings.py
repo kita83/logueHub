@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.github',
     'allauth.socialaccount.providers.twitter',
+    'django_nose',
     'accounts',
     'feed',
 ]
@@ -196,3 +197,11 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 INTERNAL_IPS = ('127.0.0.1',)
+
+# django-nose, coverage configure
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = [
+    '--with-coverage',  # coverage を取る
+    '--cover-html',  # coverage を html で cover/ に出力する
+    '--cover-package=feed, accounts',
+]

@@ -23,9 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('logue/', include('feed.urls')),
     path('accounts/', include('allauth.urls')),
-    # path('logue/signup/', views.signup, name='logue_signup'),
-    # path('logue/login/', views.login, name='logue_login'),
-    # path('logue/logout/', views.logout, name='logue_logout'),
     path('', RedirectView.as_view(url='/logue', permanent=True)),
 ]
 

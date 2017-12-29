@@ -1,6 +1,6 @@
 """feedアプリのModelテスト"""
 from django.test import TestCase
-from .models import Channel
+from feed.models import Channel
 
 class ChannelModelTest(TestCase):
     """
@@ -8,7 +8,7 @@ class ChannelModelTest(TestCase):
     """
     def test_is_empty(self):
         saved_channels = Channel.objects.all()
-        self.assertEqual(saved_channels.count(), 1)
+        self.assertEqual(saved_channels.count(), 0)
 
     def test_bad_maths(self):
-        self.assertEqual(1+1, 3)
+        self.assertEqual(1+1, 2)
