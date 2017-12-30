@@ -34,19 +34,18 @@
         {% endblock %}
 
         <!-- サイドバー -->
-        <!-- <div class="navbar-default sidebar" role="navigation">
+        <div class="navbar-default sidebar" role="navigation">
           <div class="sidebar-nav navbar-collapse">
             <ul class="nav" id="side-menu">
+              <li><a href="">トレンド</a></li>
               {% if user.is_authenticated %}
                 <li>{{ user.username }}</li>
-                <li><a href="{% url 'account_logout' %}">ログアウト</a></li>
-              {% else %}
-                <li><a href="{% url 'account_login' %}">ログイン</a></li>
-                <li><a href="{% url 'account_signup' %}">サインアップ</a></li>
+                <li><a href="">登録チャンネル</a></li>
+                <li><a href="">プレイリスト</a></li>
               {% endif %}
             </ul>
           </div>
-        </div> -->
+        </div>
       </nav>
       {% block content %}
       {% endblock %}

@@ -4,6 +4,7 @@
 <ul class="nav navbar-top-links navbar-right">
     <li class="dropdown">
       {% if user.is_authenticated %}
+        <li><input type="url" name="sbuscribe" placeholder="登録したいフィードのURLを入力" size="30"></li>
         <li>{{ user.email }}</li>
         <li><a href="{% url 'account_logout' %}">マイページ</a></li>
       {% else %}
