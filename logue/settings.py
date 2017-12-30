@@ -199,9 +199,13 @@ DEBUG_TOOLBAR_CONFIG = {
 INTERNAL_IPS = ('127.0.0.1',)
 
 # django-nose, coverage configure
+TEST_APPS = (
+    'feed',
+    'accounts',
+)
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = [
     '--with-coverage',  # coverage を取る
     '--cover-html',  # coverage を html で cover/ に出力する
-    '--cover-package=feed, accounts',
+    '--cover-package=' + ",".join(TEST_APPS),
 ]
