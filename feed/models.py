@@ -18,6 +18,7 @@ class Category(TimeStampModel):
     """
     カテゴリ情報を保持する
     """
+    code = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
 
