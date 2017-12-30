@@ -2,19 +2,21 @@ import pprint
 import requests
 from django.shortcuts import render
 from django.views import View
+from .forms import SubscribeForm
 
 
 class IndexView(View):
     template_name = 'feed/index.html'
 
     def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
+        form = SubscribeForm(request.POST)
         if form.is_valid():
             return render(request, 'feed/ch_detail.html', {'form': form})
 
         return render(request, self.template_name, {'form': form})
 
     def get(self, request):
+        form = SubscribeForm(request.POST)
         # ジャンル"Software How-To"のPodcastランキング情報を取得
         url = 'https://itunes.apple.com/jp/rss/topaudiopodcasts/genre=1480/json'
         res = requests.get(url).json()
@@ -39,14 +41,14 @@ class IndexView(View):
             feeds.append(tmp)
 
         # debug
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(feeds)
+        # pp = pprint.PrettyPrinter(indent=4)
+        # pp.pprint(feeds)
 
         context = {
             'feeds': feeds
         }
 
-        return render(request, self.template_name, context=context)
+        return render(request, self.template_name, {'context': context, 'form': form})
 
 
 class ChannelDetailView(View):
