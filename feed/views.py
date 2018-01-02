@@ -3,6 +3,7 @@ import requests
 from django.shortcuts import render
 from django.views import View
 from .forms import SubscribeForm
+from .models import Channel
 
 
 class IndexView(View):
@@ -11,12 +12,13 @@ class IndexView(View):
     def post(self, request, *args, **kwargs):
         form = SubscribeForm(request.POST)
         if form.is_valid():
+
             return render(request, 'feed/ch_detail.html', {'form': form})
 
         return render(request, self.template_name, {'form': form})
 
     def get(self, request):
-        form = SubscribeForm(request.POST)
+        form = SubscribeForm()
         # ジャンル"Software How-To"のPodcastランキング情報を取得
         url = 'https://itunes.apple.com/jp/rss/topaudiopodcasts/genre=1480/json'
         res = requests.get(url).json()
@@ -41,14 +43,13 @@ class IndexView(View):
             feeds.append(tmp)
 
         # debug
-        # pp = pprint.PrettyPrinter(indent=4)
-        # pp.pprint(feeds)
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(feeds)
 
-        context = {
-            'feeds': feeds
-        }
-
-        return render(request, self.template_name, {'context': context, 'form': form})
+        return render(request, self.template_name, {
+            'feeds': feeds,
+            'form': form
+        })
 
 
 class ChannelDetailView(View):

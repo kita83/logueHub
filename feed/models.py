@@ -33,6 +33,8 @@ class Channel(TimeStampModel):
     code = models.IntegerField(primary_key=True)
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
     title = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    link = models.URLField(max_length=200)
     author_name = models.CharField(max_length=100)
     cover_image = models.ImageField(upload_to='images/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -49,7 +51,7 @@ class Episode(TimeStampModel):
     channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
     title = models.CharField(max_length=200)
     link = models.URLField(max_length=200)
-    summary = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     release_date = models.DateTimeField()
     is_active = models.BooleanField(default=True)
 
