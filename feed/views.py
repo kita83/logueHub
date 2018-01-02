@@ -12,7 +12,7 @@ class IndexView(View):
     def post(self, request, *args, **kwargs):
         form = SubscribeForm(request.POST)
         if form.is_valid():
-
+            exist_data = get_exist_url(form.cleaned_data['require_url'])
             return render(request, 'feed/ch_detail.html', {'form': form})
 
         return render(request, self.template_name, {'form': form})
@@ -72,3 +72,15 @@ class ChannelDetailView(View):
             'new_list': new
         }
         return render(request, self.template_name, context=context)
+
+
+def get_exist_url(require_url):
+    """
+    引数と同一の URL が
+    存在する: 登録済みのデータを返す
+    存在しない: None
+    """
+    rtn = Channel.objects.filter(link=require_url)
+    if not rtn:
+        return None
+    return rtn

@@ -4,7 +4,7 @@ class SubscribeForm(forms.Form):
     """
     購読Feedを取得する
     """
-    url = forms.URLField(
+    require_url = forms.URLField(
         label='',
         required=False,
         widget=forms.TextInput(

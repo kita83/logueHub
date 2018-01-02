@@ -1,5 +1,7 @@
 """feedアプリのViewテスト"""
 from django.test import TestCase, Client
+from feed.models import Channel
+from feed.views import get_exist_url
 
 
 class UrlResolveTest(TestCase):
@@ -17,3 +19,30 @@ class FeedViewTest(TestCase):
         index画面のアクセスができているかテストする
         """
         pass
+
+    def test_get_exist_url(self):
+        """
+        同一URLがあれば既存データを返すことをチェック
+        """
+        Channel.objects.create(
+            code=1,
+            title='test_title',
+            link='http://feeds.test.fm/testfm',
+            author_name='john'
+        )
+        ch = get_exist_url('http://feeds.test.fm/testfm')
+        actual = ch[0].title
+        self.assertEqual(actual, 'test_title')
+
+    def test_not_get_exist_url(self):
+        """
+        同一URLがなければ None を返すことをチェック
+        """
+        Channel.objects.create(
+            code=1,
+            title='test_title',
+            link='http://feeds.test.fm/testfm',
+            author_name='john'
+        )
+        ch = get_exist_url('http://feeds.notexisttest.fm/testfm')
+        self.assertEqual(ch, None)
