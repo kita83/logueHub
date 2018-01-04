@@ -1,19 +1,51 @@
 import pprint
 import requests
+import feedparser
 from django.shortcuts import render
 from django.views import View
 from .forms import SubscribeForm
-from .models import Channel
+from .models import Channel, Episode
 
 
 class IndexView(View):
     template_name = 'feed/index.html'
 
     def post(self, request, *args, **kwargs):
+        """フィード登録項目に入力がある場合、チャンネル登録処理をする"""
         form = SubscribeForm(request.POST)
+
         if form.is_valid():
-            exist_data = get_exist_url(form.cleaned_data['require_url'])
-            return render(request, 'feed/ch_detail.html', {'form': form})
+            url = form.cleaned_data['require_url']
+
+            # 入力されたURLがすでに登録されている場合、DBからデータを取得
+            exist_ch = get_exist_channel(url)
+
+            forms = []
+            if exist_ch:
+                # チャンネルから最新エピソードを取得
+                exist_ep = get_exist_epsode(exist_ch[0])
+
+                for ep in exist_ep:
+                    form = {
+                        'title': ep.title,
+                        'link': ep.link,
+                        'description': ep.description,
+                        'released_at': ep.released_at
+                    }
+                    forms.append(form)
+            else:
+                # 入力されたURLからFeed情報を取得
+                feeds = parse_feed(url)
+
+                for ep in feeds:
+                    form = {
+                        'title': ep.title,
+                        'link': ep.link,
+                        'description': ep.description,
+                        'released_at': ep.released_at
+                    }
+                    forms.append(form)
+            return render(request, 'feed/ch_detail.html', {'forms': forms})
 
         return render(request, self.template_name, {'form': form})
 
@@ -74,13 +106,40 @@ class ChannelDetailView(View):
         return render(request, self.template_name, context=context)
 
 
-def get_exist_url(require_url):
+def get_exist_channel(require_url):
     """
-    引数と同一の URL が
-    存在する: 登録済みのデータを返す
-    存在しない: None
+    登録済みのチャンネルデータを返す
+    存在しない場合: None
     """
     rtn = Channel.objects.filter(link=require_url)
     if not rtn:
         return None
     return rtn
+
+
+def get_exist_epsode(require_ch):
+    """
+    登録済みのエピソードデータを返す
+    存在しない場合: None
+    """
+    rtn = Episode.objects.filter(channel=require_ch)
+    if not rtn:
+        return None
+    return rtn
+
+
+def parse_feed(url):
+    """
+    URLからfeedデータを取得する
+    """
+    feed = feedparser.parse(url)
+    save_channel(feed)
+    feeds = {}
+    return feeds
+
+
+def save_channel(feed):
+    """
+    feedデータをChannelに登録する
+    """
+    pass

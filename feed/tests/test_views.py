@@ -1,7 +1,7 @@
 """feedアプリのViewテスト"""
 from django.test import TestCase, Client
 from feed.models import Channel
-from feed.views import get_exist_url
+from feed.views import get_exist_channel
 
 
 class UrlResolveTest(TestCase):
@@ -30,7 +30,7 @@ class FeedViewTest(TestCase):
             link='http://feeds.test.fm/testfm',
             author_name='john'
         )
-        ch = get_exist_url('http://feeds.test.fm/testfm')
+        ch = get_exist_channel('http://feeds.test.fm/testfm')
         actual = ch[0].title
         self.assertEqual(actual, 'test_title')
 
@@ -44,5 +44,5 @@ class FeedViewTest(TestCase):
             link='http://feeds.test.fm/testfm',
             author_name='john'
         )
-        ch = get_exist_url('http://feeds.notexisttest.fm/testfm')
+        ch = get_exist_channel('http://feeds.notexisttest.fm/testfm')
         self.assertEqual(ch, None)
