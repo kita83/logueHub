@@ -30,10 +30,16 @@ class Channel(TimeStampModel):
     """
     チャンネル情報を保持する
     """
-    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(
+        Category,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+        )
     title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
-    link = models.URLField(max_length=200)
+    link = models.URLField(max_length=200, null=True, blank=True)
+    feed_url = models.URLField(max_length=200)
     author_name = models.CharField(max_length=100)
     cover_image = models.ImageField(upload_to='images/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -62,7 +68,10 @@ class Subscribe(TimeStampModel):
     登録されたチャンネルを保持する
     """
     channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+        )
 
     def __str__(self):
         return self.channel
@@ -75,7 +84,10 @@ class Like(TimeStampModel):
     item_cd = models.CharField(max_length=50)
     type_cd = models.CharField(max_length=1)
     episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+        )
 
     def __str__(self):
         return self.episode
@@ -86,7 +98,10 @@ class MstPlaylist(TimeStampModel):
     プレイリスト情報を保持する
     """
     title = models.CharField(max_length=100)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+        )
     is_public = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
 
@@ -98,7 +113,10 @@ class Playlist(TimeStampModel):
     """
     プレイリストに入れるエピソードを管理する
     """
-    mstplaylist_cd = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    mstplaylist_cd = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+        )
     episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
     play_order = models.IntegerField()
 
@@ -112,7 +130,11 @@ class Tag(TimeStampModel):
     """
     name = models.CharField(max_length=50)
     episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True
+        )
 
     def __str__(self):
         return self.name

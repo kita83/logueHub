@@ -37,10 +37,10 @@ class IndexView(View):
             else:
                 # 入力されたURLからFeed情報を取得
                 feeds = parse_feed(url)
+                # チャンネルの新規登録
+                save_channel(feeds)
 
                 if feeds:
-                    # チャンネルの新規登録
-                    # c = Channel(code=feeds.)
                     pass
 
             return render(request, 'feed/ch_detail.html', {'forms': forms})
@@ -128,16 +128,31 @@ def get_exist_epsode(require_ch):
 
 def parse_feed(url):
     """
-    URLからfeedデータを取得する
+    URLからfeedデータを取得、
     """
-    feed = feedparser.parse(url)
-    save_channel(feed)
-    feeds = {}
-    return feeds
+    feeds = feedparser.parse(url)
+    f = feeds.channel
+
+    ch = {
+        'title': f.title,
+        'author': f.author,
+        'description': f.summary,
+        'link': f.link,
+        'feed_url': url,
+        'cover_image': f.image.href
+    }
+    return ch
 
 
 def save_channel(feed):
     """
     feedデータをChannelに登録する
     """
+    # c = Channel(
+    #     title=feeds.title,
+    #     description=feeds.description,
+    #     link=feeds.link,
+    #     feed_url=url,
+    #     author_name=author
+    #     )
     pass
