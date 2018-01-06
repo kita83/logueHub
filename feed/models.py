@@ -30,7 +30,6 @@ class Channel(TimeStampModel):
     """
     チャンネル情報を保持する
     """
-    code = models.IntegerField(primary_key=True)
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
     title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
@@ -47,7 +46,6 @@ class Episode(TimeStampModel):
     """
     エピソード情報を保持する
     """
-    code = models.IntegerField(primary_key=True)
     channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
     title = models.CharField(max_length=200)
     link = models.URLField(max_length=200)
@@ -87,7 +85,6 @@ class MstPlaylist(TimeStampModel):
     """
     プレイリスト情報を保持する
     """
-    code = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=100)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     is_public = models.BooleanField(default=True)

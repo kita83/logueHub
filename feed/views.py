@@ -25,26 +25,24 @@ class IndexView(View):
                 # チャンネルから最新エピソードを取得
                 exist_ep = get_exist_epsode(exist_ch[0])
 
-                for ep in exist_ep:
-                    form = {
-                        'title': ep.title,
-                        'link': ep.link,
-                        'description': ep.description,
-                        'released_at': ep.released_at
-                    }
-                    forms.append(form)
+                if exist_ep:
+                    for ep in exist_ep:
+                        form = {
+                            'title': ep.title,
+                            'link': ep.link,
+                            'description': ep.description,
+                            'released_at': ep.released_at
+                        }
+                        forms.append(form)
             else:
                 # 入力されたURLからFeed情報を取得
                 feeds = parse_feed(url)
 
-                for ep in feeds:
-                    form = {
-                        'title': ep.title,
-                        'link': ep.link,
-                        'description': ep.description,
-                        'released_at': ep.released_at
-                    }
-                    forms.append(form)
+                if feeds:
+                    # チャンネルの新規登録
+                    # c = Channel(code=feeds.)
+                    pass
+
             return render(request, 'feed/ch_detail.html', {'forms': forms})
 
         return render(request, self.template_name, {'form': form})
