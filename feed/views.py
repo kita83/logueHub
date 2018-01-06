@@ -1,6 +1,7 @@
 import pprint
 import requests
 import feedparser
+import datetime
 from django.shortcuts import render
 from django.views import View
 from .forms import SubscribeForm
@@ -15,10 +16,10 @@ class IndexView(View):
         form = SubscribeForm(request.POST)
 
         if form.is_valid():
-            url = form.cleaned_data['require_url']
+            feed_url = form.cleaned_data['require_url']
 
             # 入力されたURLがすでに登録されている場合、DBからデータを取得
-            exist_ch = get_exist_channel(url)
+            exist_ch = get_exist_channel(feed_url)
 
             forms = []
             if exist_ch:
@@ -35,10 +36,8 @@ class IndexView(View):
                         }
                         forms.append(form)
             else:
-                # 入力されたURLからFeed情報を取得
-                feeds = parse_feed(url)
-                # チャンネルの新規登録
-                save_channel(feeds)
+                # 新規Feed情報を登録
+                feeds = new_registration(feed_url)
 
                 if feeds:
                     pass
@@ -126,33 +125,62 @@ def get_exist_epsode(require_ch):
     return rtn
 
 
-def parse_feed(url):
+def new_registration(feed_url):
     """
-    URLからfeedデータを取得、
+    新規feedを登録し、最新エピソードを取得する
     """
-    feeds = feedparser.parse(url)
-    f = feeds.channel
+    feeds = feedparser.parse(feed_url)
+    if feeds:
+        # チャンネル情報
+        ch = feeds.channel
+        # エピソード
+        entries = feeds.entries
+        save_channel(ch, feed_url)
 
-    ch = {
-        'title': f.title,
-        'author': f.author,
-        'description': f.summary,
-        'link': f.link,
-        'feed_url': url,
-        'cover_image': f.image.href
-    }
-    return ch
+        exist_ch = Channel.objects.filter(feed_url=feed_url)
+        save_episode(exist_ch.id, entries)
+        return ch
 
 
-def save_channel(feed):
+def save_channel(ch, feed_url):
     """
-    feedデータをChannelに登録する
+    feedデータを Channel に登録する
     """
-    # c = Channel(
-    #     title=feeds.title,
-    #     description=feeds.description,
-    #     link=feeds.link,
-    #     feed_url=url,
-    #     author_name=author
-    #     )
-    pass
+    if not ch:
+        return
+
+    title = ch.title
+    author = ch.author
+    description = ch.summary
+    link = ch.link
+    feed_url = feed_url
+    cover_image = ch.image.href
+
+    Channel.objects.create(
+        title=title,
+        description=description,
+        link=link,
+        feed_url=feed_url,
+        author_name=author,
+        cover_image=cover_image
+        )
+
+
+def save_episode(ch_id, entries):
+    """
+    feedデータを Episode に登録する
+    """
+    for entry in entries:
+        title = entry.title
+        link = entry.link
+        description = entry.description
+        d = datetime.strptime(entry.published, '%a, %d %b %Y %H:%M:%S %z')
+        release_date = d
+
+        Episode.objects.create(
+            channel=ch_id,
+            title=title,
+            link=link,
+            description=description,
+            release_date=release_date
+        )

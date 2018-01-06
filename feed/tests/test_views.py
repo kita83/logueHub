@@ -16,16 +16,15 @@ class UrlResolveTest(TestCase):
 class FeedViewTest(TestCase):
     def test_index(self):
         """
-        index画面のアクセスができているかテストする
+        index画面にアクセスができる
         """
         pass
 
     def test_get_exist_url(self):
         """
-        同一URLがあれば既存データを返すことをチェック
+        同一URLがあれば既存データを返す
         """
         Channel.objects.create(
-            code=1,
             title='test_title',
             link='http://feeds.test.fm/testfm',
             author_name='john'
@@ -36,10 +35,9 @@ class FeedViewTest(TestCase):
 
     def test_not_get_exist_url(self):
         """
-        同一URLがなければ None を返すことをチェック
+        同一URLがなければ None を返す
         """
         Channel.objects.create(
-            code=1,
             title='test_title',
             link='http://feeds.test.fm/testfm',
             author_name='john'
