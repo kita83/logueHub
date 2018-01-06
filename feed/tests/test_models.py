@@ -1,7 +1,7 @@
 """feedアプリのModelテスト"""
 import feedparser
 from django.test import TestCase
-from feed.models import Channel
+from feed.models import Channel, Episode
 from feed import views
 
 
@@ -35,3 +35,30 @@ class ChannelModelTest(TestCase):
         views.save_channel(ch, feed_url)
         actual = Channel.objects.filter(feed_url='http://feeds.test.fm/testfm')
         self.assertEqual(actual.count(), 0)
+
+
+class EpisodeModelTest(TestCase):
+    """
+    エピソードモデル
+    """
+    def test_save(self):
+        """
+        エピソードの新規登録ができる
+        """
+        Channel.objects.create(
+            title='test_title',
+            description='description',
+            link='http://test.fm',
+            feed_url='http://feeds.rebuild.fm/rebuildfm',
+            author_name='test_author',
+            cover_image='http://files.test.fm/test.png'
+        )
+
+        feed_url = 'http://feeds.rebuild.fm/rebuildfm'
+        feeds = feedparser.parse(feed_url)
+        entries = feeds.entries
+
+        exist_ch = Channel.objects.filter(feed_url=feed_url)
+        views.save_episode(exist_ch[0], entries)
+        actual = Episode.objects.filter(channel=exist_ch[0])
+        self.assertNotEqual(actual.count(), 0)

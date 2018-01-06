@@ -138,7 +138,7 @@ def new_registration(feed_url):
         save_channel(ch, feed_url)
 
         exist_ch = Channel.objects.filter(feed_url=feed_url)
-        save_episode(exist_ch.id, entries)
+        save_episode(exist_ch[0], entries)
         return ch
 
 
@@ -166,7 +166,7 @@ def save_channel(ch, feed_url):
         )
 
 
-def save_episode(ch_id, entries):
+def save_episode(ch, entries):
     """
     feedデータを Episode に登録する
     """
@@ -174,11 +174,11 @@ def save_episode(ch_id, entries):
         title = entry.title
         link = entry.link
         description = entry.description
-        d = datetime.strptime(entry.published, '%a, %d %b %Y %H:%M:%S %z')
+        d = datetime.datetime.strptime(entry.published, '%a, %d %b %Y %H:%M:%S %z')
         release_date = d
 
         Episode.objects.create(
-            channel=ch_id,
+            channel=ch,
             title=title,
             link=link,
             description=description,
