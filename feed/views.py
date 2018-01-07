@@ -21,7 +21,6 @@ class IndexView(View):
             # DBから登録済みデータを取得
             exist_ch = get_exist_channel(feed_url)
 
-            forms = []
             # チャンネル未登録の場合、先に新規登録する
             if not exist_ch:
                 new_registration(feed_url)
@@ -30,6 +29,7 @@ class IndexView(View):
             # チャンネルから最新エピソードを取得
             exist_ep = get_exist_epsode(exist_ch[0])
 
+            forms = []
             if exist_ep:
                 for ep in exist_ep:
                     form = {
@@ -146,8 +146,8 @@ def save_channel(ch, feed_url):
     """
     feedデータを Channel に登録する
     """
-    if not ch:
-        return
+    if ch is None:
+        return None
 
     title = ch.title
     author = ch.author
@@ -176,11 +176,13 @@ def save_episode(ch, entries):
         description = entry.description
         d = datetime.datetime.strptime(entry.published, '%a, %d %b %Y %H:%M:%S %z')
         release_date = d
+        duration = entry.itunes_duration
 
         Episode.objects.create(
             channel=ch,
             title=title,
             link=link,
             description=description,
-            release_date=release_date
+            release_date=release_date,
+            duration=duration
         )

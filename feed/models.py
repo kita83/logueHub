@@ -57,6 +57,7 @@ class Episode(TimeStampModel):
     link = models.URLField(max_length=200)
     description = models.TextField(null=True, blank=True)
     release_date = models.DateTimeField()
+    duration = models.CharField(max_length=30, null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):

@@ -49,12 +49,12 @@ class EpisodeModelTest(TestCase):
             title='test_title',
             description='description',
             link='http://test.fm',
-            feed_url='http://feeds.rebuild.fm/rebuildfm',
+            feed_url='http://podcast.1242.com/sand/index.xml',
             author_name='test_author',
             cover_image='http://files.test.fm/test.png'
         )
 
-        feed_url = 'http://feeds.rebuild.fm/rebuildfm'
+        feed_url = 'http://podcast.1242.com/sand/index.xml'
         feeds = feedparser.parse(feed_url)
         entries = feeds.entries
 
