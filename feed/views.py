@@ -81,14 +81,13 @@ class IndexView(View):
 
 
 class ChannelDetailView(View):
+    """
+    チャンネル詳細画面
+    指定された登録チャンネルの最新エピソードを表示する
+    """
     template_name = 'feed/ch_detail.html'
 
     def get(self, request):
-        """
-        チャンネル詳細画面
-
-        指定された登録チャンネルの最新エピソードを表示する
-        """
         new = []
         tmp = {
             'title': 'ep0001',
@@ -100,6 +99,40 @@ class ChannelDetailView(View):
             'new_list': new
         }
         return render(request, self.template_name, context=context)
+
+    def post(self, request, *args, **kwargs):
+        """フィード登録項目に入力がある場合、チャンネル登録処理をする"""
+        form = SubscribeForm(request.POST)
+
+        if form.is_valid():
+            feed_url = form.cleaned_data['require_url']
+
+            # DBから登録済みデータを取得
+            exist_ch = get_exist_channel(feed_url)
+
+            # チャンネル未登録の場合、先に新規登録する
+            if not exist_ch:
+                new_registration(feed_url)
+                exist_ch = get_exist_channel(feed_url)
+
+            # チャンネルから最新エピソードを取得
+            exist_ep = get_exist_epsode(exist_ch)
+
+            forms = []
+            if exist_ep:
+                for ep in exist_ep:
+                    form = {
+                        'title': ep.title,
+                        'link': ep.link,
+                        'description': ep.description,
+                        'released_at': ep.released_at,
+                        'duration': ep.duration
+                    }
+                    forms.append(form)
+
+            return render(request, self.template_name, {'forms': forms})
+
+        return render(request, self.template_name, {'form': form})
 
 
 def get_exist_channel(require_url):
