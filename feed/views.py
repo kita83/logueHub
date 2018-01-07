@@ -18,29 +18,27 @@ class IndexView(View):
         if form.is_valid():
             feed_url = form.cleaned_data['require_url']
 
-            # 入力されたURLがすでに登録されている場合、DBからデータを取得
+            # DBから登録済みデータを取得
             exist_ch = get_exist_channel(feed_url)
 
             forms = []
-            if exist_ch:
-                # チャンネルから最新エピソードを取得
-                exist_ep = get_exist_epsode(exist_ch[0])
+            # チャンネル未登録の場合、先に新規登録する
+            if not exist_ch:
+                new_registration(feed_url)
+                exist_ch = get_exist_channel(feed_url)
 
-                if exist_ep:
-                    for ep in exist_ep:
-                        form = {
-                            'title': ep.title,
-                            'link': ep.link,
-                            'description': ep.description,
-                            'released_at': ep.released_at
-                        }
-                        forms.append(form)
-            else:
-                # 新規Feed情報を登録
-                feeds = new_registration(feed_url)
+            # チャンネルから最新エピソードを取得
+            exist_ep = get_exist_epsode(exist_ch[0])
 
-                if feeds:
-                    pass
+            if exist_ep:
+                for ep in exist_ep:
+                    form = {
+                        'title': ep.title,
+                        'link': ep.link,
+                        'description': ep.description,
+                        'released_at': ep.released_at
+                    }
+                    forms.append(form)
 
             return render(request, 'feed/ch_detail.html', {'forms': forms})
 
@@ -131,15 +129,17 @@ def new_registration(feed_url):
     """
     feeds = feedparser.parse(feed_url)
     if feeds:
-        # チャンネル情報
+        # チャンネル
         ch = feeds.channel
         # エピソード
         entries = feeds.entries
+
+        # チャンネル新規登録
         save_channel(ch, feed_url)
 
+        # 最新エピソード登録
         exist_ch = Channel.objects.filter(feed_url=feed_url)
         save_episode(exist_ch[0], entries)
-        return ch
 
 
 def save_channel(ch, feed_url):
