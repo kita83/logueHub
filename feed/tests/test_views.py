@@ -7,10 +7,20 @@ from feed.views import get_exist_channel
 class UrlResolveTest(TestCase):
     """URL解決テスト"""
     def test_url_resoleves_to_index_view(self):
-        c = Client()
-        response = c.get('/logue/')
+        """
+        [get] /logue/ → feed/index.html
+        """
+        response = self.client.get('/logue/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'feed/index.html')
+
+    def test_url_resoleves_to_ch_detail_view(self):
+        """
+        [post] /logue/ → feed/index.html
+        """
+        response = self.client.post('/logue/', {'require_url': 'http://feeds.rebuild.fm/rebuildfm'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'feed/ch_detail.html')
 
 
 class FeedViewTest(TestCase):

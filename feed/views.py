@@ -27,7 +27,7 @@ class IndexView(View):
                 exist_ch = get_exist_channel(feed_url)
 
             # チャンネルから最新エピソードを取得
-            exist_ep = get_exist_epsode(exist_ch[0])
+            exist_ep = get_exist_epsode(exist_ch)
 
             forms = []
             if exist_ep:
@@ -36,7 +36,8 @@ class IndexView(View):
                         'title': ep.title,
                         'link': ep.link,
                         'description': ep.description,
-                        'released_at': ep.released_at
+                        'released_at': ep.released_at,
+                        'duration': ep.duration
                     }
                     forms.append(form)
 

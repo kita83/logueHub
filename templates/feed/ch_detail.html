@@ -15,16 +15,20 @@
               <thead>
               <tr>
                 <th>エピソードタイトル</th>
-                <th>収録者</th>
+                <th>参照リンク</th>
+                <th>概要</th>
                 <th>リリース</th>
+                <th>収録時間</th>
               </tr>
               </thead>
-              {% for ep in form %}
+              {% for ep in forms %}
               <tbody>
                 <tr>
                   <td>{{ ep.title }}</td>
-                  <td>{{ ep.author }}</td>
+                  <td>{{ ep.link }}</td>
+                  <td>{{ ep.description }}</td>
                   <td>{{ ep.released_at }}</td>
+                  <td>{{ ep.duration }}</td>
                 </tr>
               {% empty %}
                 <tr>
