@@ -12,45 +12,6 @@ from .models import Channel, Episode
 class IndexView(View):
     template_name = 'feed/index.html'
 
-    def post(self, request, *args, **kwargs):
-        """フィード登録項目に入力がある場合、チャンネル登録処理をする"""
-        form = SubscribeForm(request.POST)
-
-        if form.is_valid():
-            feed_url = form.cleaned_data['require_url']
-            print('required_url={0}'.format(feed_url))
-            # DBから登録済みデータを取得
-            exist_ch = get_exist_channel(feed_url)
-            print('exist_ch={0}'.format(exist_ch))
-
-            # チャンネル未登録の場合、先に新規登録する
-            if not exist_ch:
-                print('channel_not_exist')
-                new_registration(feed_url)
-                exist_ch = get_exist_channel(feed_url)
-
-            # チャンネルから最新エピソードを取得
-            exist_ep = get_exist_epsode(exist_ch[0])
-
-            forms = []
-            if exist_ep:
-                print('exist_epが存在')
-                for ep in exist_ep:
-                    form = {
-                        'title': ep.title,
-                        'link': ep.link,
-                        'description': ep.description,
-                        'release_date': ep.release_date,
-                        'duration': ep.duration
-                    }
-                    forms.append(form)
-
-            debug = 'hogeeeeee'
-            print(exist_ep)
-            return render(request, 'feed/ch_detail.html', {'forms': forms, 'debug': debug})
-
-        return render(request, self.template_name, {'forms': form})
-
     def get(self, request):
         form = SubscribeForm()
         # ジャンル"Software How-To"のPodcastランキング情報を取得
@@ -102,12 +63,39 @@ class ChannelDetailView(View):
         }
         return render(request, self.template_name, context=context)
 
-    def post(self, request):
-        forms = request.POST['forms']
-        context = {
-            'forms': forms
-        }
-        return render(request, self.template_name, context=context)
+    def post(self, request, *args, **kwargs):
+        """フィード登録項目に入力がある場合、チャンネル登録処理をする"""
+        form = SubscribeForm(request.POST)
+
+        if form.is_valid():
+            feed_url = form.cleaned_data['require_url']
+
+            # DBから登録済みデータを取得
+            exist_ch = get_exist_channel(feed_url)
+
+            # チャンネル未登録の場合、先に新規登録する
+            if not exist_ch:
+                new_registration(feed_url)
+                exist_ch = get_exist_channel(feed_url)
+
+            # チャンネルから最新エピソードを取得
+            exist_ep = get_exist_epsode(exist_ch[0])
+
+            forms = []
+            if exist_ep:
+                for ep in exist_ep:
+                    form = {
+                        'title': ep.title,
+                        'link': ep.link,
+                        'description': ep.description,
+                        'release_date': ep.release_date,
+                        'duration': ep.duration
+                    }
+                    forms.append(form)
+
+            return render(request, self.template_name, {'forms': forms})
+
+        return render(request, 'feed/index.html')
 
 
 class ChannelCreateView(CreateView):
