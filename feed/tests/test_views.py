@@ -36,7 +36,7 @@ class FeedViewTest(TestCase):
         """
         Channel.objects.create(
             title='test_title',
-            link='http://feeds.test.fm/testfm',
+            feed_url='http://feeds.test.fm/testfm',
             author_name='john'
         )
         ch = get_exist_channel('http://feeds.test.fm/testfm')
@@ -49,7 +49,7 @@ class FeedViewTest(TestCase):
         """
         Channel.objects.create(
             title='test_title',
-            link='http://feeds.test.fm/testfm',
+            feed_url='http://feeds.test.fm/testfm',
             author_name='john'
         )
         ch = get_exist_channel('http://feeds.notexisttest.fm/testfm')

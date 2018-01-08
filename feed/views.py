@@ -1,9 +1,10 @@
-import pprint
 import requests
 import feedparser
 import datetime
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
+from django.views.generic.edit import CreateView
+from django.views.generic import DetailView
 from .forms import SubscribeForm
 from .models import Channel, Episode
 
@@ -17,33 +18,38 @@ class IndexView(View):
 
         if form.is_valid():
             feed_url = form.cleaned_data['require_url']
-
+            print('required_url={0}'.format(feed_url))
             # DBから登録済みデータを取得
             exist_ch = get_exist_channel(feed_url)
+            print('exist_ch={0}'.format(exist_ch))
 
             # チャンネル未登録の場合、先に新規登録する
             if not exist_ch:
+                print('channel_not_exist')
                 new_registration(feed_url)
                 exist_ch = get_exist_channel(feed_url)
 
             # チャンネルから最新エピソードを取得
-            exist_ep = get_exist_epsode(exist_ch)
+            exist_ep = get_exist_epsode(exist_ch[0])
 
             forms = []
             if exist_ep:
+                print('exist_epが存在')
                 for ep in exist_ep:
                     form = {
                         'title': ep.title,
                         'link': ep.link,
                         'description': ep.description,
-                        'released_at': ep.released_at,
+                        'release_date': ep.release_date,
                         'duration': ep.duration
                     }
                     forms.append(form)
 
-            return render(request, 'feed/ch_detail.html', {'forms': forms})
+            debug = 'hogeeeeee'
+            print(exist_ep)
+            return render(request, 'feed/ch_detail.html', {'forms': forms, 'debug': debug})
 
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'forms': form})
 
     def get(self, request):
         form = SubscribeForm()
@@ -61,18 +67,14 @@ class IndexView(View):
             # 収録者
             author = feed['im:artist']['label']
             # リリース日
-            released_at = feed['im:releaseDate']['attributes']['label']
+            release_date = feed['im:releaseDate']['attributes']['label']
             tmp = {
                 'title': title,
                 'channel': channel,
                 'author': author,
-                'released_at': released_at
+                'release_date': release_date
             }
             feeds.append(tmp)
-
-        # debug
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(feeds)
 
         return render(request, self.template_name, {
             'feeds': feeds,
@@ -92,47 +94,31 @@ class ChannelDetailView(View):
         tmp = {
             'title': 'ep0001',
             'author': 'chris',
-            'released_at': '2017年12月30日'
+            'release_date': '2017年12月30日'
         }
         new.append(tmp)
         context = {
-            'new_list': new
+            'forms': new
         }
         return render(request, self.template_name, context=context)
 
-    def post(self, request, *args, **kwargs):
-        """フィード登録項目に入力がある場合、チャンネル登録処理をする"""
-        form = SubscribeForm(request.POST)
+    def post(self, request):
+        forms = request.POST['forms']
+        context = {
+            'forms': forms
+        }
+        return render(request, self.template_name, context=context)
 
-        if form.is_valid():
-            feed_url = form.cleaned_data['require_url']
 
-            # DBから登録済みデータを取得
-            exist_ch = get_exist_channel(feed_url)
+class ChannelCreateView(CreateView):
+    model = Episode
+    form_class = SubscribeForm
 
-            # チャンネル未登録の場合、先に新規登録する
-            if not exist_ch:
-                new_registration(feed_url)
-                exist_ch = get_exist_channel(feed_url)
+    def form_valid(self, form):
+        pass
 
-            # チャンネルから最新エピソードを取得
-            exist_ep = get_exist_epsode(exist_ch)
-
-            forms = []
-            if exist_ep:
-                for ep in exist_ep:
-                    form = {
-                        'title': ep.title,
-                        'link': ep.link,
-                        'description': ep.description,
-                        'released_at': ep.released_at,
-                        'duration': ep.duration
-                    }
-                    forms.append(form)
-
-            return render(request, self.template_name, {'forms': forms})
-
-        return render(request, self.template_name, {'form': form})
+    def form_invalid(self, form):
+        pass
 
 
 def get_exist_channel(require_url):
@@ -140,7 +126,7 @@ def get_exist_channel(require_url):
     登録済みのチャンネルデータを返す
     存在しない場合: None
     """
-    rtn = Channel.objects.filter(link=require_url)
+    rtn = Channel.objects.filter(feed_url=require_url)
     if not rtn:
         return None
     return rtn
