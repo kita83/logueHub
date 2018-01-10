@@ -1,7 +1,8 @@
 """feedアプリのModelテスト"""
 import feedparser
 from django.test import TestCase
-from feed.models import Channel, Episode
+from feed.models import Channel, Episode, Subscribe
+from accounts.models import LogueUser
 from feed import views
 
 
@@ -62,3 +63,25 @@ class EpisodeModelTest(TestCase):
         views.save_episode(exist_ch[0], entries)
         actual = Episode.objects.filter(channel=exist_ch[0])
         self.assertNotEqual(actual.count(), 0)
+
+
+class SubscribeModelTest(TestCase):
+    """
+    購読モデル
+    """
+    def test_save(self):
+        """
+        購読情報の新規登録ができる
+        """
+        feed_url = 'http://feeds.rebuild.fm/rebuildfm'
+        feeds = feedparser.parse(feed_url)
+        ch = feeds.channel
+
+        user = LogueUser.objects.create(email='test@email.com', password='testpass')
+
+        views.save_channel(ch, feed_url)
+        c = Channel.objects.get(title='Rebuild')
+        views.save_subscribe(c, user)
+        sub = Subscribe.objects.get(user=user)
+        actual = sub.user.email
+        self.assertEqual(actual, 'test@email.com')

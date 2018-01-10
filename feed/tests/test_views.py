@@ -16,9 +16,12 @@ class UrlResolveTest(TestCase):
 
     def test_url_resoleves_to_ch_detail_view(self):
         """
-        [post] /logue/ → feed/ch_detail.html
+        [post] /logue/ch/detail → feed/ch_detail.html
         """
-        response = self.client.post('/logue/', {'require_url': 'http://feeds.rebuild.fm/rebuildfm'})
+        response = self.client.post(
+            '/logue/ch/detail/',
+            {'require_url': 'http://feeds.rebuild.fm/rebuildfm'}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'feed/ch_detail.html')
 

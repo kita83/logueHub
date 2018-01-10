@@ -18,7 +18,6 @@ class Category(TimeStampModel):
     """
     カテゴリ情報を保持する
     """
-    code = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
 
@@ -35,7 +34,7 @@ class Channel(TimeStampModel):
         null=True,
         blank=True,
         on_delete=models.SET_NULL
-        )
+    )
     title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     link = models.URLField(max_length=200, null=True, blank=True)
@@ -72,10 +71,10 @@ class Subscribe(TimeStampModel):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
-        )
+    )
 
     def __str__(self):
-        return self.channel
+        return self.user.email
 
 
 class Like(TimeStampModel):

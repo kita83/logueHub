@@ -6,7 +6,7 @@ from django.views import View
 from django.views.generic.edit import CreateView
 from django.views.generic import DetailView
 from .forms import SubscribeForm
-from .models import Channel, Episode
+from .models import Channel, Episode, Subscribe
 
 
 class IndexView(View):
@@ -66,6 +66,7 @@ class ChannelDetailView(View):
     def post(self, request, *args, **kwargs):
         """フィード登録項目に入力がある場合、チャンネル登録処理をする"""
         form = SubscribeForm(request.POST)
+        user = request.user
 
         if form.is_valid():
             feed_url = form.cleaned_data['require_url']
@@ -75,10 +76,10 @@ class ChannelDetailView(View):
 
             # チャンネル未登録の場合、先に新規登録する
             if not exist_ch:
-                new_registration(feed_url)
+                new_registration(feed_url, user)
                 exist_ch = get_exist_channel(feed_url)
 
-            # チャンネルから最新エピソードを取得
+            # 最新エピソードを取得
             exist_ep = get_exist_epsode(exist_ch[0])
 
             forms = []
@@ -131,9 +132,9 @@ def get_exist_epsode(require_ch):
     return rtn
 
 
-def new_registration(feed_url):
+def new_registration(feed_url, user):
     """
-    新規feedを登録し、最新エピソードを取得する
+    新規カテゴリ、チャンネル、最新エピソードを登録する
     """
     feeds = feedparser.parse(feed_url)
     if feeds:
@@ -145,9 +146,14 @@ def new_registration(feed_url):
         # チャンネル新規登録
         save_channel(ch, feed_url)
 
+        c = Channel.objects.filter(feed_url=feed_url)
+        exist_ch = c[0]
+
         # 最新エピソード登録
-        exist_ch = Channel.objects.filter(feed_url=feed_url)
-        save_episode(exist_ch[0], entries)
+        save_episode(exist_ch, entries)
+
+        # 購読情報登録
+        save_subscribe(exist_ch, user)
 
 
 def save_channel(ch, feed_url):
@@ -172,6 +178,16 @@ def save_channel(ch, feed_url):
         author_name=author,
         cover_image=cover_image
         )
+
+
+def save_subscribe(ch, user):
+    """
+    アカウントとチャンネルの関連を Subscribe に登録する
+    """
+    Subscribe.objects.create(
+        channel=ch,
+        user=user
+    )
 
 
 def save_episode(ch, entries):
