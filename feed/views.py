@@ -4,15 +4,15 @@ import datetime
 from django.shortcuts import render
 from django.views import View
 from django.views import generic
-from .forms import SubscribeForm
-from .models import Channel, Episode, Subscribe
+from .forms import SubscriptionForm
+from .models import Channel, Episode, Subscription
 
 
 class IndexView(View):
     template_name = 'feed/index.html'
 
     def get(self, request):
-        form = SubscribeForm()
+        form = SubscriptionForm()
         # ジャンル"Software How-To"のPodcastランキング情報を取得
         url = 'https://itunes.apple.com/jp/rss/topaudiopodcasts/genre=1480/json'
         res = requests.get(url).json()
@@ -64,7 +64,7 @@ class ChannelDetailView(View):
 
     def post(self, request, *args, **kwargs):
         """フィード登録項目に入力がある場合、チャンネル登録処理をする"""
-        form = SubscribeForm(request.POST)
+        form = SubscriptionForm(request.POST)
         user = request.user
 
         if form.is_valid():
@@ -121,7 +121,7 @@ class SettingsView(generic.TemplateView):
 
 class ChannelCreateView(generic.CreateView):
     model = Episode
-    form_class = SubscribeForm
+    form_class = SubscriptionForm
 
     def form_valid(self, form):
         pass
@@ -173,7 +173,7 @@ def new_registration(feed_url, user):
         save_episode(exist_ch, entries)
 
         # 購読情報登録
-        save_subscribe(exist_ch, user)
+        save_Subscription(exist_ch, user)
 
 
 def save_channel(ch, feed_url):
@@ -200,11 +200,11 @@ def save_channel(ch, feed_url):
         )
 
 
-def save_subscribe(ch, user):
+def save_Subscription(ch, user):
     """
-    アカウントとチャンネルの関連を Subscribe に登録する
+    アカウントとチャンネルの関連を Subscription に登録する
     """
-    Subscribe.objects.create(
+    Subscription.objects.create(
         channel=ch,
         user=user
     )

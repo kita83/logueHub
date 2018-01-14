@@ -1,6 +1,7 @@
 from django import forms
 
-class SubscribeForm(forms.Form):
+
+class SubscriptionForm(forms.Form):
     """
     購読Feedを取得する
     """

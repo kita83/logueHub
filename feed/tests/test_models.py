@@ -1,7 +1,7 @@
 """feedアプリのModelテスト"""
 import feedparser
 from django.test import TestCase
-from feed.models import Channel, Episode, Subscribe
+from feed.models import Channel, Episode, Subscription
 from accounts.models import LogueUser
 from feed import views
 
@@ -65,7 +65,7 @@ class EpisodeModelTest(TestCase):
         self.assertNotEqual(actual.count(), 0)
 
 
-class SubscribeModelTest(TestCase):
+class SubscriptionModelTest(TestCase):
     """
     購読モデル
     """
@@ -81,7 +81,7 @@ class SubscribeModelTest(TestCase):
 
         views.save_channel(ch, feed_url)
         c = Channel.objects.get(title='Rebuild')
-        views.save_subscribe(c, user)
-        sub = Subscribe.objects.get(user=user)
+        views.save_Subscription(c, user)
+        sub = Subscription.objects.get(user=user)
         actual = sub.user.email
         self.assertEqual(actual, 'test@email.com')
