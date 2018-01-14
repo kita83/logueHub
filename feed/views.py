@@ -1,10 +1,9 @@
 import requests
 import feedparser
 import datetime
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views import View
-from django.views.generic.edit import CreateView
-from django.views.generic import DetailView
+from django.views import generic
 from .forms import SubscribeForm
 from .models import Channel, Episode, Subscribe
 
@@ -99,7 +98,21 @@ class ChannelDetailView(View):
         return render(request, 'feed/index.html')
 
 
-class ChannelCreateView(CreateView):
+class EpisodeAllView(generic.TemplateView):
+    """
+    全チャンネルの未聴エピソードを表示
+    """
+    # model = Episode
+    template_name = 'feed/ep_all.html'
+
+    # def get_queryset(self):
+
+    # def get_context_data(self):
+    #     user = request.user
+    #     return user
+
+
+class ChannelCreateView(generic.CreateView):
     model = Episode
     form_class = SubscribeForm
 
