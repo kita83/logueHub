@@ -157,7 +157,7 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/logue/'
 
 # django-allauth でSMTPサーバー認証を不要にする
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # django-allauth でカスタムユーザーモデル使用時に username を使わない設定
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
@@ -184,8 +184,10 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.redirects.RedirectsPanel',
 )
 
+
 def custom_show_toolbar(request):
     return True
+
 
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
