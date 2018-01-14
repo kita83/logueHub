@@ -102,14 +102,21 @@ class EpisodeAllView(generic.TemplateView):
     """
     全チャンネルの未聴エピソードを表示
     """
-    # model = Episode
     template_name = 'feed/ep_all.html'
 
-    # def get_queryset(self):
 
-    # def get_context_data(self):
-    #     user = request.user
-    #     return user
+class LikeListView(generic.TemplateView):
+    """
+    Likeされた全エピソードリストを表示
+    """
+    template_name = 'feed/like_list.html'
+
+
+class SettingsView(generic.TemplateView):
+    """
+    各種設定項目を表示
+    """
+    template_name = 'feed/settings.html'
 
 
 class ChannelCreateView(generic.CreateView):
