@@ -2,6 +2,7 @@ import requests
 import feedparser
 import datetime
 from django.shortcuts import render
+from django.views.decorators.http import require_POST
 from django.views import View
 from django.views import generic
 from .forms import SubscriptionForm
@@ -42,28 +43,16 @@ class IndexView(View):
         })
 
 
-class ChannelDetailView(View):
+@require_POST
+class EntryView(View):
     """
-    チャンネル詳細画面
-    指定された登録チャンネルの最新エピソードを表示する
+    下記モデルにリクエストFeedを新規登録する
+    Subscription
+
+    既存データがなければ下記も併せて登録する
+    Channel, Episode, Tag
     """
-    template_name = 'feed/ch_detail.html'
-
-    def get(self, request):
-        new = []
-        tmp = {
-            'title': 'ep0001',
-            'author': 'chris',
-            'release_date': '2017年12月30日'
-        }
-        new.append(tmp)
-        context = {
-            'forms': new
-        }
-        return render(request, self.template_name, context=context)
-
-    def post(self, request, *args, **kwargs):
-        """フィード登録項目に入力がある場合、チャンネル登録処理をする"""
+    def post(self, request):
         form = SubscriptionForm(request.POST)
         user = request.user
 
@@ -93,9 +82,18 @@ class ChannelDetailView(View):
                     }
                     forms.append(form)
 
-            return render(request, self.template_name, {'forms': forms})
+            return render(request, 'feed/ch_detail', {'forms': forms})
 
         return render(request, 'feed/index.html')
+
+
+class ChannelDetailView(generic.DetailView):
+    """
+    チャンネル詳細画面
+    指定された登録チャンネルの最新エピソードを表示する
+    """
+    model = Channel
+    template_name = 'feed:ch_detail'
 
 
 class EpisodeAllView(generic.TemplateView):
@@ -117,17 +115,6 @@ class SettingsView(generic.TemplateView):
     各種設定項目を表示
     """
     template_name = 'feed/settings.html'
-
-
-class ChannelCreateView(generic.CreateView):
-    model = Episode
-    form_class = SubscriptionForm
-
-    def form_valid(self, form):
-        pass
-
-    def form_invalid(self, form):
-        pass
 
 
 def get_exist_channel(require_url):
@@ -216,7 +203,7 @@ def save_episode(ch, entries):
     """
     for entry in entries:
         title = entry.title
-        link = entry.link
+        link = entry.linkß
         description = entry.description
         d = datetime.datetime.strptime(entry.published, '%a, %d %b %Y %H:%M:%S %z')
         release_date = d
