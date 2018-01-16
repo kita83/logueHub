@@ -22,7 +22,7 @@ class Channel(TimeStampModel):
     description = models.TextField(null=True, blank=True)
     link = models.URLField(max_length=200, null=True, blank=True)
     feed_url = models.URLField(max_length=200)
-    author_name = models.CharField(max_length=100)
+    author_name = models.CharField(max_length=100, null=True, blank=True)
     cover_image = models.ImageField(upload_to='images/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
 

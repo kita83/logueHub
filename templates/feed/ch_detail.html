@@ -8,35 +8,19 @@
     <div class="row">
       <div class="col-lg-6 full-width margin-top-20percent" >
         <div class="panel panel-default full-width">
-          <h1>最新エピソード</h1>
-
+          <h1>チャンネル詳細</h1>
             <div class="panel-body full-width full-height">
-              <table id="worker-list-table" class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline full-width">
-              <thead>
-              <tr>
-                <th>エピソードタイトル</th>
-                <th>参照リンク</th>
-                <th>リリース</th>
-                <th>収録時間</th>
-              </tr>
-              </thead>
-              {% for ep in forms %}
-              <tbody>
-                <tr>
-                  <td>{{ ep.title }}</td>
-                  <td>{{ ep.link }}</td>
-                  <td>{{ ep.release_date }}</td>
-                  <td>{{ ep.duration }}</td>
-                </tr>
-              {% empty %}
-                <tr>
-                  <td>最新情報が取得できませんでした</td>
-                </tr>
-              {% endfor %}
-              </tbody>
-            </table>
+              {% if channel %}
+                <p>{{ channel.title }}</p>
+                <p>{{ channel.description }}</p>
+                <p>{{ channel.link }}</p>
+                <p>{{ channel.feed_url }}</p>
+                <p>{{ channel.author_name }}</p>
+                <p>{{ channel.cover_image }}</p>
+              {% else %}
+                <p>チャンネル情報が取得できませんでした</p>
+              {% endif %}
           </div>
-
         </div>
       </div>
     </div>

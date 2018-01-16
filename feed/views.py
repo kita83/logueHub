@@ -1,7 +1,7 @@
 import requests
 import feedparser
 import datetime
-from django.shortcuts import render
+from django.shortcuts import render, reverse
 from django.views.decorators.http import require_POST
 from django.views import View
 from django.views import generic
@@ -44,7 +44,7 @@ class IndexView(View):
 
 
 @require_POST
-class EntryView(View):
+def entry(request):
     """
     下記モデルにリクエストFeedを新規登録する
     Subscription
@@ -52,39 +52,38 @@ class EntryView(View):
     既存データがなければ下記も併せて登録する
     Channel, Episode, Tag
     """
-    def post(self, request):
-        form = SubscriptionForm(request.POST)
-        user = request.user
+    form = SubscriptionForm(request.POST)
+    user = request.user
 
-        if form.is_valid():
-            feed_url = form.cleaned_data['require_url']
+    if form.is_valid():
+        feed_url = form.cleaned_data['require_url']
 
-            # DBから登録済みデータを取得
+        # DBから登録済みデータを取得
+        exist_ch = get_exist_channel(feed_url)
+
+        # チャンネル未登録の場合、先に新規登録する
+        if not exist_ch:
+            new_registration(feed_url, user)
             exist_ch = get_exist_channel(feed_url)
 
-            # チャンネル未登録の場合、先に新規登録する
-            if not exist_ch:
-                new_registration(feed_url, user)
-                exist_ch = get_exist_channel(feed_url)
+        # 最新エピソードを取得
+        exist_ep = get_exist_epsode(exist_ch[0])
 
-            # 最新エピソードを取得
-            exist_ep = get_exist_epsode(exist_ch[0])
+        forms = []
+        if exist_ep:
+            for ep in exist_ep:
+                form = {
+                    'title': ep.title,
+                    'link': ep.link,
+                    'description': ep.description,
+                    'release_date': ep.release_date,
+                    'duration': ep.duration
+                }
+                forms.append(form)
 
-            forms = []
-            if exist_ep:
-                for ep in exist_ep:
-                    form = {
-                        'title': ep.title,
-                        'link': ep.link,
-                        'description': ep.description,
-                        'release_date': ep.release_date,
-                        'duration': ep.duration
-                    }
-                    forms.append(form)
+        return render(request, 'feed/ch_detail.html', context={'channel': exist_ch[0]})
 
-            return render(request, 'feed/ch_detail', {'forms': forms})
-
-        return render(request, 'feed/index.html')
+    return render(request, 'feed/index.html')
 
 
 class ChannelDetailView(generic.DetailView):
@@ -93,7 +92,7 @@ class ChannelDetailView(generic.DetailView):
     指定された登録チャンネルの最新エピソードを表示する
     """
     model = Channel
-    template_name = 'feed:ch_detail'
+    template_name = 'feed/ch_detail.html'
 
 
 class EpisodeAllView(generic.TemplateView):
@@ -203,7 +202,7 @@ def save_episode(ch, entries):
     """
     for entry in entries:
         title = entry.title
-        link = entry.linkß
+        link = entry.link
         description = entry.description
         d = datetime.datetime.strptime(entry.published, '%a, %d %b %Y %H:%M:%S %z')
         release_date = d

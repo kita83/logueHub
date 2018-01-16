@@ -5,7 +5,7 @@
     <ul class="nav navbar-top-links navbar-right">
         <li class="dropdown">
             {% if user.is_authenticated %}
-            <form action="{% url 'feed:ch_detail' %}" method="post">
+            <form action="{% url 'feed:entry' %}" method="post">
                 {% csrf_token %}
                 {{ form }}
                 <li><button type="submit" class="btn btn-primary btn-sm">{% trans "Submit" %}</button></li>
