@@ -168,13 +168,30 @@ def save_channel(ch, feed_url):
     """
     if ch is None:
         return None
+    
+    title = ''
+    author = ''
+    description = ''
+    link = ''
+    cover_image = ''
 
-    title = ch.title
-    author = ch.author
-    description = ch.summary
-    link = ch.link
-    feed_url = feed_url
-    cover_image = ch.image.href
+    if hasattr(ch, 'title'):
+        title = ch.title
+
+    if hasattr(ch, 'author'):
+        author = ch.author
+
+    if hasattr(ch, 'description'):
+        description = ch.summary
+    
+    if hasattr(ch, 'link'):
+        link = ch.link
+    
+    if hasattr(ch, 'feed_url'):
+        feed_url = ch.feed_url
+    
+    if hasattr(ch, 'image'):
+        cover_image = ch.image.href
 
     Channel.objects.create(
         title=title,
@@ -200,13 +217,28 @@ def save_episode(ch, entries):
     """
     feedデータを Episode に登録する
     """
+    title = ''
+    link = ''
+    description = ''
+    release_date = ''
+    duration = ''
+
     for entry in entries:
-        title = entry.title
-        link = entry.link
-        description = entry.description
-        d = datetime.datetime.strptime(entry.published, '%a, %d %b %Y %H:%M:%S %z')
-        release_date = d
-        duration = entry.itunes_duration
+        if hasattr(entry, 'title'):
+            title = entry.title
+
+        if hasattr(entry, 'link'):
+            link = entry.link
+        
+        if hasattr(entry, 'description'):
+            description = entry.description
+        
+        if hasattr(entry, 'published'):
+            d = datetime.datetime.strptime(entry.published, '%a, %d %b %Y %H:%M:%S %z')
+            release_date = d
+        
+        if hasattr(entry, 'duration'):
+            duration = entry.itunes_duration
 
         Episode.objects.create(
             channel=ch,
