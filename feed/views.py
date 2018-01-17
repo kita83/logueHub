@@ -1,3 +1,4 @@
+import os
 import requests
 import feedparser
 import datetime
@@ -183,15 +184,16 @@ def save_channel(ch, feed_url):
 
     if hasattr(ch, 'description'):
         description = ch.summary
-    
+
     if hasattr(ch, 'link'):
         link = ch.link
-    
+
     if hasattr(ch, 'feed_url'):
         feed_url = ch.feed_url
-    
+
     if hasattr(ch, 'image'):
-        cover_image = ch.image.href
+        path = ch.image.href
+        cover_image = save_image(path)
 
     Channel.objects.create(
         title=title,
@@ -229,14 +231,14 @@ def save_episode(ch, entries):
 
         if hasattr(entry, 'link'):
             link = entry.link
-        
+
         if hasattr(entry, 'description'):
             description = entry.description
-        
+
         if hasattr(entry, 'published'):
             d = datetime.datetime.strptime(entry.published, '%a, %d %b %Y %H:%M:%S %z')
             release_date = d
-        
+
         if hasattr(entry, 'duration'):
             duration = entry.itunes_duration
 
@@ -248,3 +250,20 @@ def save_episode(ch, entries):
             release_date=release_date,
             duration=duration
         )
+
+
+def save_image(url, name=None):
+    """
+    画像を保存する
+    """
+    res = requests.get(url)
+    if res.status_code != 200:
+        return None
+    path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/media/images/"
+    if name is None:
+        path += url.split("/")[-1]
+    else:
+        path += name
+    with open(path, 'wb') as file:
+        file.write(res.content)
+    return path
