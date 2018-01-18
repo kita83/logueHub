@@ -6,6 +6,7 @@ __pycache__/
 db.sqlite3
 
 docs/
+media/
 
 ## Directory-based project format:
 .idea/
@@ -54,5 +55,4 @@ venv.bak/
 # Django stuff:
 *.log
 .static_storage/
-.media/
 local_settings.py
