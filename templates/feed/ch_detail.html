@@ -1,5 +1,5 @@
 {% extends 'base_nav.html' %}
-
+{% load static%}
 {% block title %}チャンネル詳細{% endblock %}
 
 {% block content %}
@@ -11,12 +11,12 @@
           <h1>チャンネル詳細</h1>
             <div class="panel-body full-width full-height">
               {% if channel %}
+                <img src="{% static {{ channel.cover_image }} %}" />
                 <p>{{ channel.title }}</p>
                 <p>{{ channel.description }}</p>
                 <p>{{ channel.link }}</p>
                 <p>{{ channel.feed_url }}</p>
                 <p>{{ channel.author_name }}</p>
-                <p>{{ channel.cover_image }}</p>
               {% else %}
                 <p>チャンネル情報が取得できませんでした</p>
               {% endif %}
