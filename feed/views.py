@@ -2,7 +2,8 @@ import os
 import requests
 import feedparser
 import datetime
-from django.shortcuts import render, reverse
+import uuid
+from django.shortcuts import render
 from django.views.decorators.http import require_POST
 from django.views import View
 from django.views import generic
@@ -170,30 +171,18 @@ def save_channel(ch, feed_url):
     if ch is None:
         return None
     
-    title = ''
-    author = ''
-    description = ''
-    link = ''
+    title = ch.title if hasattr(ch, 'title') else ''
+    author = ch.author if hasattr(ch, 'author') else ''
+    description = ch.summary if hasattr(ch, 'summary') else ''
+    link = ch.link if hasattr(ch, 'link') else ''
+    feed_url = feed_url
     cover_image = ''
-
-    if hasattr(ch, 'title'):
-        title = ch.title
-
-    if hasattr(ch, 'author'):
-        author = ch.author
-
-    if hasattr(ch, 'description'):
-        description = ch.summary
-
-    if hasattr(ch, 'link'):
-        link = ch.link
-
-    if hasattr(ch, 'feed_url'):
-        feed_url = ch.feed_url
 
     if hasattr(ch, 'image'):
         path = ch.image.href
         cover_image = save_image(path)
+
+    print(cover_image)
 
     Channel.objects.create(
         title=title,
@@ -202,7 +191,7 @@ def save_channel(ch, feed_url):
         feed_url=feed_url,
         author_name=author,
         cover_image=cover_image
-        )
+    )
 
 
 def save_Subscription(ch, user):
@@ -219,28 +208,16 @@ def save_episode(ch, entries):
     """
     feedデータを Episode に登録する
     """
-    title = ''
-    link = ''
-    description = ''
-    release_date = ''
-    duration = ''
-
     for entry in entries:
-        if hasattr(entry, 'title'):
-            title = entry.title
-
-        if hasattr(entry, 'link'):
-            link = entry.link
-
-        if hasattr(entry, 'description'):
-            description = entry.description
+        title = entry.title if hasattr(entry, 'title') else ''
+        link = entry.link if hasattr(entry, 'link') else ''
+        description = entry.description if hasattr(entry, 'description') else ''
+        duration = entry.itunes_duration if hasattr(entry, 'duration') else ''
+        release_date = ''
 
         if hasattr(entry, 'published'):
             d = datetime.datetime.strptime(entry.published, '%a, %d %b %Y %H:%M:%S %z')
             release_date = d
-
-        if hasattr(entry, 'duration'):
-            duration = entry.itunes_duration
 
         Episode.objects.create(
             channel=ch,
@@ -257,13 +234,29 @@ def save_image(url, name=None):
     画像を保存する
     """
     res = requests.get(url)
+
     if res.status_code != 200:
-        return None
-    path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+"/media/images/"
-    if name is None:
-        path += url.split("/")[-1]
-    else:
-        path += name
+        return ''
+
+    # 保存する画像パスを取得
+    filename = url.split("/")[-1]
+    path = get_image_path(filename)
+
     with open(path, 'wb') as file:
         file.write(res.content)
     return path
+
+
+def get_image_path(filename):
+    """カスタマイズした画像パスを取得する.
+
+    :param filename: 元ファイル名
+    :return: カスタマイズしたファイル名を含む画像パス
+    """
+    # ディレクトリパス
+    prefix = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/media/images/"
+    # UUIDで一意な名前にする
+    name = str(uuid.uuid4()).replace('-', '')
+    # 拡張子
+    extension = os.path.splitext(filename)[-1]
+    return prefix + name + extension
