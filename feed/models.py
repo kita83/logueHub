@@ -26,6 +26,12 @@ class Channel(TimeStampModel):
     cover_image = models.ImageField(upload_to='images/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super(Channel, self).save()
+
+    def delete(self, using=None, keep_parents=False):
+        super(Channel, self).delete()
+
     def __str__(self):
         return self.title
 
