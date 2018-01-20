@@ -238,25 +238,31 @@ def save_image(url, name=None):
     if res.status_code != 200:
         return ''
 
-    # 保存する画像パスを取得
+    # 保存する画像名を取得
     filename = url.split("/")[-1]
-    path = get_image_path(filename)
+    unique_name = get_image_name(filename)
+
+    # 画像ファイル書き込み用パス
+    prefix = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/media/images/'
+    path = prefix + unique_name
+
+    # DB登録用パス
+    rel_prefix = 'images/'
+    rel_path = rel_prefix + unique_name
 
     with open(path, 'wb') as file:
         file.write(res.content)
-    return path
+    return rel_path
 
 
-def get_image_path(filename):
+def get_image_name(filename):
     """カスタマイズした画像パスを取得する.
 
     :param filename: 元ファイル名
     :return: カスタマイズしたファイル名を含む画像パス
     """
-    # ディレクトリパス
-    prefix = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/media/images/"
     # UUIDで一意な名前にする
     name = str(uuid.uuid4()).replace('-', '')
     # 拡張子
     extension = os.path.splitext(filename)[-1]
-    return prefix + name + extension
+    return name + extension
