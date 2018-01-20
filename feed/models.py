@@ -1,4 +1,5 @@
 """feedアプリのモデル"""
+import uuid
 from django.db import models
 from django.conf import settings
 
@@ -18,6 +19,7 @@ class Channel(TimeStampModel):
     """
     チャンネル情報を保持する
     """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     link = models.URLField(max_length=200, null=True, blank=True)
@@ -40,6 +42,7 @@ class Episode(TimeStampModel):
     """
     エピソード情報を保持する
     """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
     title = models.CharField(max_length=200)
     link = models.URLField(max_length=200)
@@ -56,6 +59,7 @@ class Subscription(TimeStampModel):
     """
     登録されたチャンネルを保持する
     """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -70,13 +74,14 @@ class Like(TimeStampModel):
     """
     likeされたエピソードとユーザー情報を関連づける
     """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     item_cd = models.CharField(max_length=50)
     type_cd = models.CharField(max_length=1)
     episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
-        )
+    )
 
     def __str__(self):
         return self.episode
@@ -86,11 +91,12 @@ class MstCollection(TimeStampModel):
     """
     コレクション情報を保持する
     """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=100)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
-        )
+    )
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -104,7 +110,7 @@ class Collection(TimeStampModel):
     mst_collection = models.ForeignKey(
         MstCollection,
         on_delete=models.CASCADE
-        )
+    )
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
 
@@ -116,11 +122,12 @@ class MstPlaylist(TimeStampModel):
     """
     プレイリスト情報を保持する
     """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=100)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
-        )
+    )
     is_public = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
 
@@ -135,7 +142,7 @@ class Playlist(TimeStampModel):
     mst_playlist = models.ForeignKey(
         MstPlaylist,
         on_delete=models.CASCADE
-        )
+    )
     episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
     play_order = models.IntegerField()
     is_active = models.BooleanField(default=True)
