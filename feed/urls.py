@@ -8,5 +8,6 @@ urlpatterns = [
     path('like_list/', views.LikeListView.as_view(), name='like_list'),
     path('entry/', views.entry, name='entry'),
     path('ch/<pk>/detail/', views.ChannelDetailView.as_view(), name='ch_detail'),
+    path('ep/<pk>/detail/', views.EpisodeDetailView.as_view(), name='ep_detail'),
     path('settings/', views.SettingsView.as_view(), name='settings'),
 ]

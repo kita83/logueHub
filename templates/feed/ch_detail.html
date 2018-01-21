@@ -1,28 +1,23 @@
 {% extends 'base_nav.html' %}
 {% load static %}
-{% block title %}チャンネル詳細{% endblock %}
+{% block title %}Channel Detail{% endblock %}
 
 {% block content %}
 {% static "" as STATIC_URL %}
 <div id="wrapper">
   <div id="page-wrapper">
     <div class="row">
-      <div class="col-lg-6 full-width margin-top-20percent">
-        <div class="panel panel-default full-width">
-          <h1>チャンネル詳細</h1>
-            <div class="panel-body full-width full-height">
-              {% if channel %}
-                <img src="{{ STATIC_URL }}{{ channel.cover_image }}" width=150px/>
-                <p>{{ channel.title }}</p>
-                <p>{{ channel.description }}</p>
-                <p>{{ channel.link }}</p>
-                <p>{{ channel.feed_url }}</p>
-                <p>{{ channel.author_name }}</p>
-              {% else %}
-                <p>チャンネル情報が取得できませんでした</p>
-              {% endif %}
-          </div>
-        </div>
+      <div class="col-lg-12 full-width margin-top-20percent">
+        {% if channel %}
+          <h1>{{ channel.title }}</h1>
+          <img src="{{ STATIC_URL }}{{ channel.cover_image }}" width=150px/>
+          <p>{{ channel.description }}</p>
+          <p>{{ channel.link }}</p>
+          <p>{{ channel.feed_url }}</p>
+          <p>{{ channel.author_name }}</p>
+        {% else %}
+          <p>チャンネル情報が取得できませんでした</p>
+        {% endif %}
       </div>
     </div>
   </div>

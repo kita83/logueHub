@@ -2,6 +2,8 @@
 import uuid
 from django.db import models
 from django.conf import settings
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 
 class TimeStampModel(models.Model):
@@ -25,17 +27,25 @@ class Channel(TimeStampModel):
     link = models.URLField(max_length=200, null=True, blank=True)
     feed_url = models.URLField(max_length=200)
     author_name = models.CharField(max_length=100, null=True, blank=True)
-    cover_image = models.ImageField(upload_to='images/', blank=True, null=True)
+    cover_image = models.ImageField(
+        upload_to='images/',
+        width_field='width_field',
+        height_field='height_field',
+        blank=True,
+        null=True
+    )
+    width_field = models.IntegerField(default=0)
+    height_field = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        super(Channel, self).save()
-
-    def delete(self, using=None, keep_parents=False):
-        super(Channel, self).delete()
 
     def __str__(self):
         return self.title
+
+
+@receiver(post_delete, sender=Channel)
+def delete_file(sender, instance, **kwargs):
+    """Channelモデル削除後に画像ファイルを削除する"""
+    instance.cover_image.delete(False)
 
 
 class Episode(TimeStampModel):

@@ -9,6 +9,7 @@ from django.views import View
 from django.views import generic
 from .forms import SubscriptionForm
 from .models import Channel, Episode, Subscription
+from PIL import Image
 
 
 class IndexView(View):
@@ -95,6 +96,14 @@ class ChannelDetailView(generic.DetailView):
     """
     model = Channel
     template_name = 'feed/ch_detail.html'
+
+
+class EpisodeDetailView(generic.DetailView):
+    """
+    エピソード詳細画面
+    """
+    model = Episode
+    template_name = 'feed/ep_detail.html'
 
 
 class EpisodeAllView(generic.TemplateView):
@@ -190,7 +199,9 @@ def save_channel(ch, feed_url):
         link=link,
         feed_url=feed_url,
         author_name=author,
-        cover_image=cover_image
+        cover_image=cover_image,
+        width_field=200,
+        height_field=200
     )
 
 
