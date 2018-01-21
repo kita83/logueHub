@@ -1,15 +1,12 @@
-import os
 import requests
 import feedparser
-import datetime
-import uuid
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 from django.views import View
 from django.views import generic
 from .forms import SubscriptionForm
-from .models import Channel, Episode, Subscription
-from PIL import Image
+from .models import Channel, Episode, Like
+from . import utils
 
 
 class IndexView(View):
@@ -62,15 +59,15 @@ def entry(request):
         feed_url = form.cleaned_data['require_url']
 
         # DBから登録済みデータを取得
-        exist_ch = get_exist_channel(feed_url)
+        exist_ch = utils.get_exist_channel(feed_url)
 
         # チャンネル未登録の場合、先に新規登録する
         if not exist_ch:
             new_registration(feed_url, user)
-            exist_ch = get_exist_channel(feed_url)
+            exist_ch = utils.get_exist_channel(feed_url)
 
         # 最新エピソードを取得
-        exist_ep = get_exist_epsode(exist_ch[0])
+        exist_ep = utils.get_exist_epsode(exist_ch[0])
 
         forms = []
         if exist_ep:
@@ -105,6 +102,14 @@ class EpisodeDetailView(generic.DetailView):
     model = Episode
     template_name = 'feed/ep_detail.html'
 
+    def get_context_data(self, *args, **kwargs):
+        """エピソードが Like されている場合は Like データを渡す"""
+        context = super().get_context_data(*args, **kwargs)
+        user = self.request.user
+        # TODO: フィルタリングがうまくできているかテストする
+        context['like'] = Like.objects.filter(episode=context['episode'], user=user)
+        return context
+
 
 class EpisodeAllView(generic.TemplateView):
     """
@@ -127,28 +132,6 @@ class SettingsView(generic.TemplateView):
     template_name = 'feed/settings.html'
 
 
-def get_exist_channel(require_url):
-    """
-    登録済みのチャンネルデータを返す
-    存在しない場合: None
-    """
-    rtn = Channel.objects.filter(feed_url=require_url)
-    if not rtn:
-        return None
-    return rtn
-
-
-def get_exist_epsode(require_ch):
-    """
-    登録済みのエピソードデータを返す
-    存在しない場合: None
-    """
-    rtn = Episode.objects.filter(channel=require_ch)
-    if not rtn:
-        return None
-    return rtn
-
-
 def new_registration(feed_url, user):
     """
     新規カテゴリ、チャンネル、最新エピソードを登録する
@@ -161,119 +144,13 @@ def new_registration(feed_url, user):
         entries = feeds.entries
 
         # チャンネル新規登録
-        save_channel(ch, feed_url)
+        utils.save_channel(ch, feed_url)
 
         c = Channel.objects.filter(feed_url=feed_url)
         exist_ch = c[0]
 
         # 最新エピソード登録
-        save_episode(exist_ch, entries)
+        utils.save_episode(exist_ch, entries)
 
         # 購読情報登録
-        save_Subscription(exist_ch, user)
-
-
-def save_channel(ch, feed_url):
-    """
-    feedデータを Channel に登録する
-    """
-    if ch is None:
-        return None
-    
-    title = ch.title if hasattr(ch, 'title') else ''
-    author = ch.author if hasattr(ch, 'author') else ''
-    description = ch.summary if hasattr(ch, 'summary') else ''
-    link = ch.link if hasattr(ch, 'link') else ''
-    feed_url = feed_url
-    cover_image = ''
-
-    if hasattr(ch, 'image'):
-        path = ch.image.href
-        cover_image = save_image(path)
-
-    print(cover_image)
-
-    Channel.objects.create(
-        title=title,
-        description=description,
-        link=link,
-        feed_url=feed_url,
-        author_name=author,
-        cover_image=cover_image,
-        width_field=200,
-        height_field=200
-    )
-
-
-def save_Subscription(ch, user):
-    """
-    アカウントとチャンネルの関連を Subscription に登録する
-    """
-    Subscription.objects.create(
-        channel=ch,
-        user=user
-    )
-
-
-def save_episode(ch, entries):
-    """
-    feedデータを Episode に登録する
-    """
-    for entry in entries:
-        title = entry.title if hasattr(entry, 'title') else ''
-        link = entry.link if hasattr(entry, 'link') else ''
-        description = entry.description if hasattr(entry, 'description') else ''
-        duration = entry.itunes_duration if hasattr(entry, 'duration') else ''
-        release_date = ''
-
-        if hasattr(entry, 'published'):
-            d = datetime.datetime.strptime(entry.published, '%a, %d %b %Y %H:%M:%S %z')
-            release_date = d
-
-        Episode.objects.create(
-            channel=ch,
-            title=title,
-            link=link,
-            description=description,
-            release_date=release_date,
-            duration=duration
-        )
-
-
-def save_image(url, name=None):
-    """
-    画像を保存する
-    """
-    res = requests.get(url)
-
-    if res.status_code != 200:
-        return ''
-
-    # 保存する画像名を取得
-    filename = url.split("/")[-1]
-    unique_name = get_image_name(filename)
-
-    # 画像ファイル書き込み用パス
-    prefix = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/media/images/'
-    path = prefix + unique_name
-
-    # DB登録用パス
-    rel_prefix = 'images/'
-    rel_path = rel_prefix + unique_name
-
-    with open(path, 'wb') as file:
-        file.write(res.content)
-    return rel_path
-
-
-def get_image_name(filename):
-    """カスタマイズした画像パスを取得する.
-
-    :param filename: 元ファイル名
-    :return: カスタマイズしたファイル名を含む画像パス
-    """
-    # UUIDで一意な名前にする
-    name = str(uuid.uuid4()).replace('-', '')
-    # 拡張子
-    extension = os.path.splitext(filename)[-1]
-    return name + extension
+        utils.save_Subscription(exist_ch, user)

@@ -10,7 +10,14 @@
       <div class="col-lg-12 full-width margin-top-20percent">
         {% if episode %}
         <h3>{{ episode.title }}</h3>
+            <div class="panel-body">
             <img src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=150px/>
+            </div>
+            {% if like %}
+                <p><button type="button" class="btn btn-primary btn-xs">Likeから除外する</button></p>
+            {% else %}
+                <p><button type="button" class="btn btn-secondary btn-xs">Like</button></p>
+            {% endif %}
             <p>{{ episode.description }}</p>
             <p>{{ episode.link }}</p>
             <p>{{ episode.release_date }}</p>

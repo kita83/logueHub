@@ -94,7 +94,7 @@ class Like(TimeStampModel):
     )
 
     def __str__(self):
-        return self.episode
+        return self.episode.title
 
 
 class MstCollection(TimeStampModel):
