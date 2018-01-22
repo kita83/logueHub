@@ -3,7 +3,7 @@ import feedparser
 from django.test import TestCase
 from feed.models import Channel, Episode, Subscription
 from accounts.models import LogueUser
-from feed import views
+from feed import views, utils
 
 
 class ChannelModelTest(TestCase):
@@ -22,7 +22,7 @@ class ChannelModelTest(TestCase):
         feeds = feedparser.parse(feed_url)
         ch = feeds.channel
 
-        views.save_channel(ch, feed_url)
+        utils.save_channel(ch, feed_url)
         c = Channel.objects.get(title='Rebuild')
         actual = c.link
         self.assertEqual(actual, 'http://rebuild.fm')
@@ -33,7 +33,7 @@ class ChannelModelTest(TestCase):
         """
         feed_url = 'http://feeds.test.fm/testfm'
         ch = None
-        views.save_channel(ch, feed_url)
+        utils.save_channel(ch, feed_url)
         actual = Channel.objects.filter(feed_url='http://feeds.test.fm/testfm')
         self.assertEqual(actual.count(), 0)
 
@@ -52,7 +52,7 @@ class EpisodeModelTest(TestCase):
             link='http://test.fm',
             feed_url='http://podcast.1242.com/sand/index.xml',
             author_name='test_author',
-            cover_image='http://files.test.fm/test.png'
+            cover_image='images/3aff6b6927bd46a289f39ba2e77a2b5e.png'
         )
 
         feed_url = 'http://podcast.1242.com/sand/index.xml'
@@ -60,7 +60,7 @@ class EpisodeModelTest(TestCase):
         entries = feeds.entries
 
         exist_ch = Channel.objects.filter(feed_url=feed_url)
-        views.save_episode(exist_ch[0], entries)
+        utils.save_episode(exist_ch[0], entries)
         actual = Episode.objects.filter(channel=exist_ch[0])
         self.assertNotEqual(actual.count(), 0)
 
@@ -79,9 +79,9 @@ class SubscriptionModelTest(TestCase):
 
         user = LogueUser.objects.create(email='test@email.com', password='testpass')
 
-        views.save_channel(ch, feed_url)
+        utils.save_channel(ch, feed_url)
         c = Channel.objects.get(title='Rebuild')
-        views.save_Subscription(c, user)
+        utils.save_subscription(c, user)
         sub = Subscription.objects.get(user=user)
         actual = sub.user.email
         self.assertEqual(actual, 'test@email.com')

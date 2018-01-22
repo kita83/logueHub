@@ -1,7 +1,7 @@
 """feedアプリのViewテスト"""
 from django.test import TestCase
 from feed.models import Channel
-from feed.views import get_exist_channel
+from feed.utils import get_exist_channel
 
 
 class UrlResolveTest(TestCase):

@@ -93,15 +93,14 @@ def save_subscription(ch, user):
     )
 
 
-def save_like(episode):
+def save_like(episode, user):
     """
     Like情報を登録する
     """
-    pass
-    # models.Like.objects.create(
-    #     channel=ch,
-    #     user=user
-    # )
+    models.Like.objects.create(
+        episode=episode,
+        user=user
+    )
 
 
 def delete_previous_file(function):

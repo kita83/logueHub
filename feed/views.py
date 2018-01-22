@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_POST
 from django.views import View
 from django.views import generic
+from django.http import JsonResponse
 from .forms import SubscriptionForm
 from .models import Channel, Episode, Like
 from . import utils
@@ -156,8 +157,18 @@ def new_registration(feed_url, user):
         utils.save_subscription(exist_ch, user)
 
 
-def api_v1_posts(requests):
+def api_v1_posts(request):
     """Likeされたエピソードの登録処理をする"""
-    pass
-    # if request.method == 'POST':
-    #     ep = request.POST.get('episode')
+    if request.method == 'POST':
+        ep_id = request.POST.get('ep_id')
+        episode = Episode.objects.get(id=ep_id)
+        user = request.user
+        
+        if len(episode) == 0:
+            return None
+
+        episode = utils.save_like(episode, user)
+        d = {
+            'result': episode
+        }
+        return JsonResponse(d)
