@@ -9,5 +9,6 @@ urlpatterns = [
     path('entry/', views.entry, name='entry'),
     path('ch/<pk>/detail/', views.ChannelDetailView.as_view(), name='ch_detail'),
     path('ep/<pk>/detail/', views.EpisodeDetailView.as_view(), name='ep_detail'),
+    # path('api/v1/posts', api_v1_posts, name='api_v1_posts'),
     path('settings/', views.SettingsView.as_view(), name='settings'),
 ]

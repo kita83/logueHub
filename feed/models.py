@@ -85,8 +85,6 @@ class Like(TimeStampModel):
     likeされたエピソードとユーザー情報を関連づける
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    item_cd = models.CharField(max_length=50)
-    type_cd = models.CharField(max_length=1)
     episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

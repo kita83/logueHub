@@ -153,4 +153,11 @@ def new_registration(feed_url, user):
         utils.save_episode(exist_ch, entries)
 
         # 購読情報登録
-        utils.save_Subscription(exist_ch, user)
+        utils.save_subscription(exist_ch, user)
+
+
+def api_v1_posts(requests):
+    """Likeされたエピソードの登録処理をする"""
+    pass
+    # if request.method == 'POST':
+    #     ep = request.POST.get('episode')
