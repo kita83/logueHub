@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'logue.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'project001',
+        'NAME': 'logue',
         'USER': 'admin001',
         'PASSWORD': 'vGqRxkCEiQ4qQUsD4c',
         'HOST': '',

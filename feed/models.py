@@ -69,7 +69,7 @@ class Subscription(TimeStampModel):
     """
     登録されたチャンネルを保持する
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, max_length=32)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
