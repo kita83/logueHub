@@ -1,54 +1,31 @@
 {% extends 'base_nav.html' %}
 {% load static %}
 {% block title %}Episode Detail{% endblock %}
+
+{% block content %}
+{% static "" as STATIC_URL %}
 <script>
-  function getCookie(name) {
-      var cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
-          var cookies = document.cookie.split(';');
-          for (var i = 0; i < cookies.length; i++) {
-              var cookie = jQuery.trim(cookies[i]);
-              // Does this cookie string begin with the name we want?
-              if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                  break;
-              }
-          }
-      }
-      return cookieValue;
-  }
-  var csrftoken = getCookie('csrftoken');
-
-  function csrfSafeMethod(method) {
-      // these HTTP methods do not require CSRF protection
-      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-  }
-  $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-              xhr.setRequestHeader("X-CSRFToken", csrftoken);
-          }
-      }
-  });
-
-  $('#postform').submit(function() {
+$(function() {
+    $('#ajax').on('click', function() {
+        $('#result').html('<p>返ってきている</p>');
         $.ajax({
-            'url':'{% url "api_v1_posts" %}',
-            'type':'POST',
+            'url':'{% url "feed:add_like" %}',
+            'type':'GET',
             'data':{
-                'result':$('#result').val(),
+                'ep_id':$('#ep_id').val(),
             },
             'dataType':'json',
-            'success':function(r){
-                message = r.id;
-                alert(message);           
+            'done':function(data){
+                $('#result').append('<p>'+ '返ってきた' +'</p>')
+            },
+            'fail':function(data){
+                $('#result').append('<p>'+ 'errorrrrrrrrrrrrrrrrrrrrrr' +'</p>')
             },
         });
         return false;
     });
+});
 </script>
-{% block content %}
-{% static "" as STATIC_URL %}
 <div id="wrapper">
   <div id="page-wrapper">
     <div class="row">
@@ -59,13 +36,13 @@
             <img src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=150px/>
             </div>
             {% if like %}
-                <p><button type="button" class="btn btn-primary btn-xs">Likeから除外する</button></p>
-                <form id="postform" action="{% url 'api_v1_posts' %}" method="POST">
-                  <input type="hidden" name="ep_id" value="{{ episode.id }}">
-                  <input type="submit" value="作成">
-                </form>
+              <p><button type="button" class="btn btn-primary btn-xs">Likeから除外する</button></p>
             {% else %}
-                <p><button type="button" class="btn btn-primary btn-xs">Like</button></p>
+              <p><button type="button" id="ajax" class="btn btn-primary btn-xs" >Like</button></p>
+                <form id="like" action="" method="GET">
+                  <input type="hidden" id="ep_id" name="ep_id" value="{{ episode.id }}">
+
+                </form>
             {% endif %}
             <div id="result">
               {{ result }}

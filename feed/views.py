@@ -157,18 +157,21 @@ def new_registration(feed_url, user):
         utils.save_subscription(exist_ch, user)
 
 
-def api_v1_posts(request):
+def add_like(request):
     """Likeされたエピソードの登録処理をする"""
-    if request.method == 'POST':
-        ep_id = request.POST.get('ep_id')
-        episode = Episode.objects.get(id=ep_id)
+    if request.method == 'GET':
+        query = request.GET.get('ep_id')
+        # 登録エピソード取得
+        episode = Episode.objects.filter(id=query)
+        # 登録ユーザー取得
         user = request.user
-        
+
         if len(episode) == 0:
             return None
 
-        episode = utils.save_like(episode, user)
-        d = {
-            'result': episode
+        # Likeに登録
+        utils.save_like(episode[0], user)
+        response = {
+            'result': '成功'
         }
-        return JsonResponse(d)
+        return JsonResponse(response)
