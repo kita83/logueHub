@@ -9,6 +9,6 @@ urlpatterns = [
     path('entry/', views.entry, name='entry'),
     path('ch/<pk>/detail/', views.ChannelDetailView.as_view(), name='ch_detail'),
     path('ep/<pk>/detail/', views.EpisodeDetailView.as_view(), name='ep_detail'),
-    path('add_like', views.add_like, name='add_like'),
+    path('change_like', views.change_like, name='change_like'),
     path('settings/', views.SettingsView.as_view(), name='settings'),
 ]

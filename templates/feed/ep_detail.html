@@ -6,23 +6,21 @@
 {% static "" as STATIC_URL %}
 <script>
 $(function() {
-    $('#ajax').on('click', function() {
-        $('#result').html('<p>返ってきている</p>');
+    $('#like').on('click', function() {
         $.ajax({
-            'url':'{% url "feed:add_like" %}',
+            'url':'{% url "feed:change_like" %}',
             'type':'GET',
             'data':{
-                'ep_id':$('#ep_id').val(),
+                'ep_id':$(this).attr('data-episode-id'),
             },
-            'dataType':'json',
-            'done':function(data){
-                $('#result').append('<p>'+ '返ってきた' +'</p>')
-            },
-            'fail':function(data){
-                $('#result').append('<p>'+ 'errorrrrrrrrrrrrrrrrrrrrrr' +'</p>')
-            },
-        });
-        return false;
+            'dataType':'json'
+        })
+        .done(function(data){
+            $('#like').html(data.btn_display)
+        })
+        .fail(function(data){
+            $('#error').html('<p>' + '登録できませんでした' +'</p>')
+        })
     });
 });
 </script>
@@ -36,15 +34,11 @@ $(function() {
             <img src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=150px/>
             </div>
             {% if like %}
-              <p><button type="button" class="btn btn-primary btn-xs">Likeから除外する</button></p>
+              <p><button type="button" id="like" data-episode-id="{{ episode.id }}" class="btn btn-primary btn-xs">Likeから除外する</button></p>
             {% else %}
-              <p><button type="button" id="ajax" class="btn btn-primary btn-xs" >Like</button></p>
-                <form id="like" action="" method="GET">
-                  <input type="hidden" id="ep_id" name="ep_id" value="{{ episode.id }}">
-
-                </form>
+              <p><button type="button" id="like" data-episode-id="{{ episode.id }}" class="btn btn-primary btn-xs" >Like</button></p>
             {% endif %}
-            <div id="result">
+            <div id="error">
               {{ result }}
             </div>
             <p>{{ episode.description }}</p>

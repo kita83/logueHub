@@ -157,21 +157,31 @@ def new_registration(feed_url, user):
         utils.save_subscription(exist_ch, user)
 
 
-def add_like(request):
-    """Likeされたエピソードの登録処理をする"""
+def change_like(request):
+    """
+    エピソードをLike登録する
+    すでにLikeされている場合は削除する
+    """
     if request.method == 'GET':
         query = request.GET.get('ep_id')
         # 登録エピソード取得
         episode = Episode.objects.filter(id=query)
         # 登録ユーザー取得
         user = request.user
+        # 登録Likeデータ取得
+        like = Like.objects.filter(episode=episode[0], user=user)
 
-        if len(episode) == 0:
-            return None
-
-        # Likeに登録
-        utils.save_like(episode[0], user)
-        response = {
-            'result': '成功'
-        }
-        return JsonResponse(response)
+        if len(like) == 0:
+            # Like登録
+            utils.save_like(episode[0], user)
+            response = {
+                'btn_display': 'Likeから除外する'
+            }
+            return JsonResponse(response)
+        else:
+            # Likeから削除
+            utils.delete_like(episode[0], user)
+            response = {
+                'btn_display': 'Like'
+            }
+            return JsonResponse(response)

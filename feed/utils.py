@@ -103,6 +103,16 @@ def save_like(episode, user):
     )
 
 
+def delete_like(episode, user):
+    """
+    Like情報を削除する
+    """
+    models.Like.objects.filter(
+        episode=episode,
+        user=user
+    ).delete()
+
+
 def delete_previous_file(function):
     """不要となる古いファイルを削除する為のデコレータ実装.
 
