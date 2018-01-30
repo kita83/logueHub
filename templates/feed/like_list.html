@@ -1,13 +1,17 @@
 {% extends 'base_nav.html' %}
-
+{% load static %}
 {% block title %}Likes{% endblock %}
 
 {% block content %}
+{% static "" as STATIC_URL %}
 <div id="page-wrapper">
   <div class="row">
     <div class="col-lg-12">
         <h1 class="page-header">Likeされた全エピソードリストを表示</h1>
-    </div>  
+        {% for item in object_list %}
+          <li class="list-group-item"><img src="{{ STATIC_URL }}{{ item.episode.channel.cover_image }}" width=60px/>{{ item.episode.title }} - {{ item.episode.channel }}</li>
+        {% endfor %}
+    </div>
   </div>
 </div>
 {% endblock %}

@@ -1,47 +1,24 @@
-import requests
-import feedparser
+import datetime
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
-from django.views import View
 from django.views import generic
 from django.http import JsonResponse
 from .forms import SubscriptionForm
 from .models import Channel, Episode, Like
 from . import utils
+import feedparser
 
 
-class IndexView(View):
+class IndexView(generic.ListView):
+    """
+    新着エピソードを表示する
+    """
+    model = Episode
     template_name = 'feed/index.html'
-
-    def get(self, request):
-        form = SubscriptionForm()
-        # ジャンル"Software How-To"のPodcastランキング情報を取得
-        url = 'https://itunes.apple.com/jp/rss/topaudiopodcasts/genre=1480/json'
-        res = requests.get(url).json()
-
-        # 表示用データ抽出
-        feeds = []
-        for feed in res['feed']['entry']:
-            # エピソードタイトル
-            title = 'episode title'
-            # チャンネルタイトル
-            channel = feed['im:name']['label']
-            # 収録者
-            author = feed['im:artist']['label']
-            # リリース日
-            release_date = feed['im:releaseDate']['attributes']['label']
-            tmp = {
-                'title': title,
-                'channel': channel,
-                'author': author,
-                'release_date': release_date
-            }
-            feeds.append(tmp)
-
-        return render(request, self.template_name, {
-            'feeds': feeds,
-            'form': form
-        })
+    paginate_by = 8
+    queryset = Episode.objects.filter(
+        release_date__gt=datetime.date.today() - datetime.timedelta(days=20)
+    ).order_by('-release_date')
 
 
 @require_POST
@@ -119,10 +96,11 @@ class EpisodeAllView(generic.TemplateView):
     template_name = 'feed/ep_all.html'
 
 
-class LikeListView(generic.TemplateView):
+class LikeListView(generic.ListView):
     """
     Likeされた全エピソードリストを表示
     """
+    model = Like
     template_name = 'feed/like_list.html'
 
 

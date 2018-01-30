@@ -34,7 +34,7 @@
                 </div>
             </li>
             <li>
-                <a href="{% url 'feed:index' %}">Dashboard</a>
+                <a href="{% url 'feed:index' %}">Recently</a>
             </li>
             {% if user.is_authenticated %}
                 <li><a href="{% url 'feed:all' %}">All</a></li>
