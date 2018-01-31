@@ -72,6 +72,13 @@ class ChannelDetailView(generic.DetailView):
     model = Channel
     template_name = 'feed/ch_detail.html'
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['episode'] = Episode.objects.filter(
+            channel=context['channel']
+        ).order_by('-release_date')
+        return context
+
 
 class EpisodeDetailView(generic.DetailView):
     """

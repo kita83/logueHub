@@ -10,5 +10,5 @@ class SubscriptionForm(forms.Form):
         required=False,
         widget=forms.TextInput(
             attrs={'placeholder': '新しいフィードURLを登録'}
-            )
         )
+    )
