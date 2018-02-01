@@ -5,9 +5,9 @@
     <ul class="nav navbar-top-links navbar-right">
         <li class="dropdown">
             {% if user.is_authenticated %}
-            <form action="{% url 'feed:entry' %}" method="post">
+            <form action="{% url 'feed:entry' %}" method="POST">
                 {% csrf_token %}
-                {{ form }}
+                <li><input id="input-url" class="form-control input-sm input-url" type="text" placeholder="新しいフィードURLを登録"></li>
                 <li><button type="submit" class="btn btn-primary btn-sm">{% trans "Submit" %}</button></li>
             </form>
             <li>{{ user.email }}</li>

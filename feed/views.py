@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_POST
 from django.views import generic
 from django.http import JsonResponse
+from django.db.models import Count
 from .forms import SubscriptionForm
 from .models import Channel, Episode, Like
 from . import utils
@@ -15,10 +16,19 @@ class IndexView(generic.ListView):
     """
     model = Episode
     template_name = 'feed/index.html'
+    form = SubscriptionForm
     paginate_by = 8
     queryset = Episode.objects.filter(
         release_date__gt=datetime.date.today() - datetime.timedelta(days=20)
     ).order_by('-release_date')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        # TODO: フィルタリングがうまくできているかテストする
+        context['likes'] = Like.objects.filter(
+            created__gt=datetime.date.today() - datetime.timedelta(days=7),
+        ).annotate(Count('user')).order_by('-user')[:8]
+        return context
 
 
 @require_POST
