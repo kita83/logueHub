@@ -1,5 +1,5 @@
 import datetime
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 from django.views import generic
 from django.http import JsonResponse
@@ -70,12 +70,10 @@ def entry(request):
                 }
                 forms.append(form)
 
-        return render(
-            request,
-            'feed/ch_detail.html',
-            context={
-                'channel': exist_ch[0]})
-        # return redirect('feed/ch_detail.html', context={'channel': exist_ch[0]})
+        # return render(
+        #     request, 'feed/ch_detail.html', context={'channel': exist_ch[0]}
+        # )
+        return redirect('feed:ch_detail', pk=exist_ch[0].id)
 
     return render(request, 'feed/index.html')
 

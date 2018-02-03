@@ -1,4 +1,5 @@
 import os
+import re
 import datetime
 import uuid
 import requests
@@ -70,8 +71,16 @@ def save_episode(ch, entries):
         release_date = ''
 
         if hasattr(entry, 'published'):
+            format = ''
+            if re.search(r'[A-Z]{3}$', entry.published):
+                # 末尾がUTC, GMT, EST, CST等の場合
+                format = '%a, %d %b %Y %H:%M:%S %Z'
+            else:
+                # 末尾が+HHMM, -HHMM等の場合
+                format = '%a, %d %b %Y %H:%M:%S %z'
+
             d = datetime.datetime.strptime(
-                entry.published, '%a, %d %b %Y %H:%M:%S %Z'
+                entry.published, format
             )
             release_date = d
 
