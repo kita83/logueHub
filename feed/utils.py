@@ -70,7 +70,9 @@ def save_episode(ch, entries):
         release_date = ''
 
         if hasattr(entry, 'published'):
-            d = datetime.datetime.strptime(entry.published, '%a, %d %b %Y %H:%M:%S %z')
+            d = datetime.datetime.strptime(
+                entry.published, '%a, %d %b %Y %H:%M:%S %Z'
+            )
             release_date = d
 
         models.Episode.objects.create(

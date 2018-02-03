@@ -16,7 +16,6 @@ class IndexView(generic.ListView):
     """
     model = Episode
     template_name = 'feed/index.html'
-    form = SubscriptionForm
     paginate_by = 8
     queryset = Episode.objects.filter(
         release_date__gt=datetime.date.today() - datetime.timedelta(days=20)
@@ -24,6 +23,8 @@ class IndexView(generic.ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        # 登録用フォーム
+        context['form'] = SubscriptionForm
         # TODO: フィルタリングがうまくできているかテストする
         context['likes'] = Like.objects.filter(
             created__gt=datetime.date.today() - datetime.timedelta(days=7),
@@ -69,7 +70,12 @@ def entry(request):
                 }
                 forms.append(form)
 
-        return render(request, 'feed/ch_detail.html', context={'channel': exist_ch[0]})
+        return render(
+            request,
+            'feed/ch_detail.html',
+            context={
+                'channel': exist_ch[0]})
+        # return redirect('feed/ch_detail.html', context={'channel': exist_ch[0]})
 
     return render(request, 'feed/index.html')
 
@@ -84,6 +90,8 @@ class ChannelDetailView(generic.DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        # 登録用フォーム
+        context['form'] = SubscriptionForm
         context['episode'] = Episode.objects.filter(
             channel=context['channel']
         ).order_by('-release_date')
@@ -101,6 +109,8 @@ class EpisodeDetailView(generic.DetailView):
         """エピソードが Like されている場合は Like データを渡す"""
         context = super().get_context_data(*args, **kwargs)
         user = self.request.user
+        # 登録用フォーム
+        context['form'] = SubscriptionForm
         # TODO: フィルタリングがうまくできているかテストする
         context['like'] = Like.objects.filter(episode=context['episode'], user=user)
         return context
@@ -119,6 +129,12 @@ class LikeListView(generic.ListView):
     """
     model = Like
     template_name = 'feed/like_list.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        # 登録用フォーム
+        context['form'] = SubscriptionForm
+        return context
 
 
 class SettingsView(generic.TemplateView):

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'debug_toolbar',
+    'bootstrap3',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -93,6 +94,9 @@ DATABASES = {
         'PASSWORD': 'vGqRxkCEiQ4qQUsD4c',
         'HOST': '',
         'PORT': '',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 
