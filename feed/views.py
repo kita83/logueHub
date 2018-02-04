@@ -16,8 +16,10 @@ class IndexView(generic.ListView):
     """
     model = Episode
     template_name = 'feed/index.html'
+    # user = self.request.user
     paginate_by = 8
     queryset = Episode.objects.filter(
+        # user=user,
         release_date__gt=datetime.date.today() - datetime.timedelta(days=20)
     ).order_by('-release_date')
 
