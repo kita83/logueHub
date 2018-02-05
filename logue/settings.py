@@ -220,3 +220,5 @@ NOSE_ARGS = [
     '--cover-html',  # coverage を html で cover/ に出力する
     '--cover-package=' + ",".join(TEST_APPS),
 ]
+
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'

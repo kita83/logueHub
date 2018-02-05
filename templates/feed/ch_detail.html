@@ -9,7 +9,8 @@
     <div class="col-lg-9">
       {% for item in episode %}
         <li class="list-group-item">
-          <a href="{% url 'feed:ep_detail' item.id %}"></a>{{ item.title }} - {{ item.channel }}</a></li>
+          <a href="{% url 'feed:ep_detail' item.id %}">{{ item.title }} - {{ item.channel }}</a>
+        </li>
       {% endfor %}
     </div>
     <div class="col-lg-3">

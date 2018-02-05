@@ -119,7 +119,7 @@ class Collection(TimeStampModel):
         MstCollection,
         on_delete=models.CASCADE
     )
-    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):

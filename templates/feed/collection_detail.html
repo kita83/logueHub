@@ -1,0 +1,22 @@
+{% extends 'base_nav.html' %}
+{% load static %}
+{% block title %}Collection Detail{% endblock %}
+
+{% block content %}
+{% static "" as STATIC_URL %}
+<div id="page-wrapper">
+  <div class="row">
+    <div class="col-lg-9">
+      {% for episode in episodes %}
+        <li class="list-group-item">
+          <a href="{% url 'feed:ep_detail' episode.id %}">{{ episode.title }} - {{ episode.channel }}</a>
+        </li>
+      {% endfor %}
+    </div>
+    <div class="col-lg-3">
+      <div class="panel panel-default">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

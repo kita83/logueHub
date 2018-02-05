@@ -4,8 +4,8 @@ from django.views.decorators.http import require_POST
 from django.views import generic
 from django.http import JsonResponse
 from django.db.models import Count
-from .forms import SubscriptionForm
-from .models import Channel, Episode, Like
+from .forms import SubscriptionForm, AddCollectionForm
+from .models import Channel, Episode, Like, MstCollection, Collection
 from . import utils
 import feedparser
 
@@ -26,11 +26,18 @@ class IndexView(generic.ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         # 登録用フォーム
-        context['form'] = SubscriptionForm
+        context['subscription_form'] = SubscriptionForm
         # TODO: フィルタリングがうまくできているかテストする
         context['likes'] = Like.objects.filter(
-            created__gt=datetime.date.today() - datetime.timedelta(days=7),
-        ).annotate(Count('user')).order_by('-user')[:8]
+                created__gt=datetime.date.today() - datetime.timedelta(days=7),
+            ).annotate(Count('user')).order_by('-user')[:8]
+        if 'collection' not in self.request.session:
+            user = self.request.user
+            print('user: ' + str(user))
+            self.request.session['collection'] = (
+                [item for item in MstCollection.objects.filter(user=user)]
+            )
+        context['collection'] = self.request.session.get('collection')
         return context
 
 
@@ -91,7 +98,7 @@ class ChannelDetailView(generic.DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         # 登録用フォーム
-        context['form'] = SubscriptionForm
+        context['subscription_form'] = SubscriptionForm
         context['episode'] = Episode.objects.filter(
             channel=context['channel']
         ).order_by('-release_date')
@@ -110,7 +117,8 @@ class EpisodeDetailView(generic.DetailView):
         context = super().get_context_data(*args, **kwargs)
         user = self.request.user
         # 登録用フォーム
-        context['form'] = SubscriptionForm
+        context['subscription_form'] = SubscriptionForm
+        context['add_collection_form'] = AddCollectionForm
         # TODO: フィルタリングがうまくできているかテストする
         context['like'] = Like.objects.filter(episode=context['episode'], user=user)
         return context
@@ -133,7 +141,22 @@ class LikeListView(generic.ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         # 登録用フォーム
-        context['form'] = SubscriptionForm
+        context['subscription_form'] = SubscriptionForm
+        return context
+
+
+class CollectionDetailView(generic.DetailView):
+    """
+    コレクション詳細を表示
+    """
+    model = MstCollection
+    template_name = 'feed/collection_detail.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['episodes'] = Collection.objects.filter(
+            mst_collection=context['mstcollection']
+        )
         return context
 
 

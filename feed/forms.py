@@ -1,4 +1,5 @@
 from django import forms
+from . import models
 
 
 class SubscriptionForm(forms.Form):
@@ -12,3 +13,10 @@ class SubscriptionForm(forms.Form):
             attrs={'placeholder': '新しいフィードURLを登録'}
         )
     )
+
+
+class AddCollectionForm(forms.ModelForm):
+    """
+    登録済のコレクションリストの選択フォーム
+    """
+    add_collection = forms.BooleanField(required=True)

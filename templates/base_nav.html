@@ -9,7 +9,7 @@
             <form action="{% url 'feed:entry' %}" method="POST" class="form">
                 {% csrf_token %}
                 <li>
-                    {{ form }}
+                    {{ subscription_form }}
                     <!-- <input id="input-url" name="input-url" class="form-control input-sm input-url" type="text" placeholder="新しいフィードURLを登録"> -->
                 </li>
                 <li>
@@ -48,15 +48,9 @@
                     <a href="#">Collection<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
-                            <a href="#">Develpment<span class="fa arrow"></span></a>
-                            <ul class="nav nav-third-level">
-                                <li>
-                                    <a href="flot.html">Rebuild FM</a>
-                                </li>
-                                <li>
-                                    <a href="flot.html">Mozaic FM</a>
-                                </li>
-                            </ul>
+                            {% for item in collection %}
+                            <a href="{% url 'feed:collection_detail' item.id %}">{{ item.title }}<span class="fa arrow"></span></a>
+                            {% endfor %}
                         </li>
                         <li>
                             <a href="#">Management<span class="fa arrow"></span></a>
