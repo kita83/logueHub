@@ -45,27 +45,7 @@
             {% if user.is_authenticated %}
                 <li><a href="{% url 'feed:all' %}">All</a></li>
                 <li>
-                    <a href="#">Collection<span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-                        <li>
-                            {% for item in collection %}
-                            <a href="{% url 'feed:collection_detail' item.id %}">{{ item.title }}<span class="fa arrow"></span></a>
-                            {% endfor %}
-                        </li>
-                        <li>
-                            <a href="#">Management<span class="fa arrow"></span></a>
-                            <ul class="nav nav-third-level">
-                                <li>
-                                    <a href="flot.html">Rebuild FM</a>
-                                </li>
-                                <li>
-                                    <a href="flot.html">Mozaic FM</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <ul class="nav nav-second-level">
-                    </ul>
+                    <a href="">Collection</a>
                 </li>
                 <li><a href="{% url 'feed:like_list' %}">Likes</a></li>
                 <li>

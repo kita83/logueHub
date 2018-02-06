@@ -56,6 +56,7 @@ class Episode(TimeStampModel):
     channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
     title = models.CharField(max_length=200)
     link = models.URLField(max_length=200)
+    audio_url = models.URLField(max_length=200)
     description = models.TextField(null=True, blank=True)
     release_date = models.DateTimeField()
     duration = models.CharField(max_length=30, null=True, blank=True)

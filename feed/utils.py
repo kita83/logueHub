@@ -67,6 +67,7 @@ def save_episode(ch, entries):
     for entry in entries:
         title = entry.title if hasattr(entry, 'title') else ''
         link = entry.link if hasattr(entry, 'link') else ''
+        audio_url = entry.links[0].href if hasattr(entry, 'links') else ''
         description = entry.description if hasattr(entry, 'description') else ''
         duration = entry.itunes_duration if hasattr(entry, 'duration') else ''
         release_date = ''
@@ -80,6 +81,7 @@ def save_episode(ch, entries):
             channel=ch,
             title=title,
             link=link,
+            audio_url=audio_url,
             description=description,
             release_date=release_date,
             duration=duration

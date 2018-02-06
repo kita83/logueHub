@@ -21,6 +21,12 @@
   <script src="{% static 'bootstrap/vendor/datatables-responsive/dataTables.responsive.js' %}"></script>
   <script src="{% static 'bootstrap/dist/js/sb-admin-2.js' %}"></script>
   <script src="{% static 'manager/js/ajax.js' %}"></script>
+  <script src="{% static 'manager/audiojs/audio.min.js' %}"></script>
+  <script>
+    audiojs.events.ready(function() {
+      var as = audiojs.createAll();
+    });
+  </script>
 </head>
 
 <body>

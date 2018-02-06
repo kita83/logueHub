@@ -10,7 +10,7 @@ urlpatterns = [
     path('likes/', views.LikeListView.as_view(), name='likes'),
     path('ch/<pk>/detail/', views.ChannelDetailView.as_view(), name='ch_detail'),
     path('ep/<pk>/detail/', views.EpisodeDetailView.as_view(), name='ep_detail'),
-    path('collection/<pk>/detail/', views.CollectionDetailView.as_view(), name='collection_detail'),
+    # path('collection/', views.CollectionDetailView.as_view(), name='collection_detail'),
     path('change_like', views.change_like, name='change_like'),
     path('settings/', views.SettingsView.as_view(), name='settings'),
 ]
