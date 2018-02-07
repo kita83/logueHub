@@ -13,10 +13,12 @@ def get_exist_channel(require_url):
     登録済みのチャンネルデータを返す
     存在しない場合: None
     """
-    rtn = models.Channel.objects.filter(feed_url=require_url)
-    if not rtn:
-        return None
-    return rtn
+    try:
+        ch = models.Channel.objects.filter(feed_url=require_url)
+    except models.Channel.DoesNotExist:
+        pass
+
+    return ch
 
 
 def get_exist_epsode(require_ch):

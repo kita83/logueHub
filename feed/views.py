@@ -172,9 +172,18 @@ def new_registration(feed_url, user):
     新規カテゴリ、チャンネル、最新エピソードを登録する
     """
     feeds = feedparser.parse(feed_url)
+
+    # パース失敗の場合、処理終了
+    if hasattr(feeds.feed, 'bozo_exception'):
+        # msg = 'Feedreader poll_feeds found Malformed feed, "%s": %s' % (db_feed.xml_url, parsed.feed.bozo_exception)
+        # logger.warning(msg)
+        # if verbose:
+        #     print(msg)
+        return
+
     if feeds:
         # チャンネル
-        ch = feeds.channel
+        ch = feeds.feed
         # エピソード
         entries = feeds.entries
 
