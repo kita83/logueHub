@@ -38,7 +38,7 @@ def save_channel(ch, feed_url):
     """
     if ch is None:
         return None
-    
+
     title = ch.title if hasattr(ch, 'title') else ''
     author = ch.author if hasattr(ch, 'author') else ''
     description = ch.summary if hasattr(ch, 'summary') else ''
