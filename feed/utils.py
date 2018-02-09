@@ -1,11 +1,20 @@
 import os
-import re
 import datetime
 import uuid
 import requests
+import feedparser
+import pytz
 import dateutil.parser
+from time import mktime
+
+from django.utils import timezone
+from django.utils import html
 from logue import settings
 from . import models
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_exist_channel(require_url):
@@ -150,17 +159,20 @@ def delete_previous_file(function):
     return wrapper
 
 
-def save_image(url, name=None):
+def save_image(image_url):
     """
-    画像を保存する
+    画像を保存する.
+
+    :param image_url: 画像取得URL
+    :return: DB登録用パス
     """
-    res = requests.get(url)
+    res = requests.get(image_url)
 
     if res.status_code != 200:
         return ''
 
     # 保存する画像名を取得
-    filename = url.split("/")[-1]
+    filename = image_url.split("/")[-1]
     unique_name = get_image_name(filename)
 
     # 画像ファイル書き込み用パス
@@ -187,3 +199,172 @@ def get_image_name(filename):
     # 拡張子
     extension = os.path.splitext(filename)[-1]
     return name + extension
+
+
+def poll_feed(db_channel):
+    """
+    Read through a feed looking for new entries.
+
+    :param db_channel: Channelモデルインスタンス
+    """
+    parsed = feedparser.parse(db_channel.feed_url)
+
+    # パース失敗の場合、処理終了
+    if hasattr(parsed.feed, 'bozo_exception'):
+        msg = 'logue poll_feeds found Malformed feed, "%s": %s'\
+            % (db_channel.xml_url, parsed.feed.bozo_exception)
+        logger.warning(msg)
+        print(msg)
+        return
+
+    # 発行日時
+    if hasattr(parsed.feed, 'published_parsed'):
+        if parsed.feed.published_parsed is None:
+            published_time = timezone.now()
+        else:
+            published_time = datetime.fromtimestamp(
+                mktime(parsed.feed.published_parsed)
+            )
+        try:
+            published_time = pytz.timezone(
+                settings.TIME_ZONE).localize(published_time, is_dst=None)
+        except pytz.exceptions.AmbiguousTimeError:
+            pytz_timezone = pytz.timezone(settings.TIME_ZONE)
+            published_time = pytz_timezone.localize(
+                published_time, is_dst=False)
+        if db_channel.published_time\
+                and db_channel.published_time >= published_time:
+            return
+
+        db_channel.published_time = published_time
+
+    # タイトル、リンクの属性存在確認
+    for attr in ['title', 'title_detail', 'link']:
+        # 属性がない場合、エラー
+        if not hasattr(parsed.feed, attr):
+            msg = 'Feedreader poll_feeds. Feed "%s" has no %s'\
+                % (db_channel.feed_url, attr)
+            logger.error(msg)
+            print(msg)
+            return
+
+    # タイトル: 'text/plain'の場合、htmlエスケープする
+    if parsed.feed.title_detail.type == 'text/plain':
+        db_channel.title = html.escape(parsed.feed.title)
+    else:
+        db_channel.title = parsed.feed.title
+
+    # リンク
+    db_channel.link = parsed.feed.link
+
+    # author
+    if hasattr(parsed.feed, 'author'):
+        db_channel.author = parsed.feed.author
+    else:
+        db_channel.author = ''
+
+    if hasattr(parsed.feed, 'description_detail')\
+            and hasattr(parsed.feed, 'description'):
+        # チャンネル説明: 'text/plain'の場合、htmlエスケープする
+        if parsed.feed.description_detail.type == 'text/plain':
+            db_channel.description = html.escape(parsed.feed.description)
+        else:
+            db_channel.description = parsed.feed.description
+    else:
+        db_channel.description = ''
+
+    # 最終取得日
+    db_channel.last_polled_time = timezone.now()
+
+    # 画像
+    if hasattr(parsed.feed, 'image'):
+        # ストレージにイメージ画像を保存
+        image_url = parsed.feed.image.href
+        db_channel.image = save_image(image_url)
+
+    # チャンネル保存
+    db_channel.save()
+
+    print('%d entries to process in %s' % (
+        len(parsed.entries), db_channel.title))
+
+    for i, entry in enumerate(parsed.entries):
+        # 属性存在判定フラグ
+        missing_attr = False
+        for attr in ['title', 'title_detail', 'link', 'description']:
+            if not hasattr(entry, attr):
+                msg = 'Feedreader poll_feeds. Entry "%s" has no %s'\
+                    % (entry.link, attr)
+                logger.error(msg)
+                print(msg)
+                missing_attr = True
+
+        if missing_attr:
+            continue
+
+        if entry.title == "":
+            msg = 'Feedreader poll_feeds. Entry "%s" has a blank title'\
+                % (entry.link)
+            print(msg)
+            logger.warning(msg)
+            continue
+
+        db_entry, created = models.Episode.objects.get_or_create(
+            channel=db_channel, link=entry.link)
+
+        # エピソードが初回登録の場合、発行日時、タイトル、説明を追加する
+        if created:
+            if hasattr(entry, 'published_parsed'):
+                if entry.published_parsed is None:
+                    published_time = timezone.now()
+                else:
+                    published_time = datetime.fromtimestamp(
+                        mktime(entry.published_parsed))
+                    try:
+                        published_time = pytz.timezone(
+                                settings.TIME_ZONE
+                            ).localize(published_time, is_dst=None)
+                    except pytz.exceptions.AmbiguousTimeError:
+                        pytz_timezone = pytz.timezone(settings.TIME_ZONE)
+                        published_time = pytz_timezone.localize(
+                            published_time, is_dst=False)
+
+                    # 未来日付の場合、現在日時を入れる
+                    now = timezone.now()
+                    if published_time > now:
+                        published_time = now
+
+                # 発行日時
+                db_entry.published_time = published_time
+
+            # タイトル: 'text/plain'の場合、htmlエスケープする
+            if entry.title_detail.type == 'text/plain':
+                db_entry.title = html.escape(entry.title)
+            else:
+                db_entry.title = entry.title
+
+            # 収録時間
+            if hasattr(entry, 'itunes_duration'):
+                db_channel.duration = entry.itunes_duration
+            else:
+                db_channel.duration = ''
+
+            # 音声ファイルURL
+            if hasattr(entry, 'links'):
+                for link in entry.links:
+                    if hasattr(link, 'type') and link.type == 'audio/mpeg':
+                        db_channel.audio_url = link.href
+            else:
+                db_channel.audio_url = ''
+
+            # Lots of entries are missing descrtion_detail attributes.
+            # Escape their content by default.
+            if hasattr(entry, 'description_detail')\
+                    and entry.description_detail.type != 'text/plain':
+                db_entry.description = entry.description
+            else:
+                # エピソード説明: 'text/plain'の場合、htmlエスケープする
+                db_entry.description = html.escape(entry.description)
+
+            # エピソード保存
+            db_entry.save()

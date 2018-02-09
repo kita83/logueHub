@@ -5,7 +5,7 @@ from django.views import generic
 from django.http import JsonResponse
 from django.db.models import Count
 from .forms import SubscriptionForm
-from .models import Channel, Episode, Like, MstCollection, Collection
+from .models import Channel, Episode, Like
 from . import utils
 import feedparser
 

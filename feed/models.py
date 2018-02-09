@@ -36,8 +36,8 @@ class Channel(TimeStampModel):
         null=True,
         blank=True
     )
-    width_field = models.IntegerField(default=0)
-    height_field = models.IntegerField(default=0)
+    width_field = models.IntegerField(default=400)
+    height_field = models.IntegerField(default=400)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -67,11 +67,11 @@ class Episode(TimeStampModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
     title = models.CharField(max_length=200)
-    link = models.URLField(max_length=200)
-    audio_url = models.URLField(max_length=200)
+    link = models.URLField(max_length=2000)
+    audio_url = models.URLField(max_length=2000)
     description = models.TextField(null=True, blank=True)
-    release_date = models.DateTimeField()
-    duration = models.CharField(max_length=30, null=True, blank=True)
+    published_time = models.DateTimeField()
+    duration = models.CharField(max_length=10, null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
