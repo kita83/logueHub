@@ -280,7 +280,11 @@ def poll_feed(db_channel):
     if hasattr(parsed.feed, 'image'):
         # ストレージにイメージ画像を保存
         image_url = parsed.feed.image.href
-        db_channel.image = save_image(image_url)
+        path = save_image(image_url)
+        # 画像が取得できた場合、以前の画像を削除する
+        if path and db_channel.image != '':
+            os.remove(settings.MEDIA_ROOT + '/' + db_channel.image.name)
+        db_channel.image = path
 
     # チャンネル保存
     db_channel.save()
