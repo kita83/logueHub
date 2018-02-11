@@ -5,9 +5,12 @@ from django.views import generic
 from django.http import JsonResponse
 from django.db.models import Count
 from .forms import SubscriptionForm
-from .models import Channel, Episode, Like, MstCollection, Collection
+from .models import Channel, Episode, Like, Subscription
 from . import utils
-import feedparser
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class IndexView(generic.ListView):
@@ -20,8 +23,8 @@ class IndexView(generic.ListView):
     paginate_by = 8
     queryset = Episode.objects.filter(
         # user=user,
-        release_date__gt=datetime.date.today() - datetime.timedelta(days=20)
-    ).order_by('-release_date')
+        published_time__gt=datetime.date.today() - datetime.timedelta(days=20)
+    ).order_by('-published_time')
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -32,6 +35,24 @@ class IndexView(generic.ListView):
                 created__gt=datetime.date.today() - datetime.timedelta(days=7),
             ).annotate(Count('user')).order_by('-user')[:8]
         return context
+
+
+@require_POST
+class ChannelList(generic.DetailView):
+    """List of Channel"""
+    model = Channel
+    template_name = 'feed/ch_detail.html'
+    extra_context = {}
+
+    def dispatch(self, request, *args, **kwargs):
+        self.extra_context = utils.build_context(request)
+        self.queryset = self.extra_context['channel_detail']
+        return super(ChannelList, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ChannelList, self).get_context_data(**kwargs)
+        self.extra_context.update(context)
+        return self.extra_context
 
 
 @require_POST
@@ -49,34 +70,22 @@ def entry(request):
     if form.is_valid():
         feed_url = form.cleaned_data['require_url']
 
-        # DBから登録済みデータを取得
-        exist_ch = utils.get_exist_channel(feed_url)
+        if not feed_url:
+            return render(request, 'feed/index.html')
 
-        # チャンネル未登録の場合、先に新規登録する
-        if not exist_ch:
-            new_registration(feed_url, user)
-            exist_ch = utils.get_exist_channel(feed_url)
+        # チャンネル新規登録または、既存データ取得
+        channel, created = Channel.objects.get_or_create(feed_url=feed_url)
 
-        # 最新エピソードを取得
-        exist_ep = utils.get_exist_epsode(exist_ch[0])
+        # チャンネルが新規登録された場合, チャンネル、エピソードの最新情報を更新
+        if created:
+            utils.poll_feed(channel)
 
-        forms = []
-        if exist_ep:
-            for ep in exist_ep:
-                form = {
-                    'title': ep.title,
-                    'link': ep.link,
-                    'audio_url': ep.audio_url,
-                    'description': ep.description,
-                    'release_date': ep.release_date,
-                    'duration': ep.duration
-                }
-                forms.append(form)
-
-        # return render(
-        #     request, 'feed/ch_detail.html', context={'channel': exist_ch[0]}
-        # )
-        return redirect('feed:ch_detail', pk=exist_ch[0].id)
+        # 購読情報を登録
+        Subscription.objects.get_or_create(
+            channel=channel,
+            user=user
+        )
+        return redirect('feed:ch_detail', pk=channel.id)
 
     return render(request, 'feed/index.html')
 
@@ -93,9 +102,9 @@ class ChannelDetailView(generic.DetailView):
         context = super().get_context_data(*args, **kwargs)
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
-        context['episode'] = Episode.objects.filter(
+        context['episodes'] = Episode.objects.filter(
             channel=context['channel']
-        ).order_by('-release_date')
+        ).order_by('-published_time')[:8]
         return context
 
 
@@ -117,11 +126,20 @@ class EpisodeDetailView(generic.DetailView):
         return context
 
 
-class EpisodeAllView(generic.TemplateView):
+class ChannelAllView(generic.ListView):
     """
     全チャンネルの未聴エピソードを表示
     """
-    template_name = 'feed/ep_all.html'
+    model = Channel
+    template_name = 'feed/ch_all.html'
+    context_object_name = 'channels'
+    ordering = '-modified'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        # 登録用フォーム
+        context['subscription_form'] = SubscriptionForm
+        return context
 
 
 class LikeListView(generic.ListView):
@@ -138,66 +156,11 @@ class LikeListView(generic.ListView):
         return context
 
 
-# class CollectionDetailView(View):
-#     """
-#     コレクション詳細を表示
-#     """
-
-#     def get(self, request):
-#         context = []
-#         context['mst_coll'] = MstCollection.objects.filter(user=request.user)
-#     model = MstCollection
-#     template_name = 'feed/collection_detail.html'
-
-#     def get_queryset(self):
-#         return MstCollection.objects.filter(user=self.request.user)
-
-#     def get_context_data(self, *args, **kwargs):
-#         context = super().get_context_data(*args, **kwargs)
-#         context['episodes'] = Collection.objects.filter(
-#             mst_collection=context['mstcollection']
-#         )
-#         return context
-
-
 class SettingsView(generic.TemplateView):
     """
     各種設定項目を表示
     """
     template_name = 'feed/settings.html'
-
-
-def new_registration(feed_url, user):
-    """
-    新規カテゴリ、チャンネル、最新エピソードを登録する
-    """
-    feeds = feedparser.parse(feed_url)
-
-    # パース失敗の場合、処理終了
-    if hasattr(feeds.feed, 'bozo_exception'):
-        # msg = 'Feedreader poll_feeds found Malformed feed, "%s": %s' % (db_feed.xml_url, parsed.feed.bozo_exception)
-        # logger.warning(msg)
-        # if verbose:
-        #     print(msg)
-        return
-
-    if feeds:
-        # チャンネル
-        ch = feeds.feed
-        # エピソード
-        entries = feeds.entries
-
-        # チャンネル新規登録
-        utils.save_channel(ch, feed_url)
-
-        c = Channel.objects.filter(feed_url=feed_url)
-        exist_ch = c[0]
-
-        # 最新エピソード登録
-        utils.save_episode(exist_ch, entries)
-
-        # 購読情報登録
-        utils.save_subscription(exist_ch, user)
 
 
 def change_like(request):
@@ -216,14 +179,20 @@ def change_like(request):
 
         if len(like) == 0:
             # Like登録
-            utils.save_like(episode[0], user)
+            Like.objects.create(
+                episode=episode[0],
+                user=user
+            )
             response = {
                 'btn_display': 'Likeから除外する'
             }
             return JsonResponse(response)
         else:
             # Likeから削除
-            utils.delete_like(episode[0], user)
+            Like.objects.filter(
+                episode=episode[0],
+                user=user
+            ).delete()
             response = {
                 'btn_display': 'Like'
             }

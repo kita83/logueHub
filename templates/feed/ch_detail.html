@@ -7,11 +7,15 @@
 <div id="page-wrapper">
   <div class="row">
     <div class="col-lg-9">
-      {% for item in episode %}
-        <li class="list-group-item">
-          <a href="{% url 'feed:ep_detail' item.id %}">{{ item.title }} - {{ item.channel }}</a>
-        </li>
-      {% endfor %}
+      {% if episodes %}
+        {% for episode in episodes %}
+          <li class="list-group-item">
+            <a href="{{ episode.get_absolute_url }}">{{ episode.title }} - {{ episode.channel }}</a>
+          </li>
+        {% endfor %}
+      {% else %}
+        <p>There are no episodes available.</p>
+      {% endif %}
     </div>
     <div class="col-lg-3">
       <div class="panel panel-default">
@@ -25,7 +29,7 @@
       {% else %}
         <p>チャンネル情報が取得できませんでした</p>
       {% endif %}
-    </div>
+      </div>
     </div>
   </div>
 </div>

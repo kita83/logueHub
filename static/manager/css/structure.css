@@ -11,8 +11,8 @@
 }
 */
 
-.margin-top-20percent {
-    margin-top: 20px;
+.container {
+	max-width: 1240px;
 }
 
 /* 

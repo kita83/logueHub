@@ -1,35 +1,18 @@
 import os
-import re
-import datetime
 import uuid
 import requests
+import feedparser
 import dateutil.parser
+from dateutil import tz
+
+from django.utils import timezone
+from django.utils import html
 from logue import settings
 from . import models
 
+import logging
 
-def get_exist_channel(require_url):
-    """
-    登録済みのチャンネルデータを返す
-    存在しない場合: None
-    """
-    try:
-        ch = models.Channel.objects.filter(feed_url=require_url)
-    except models.Channel.DoesNotExist:
-        pass
-
-    return ch
-
-
-def get_exist_epsode(require_ch):
-    """
-    登録済みのエピソードデータを返す
-    存在しない場合: None
-    """
-    rtn = models.Episode.objects.filter(channel=require_ch)
-    if not rtn:
-        return None
-    return rtn
+logger = logging.getLogger(__name__)
 
 
 def save_channel(ch, feed_url):
@@ -38,7 +21,7 @@ def save_channel(ch, feed_url):
     """
     if ch is None:
         return None
-    
+
     title = ch.title if hasattr(ch, 'title') else ''
     author = ch.author if hasattr(ch, 'author') else ''
     description = ch.summary if hasattr(ch, 'summary') else ''
@@ -72,12 +55,12 @@ def save_episode(ch, entries):
         audio_url = entry.links[0].href if hasattr(entry, 'links') else ''
         description = entry.description if hasattr(entry, 'description') else ''
         duration = entry.itunes_duration if hasattr(entry, 'duration') else ''
-        release_date = ''
+        published_time = ''
 
         if hasattr(entry, 'published'):
             # 日付データに変換する
             d = dateutil.parser.parse(entry.published)
-            release_date = d
+            published_time = d
 
         models.Episode.objects.create(
             channel=ch,
@@ -85,39 +68,9 @@ def save_episode(ch, entries):
             link=link,
             audio_url=audio_url,
             description=description,
-            release_date=release_date,
+            published_time=published_time,
             duration=duration
         )
-
-
-def save_subscription(ch, user):
-    """
-    アカウントとチャンネルの関連を Subscription に登録する
-    """
-    models.Subscription.objects.create(
-        channel=ch,
-        user=user
-    )
-
-
-def save_like(episode, user):
-    """
-    Like情報を登録する
-    """
-    models.Like.objects.create(
-        episode=episode,
-        user=user
-    )
-
-
-def delete_like(episode, user):
-    """
-    Like情報を削除する
-    """
-    models.Like.objects.filter(
-        episode=episode,
-        user=user
-    ).delete()
 
 
 def delete_previous_file(function):
@@ -150,21 +103,25 @@ def delete_previous_file(function):
     return wrapper
 
 
-def save_image(url, name=None):
+def save_image(image_url):
     """
-    画像を保存する
+    画像を保存する.
+
+    :param image_url: 画像取得URL
+    :return: DB登録用パス
     """
-    res = requests.get(url)
+    res = requests.get(image_url)
 
     if res.status_code != 200:
         return ''
 
     # 保存する画像名を取得
-    filename = url.split("/")[-1]
+    filename = image_url.split("/")[-1]
     unique_name = get_image_name(filename)
 
     # 画像ファイル書き込み用パス
-    prefix = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/media/images/'
+    prefix = os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))) + '/media/images/'
     path = prefix + unique_name
 
     # DB登録用パス
@@ -187,3 +144,154 @@ def get_image_name(filename):
     # 拡張子
     extension = os.path.splitext(filename)[-1]
     return name + extension
+
+
+def poll_feed(db_channel):
+    """
+    Read through a feed looking for new entries.
+
+    :param db_channel: Channelモデルインスタンス
+    """
+    parsed = feedparser.parse(db_channel.feed_url)
+
+    # パース失敗の場合、処理終了
+    if hasattr(parsed.feed, 'bozo_exception'):
+        msg = 'logue poll_feeds found Malformed feed, "%s": %s'\
+            % (db_channel.xml_url, parsed.feed.bozo_exception)
+        logger.warning(msg)
+        print(msg)
+        return
+
+    # タイトル、リンクの属性存在確認
+    for attr in ['title', 'title_detail', 'link']:
+        # 属性がない場合、エラー
+        if not hasattr(parsed.feed, attr):
+            msg = 'Feedreader poll_feeds. Feed "%s" has no %s'\
+                % (db_channel.feed_url, attr)
+            logger.error(msg)
+            print(msg)
+            return
+
+    # タイトル: 'text/plain'の場合、htmlエスケープする
+    if parsed.feed.title_detail.type == 'text/plain':
+        db_channel.title = html.escape(parsed.feed.title)
+    else:
+        db_channel.title = parsed.feed.title
+
+    # リンク
+    db_channel.link = parsed.feed.link
+
+    # author
+    if hasattr(parsed.feed, 'author'):
+        db_channel.author = parsed.feed.author
+    else:
+        db_channel.author = ''
+
+    if hasattr(parsed.feed, 'description_detail')\
+            and hasattr(parsed.feed, 'description'):
+        # チャンネル説明: 'text/plain'の場合、htmlエスケープする
+        if parsed.feed.description_detail.type == 'text/plain':
+            db_channel.description = html.escape(parsed.feed.description)
+        else:
+            db_channel.description = parsed.feed.description
+    else:
+        db_channel.description = ''
+
+    # 最終取得日
+    db_channel.last_polled_time = timezone.now()
+
+    # 画像
+    if hasattr(parsed.feed, 'image'):
+        # ストレージにイメージ画像を保存
+        image_url = parsed.feed.image.href
+        path = save_image(image_url)
+        # TODO 画像が取得できた場合、以前の画像を削除する
+        # if path and db_channel.image != '':
+        #     os.remove(settings.MEDIA_ROOT + '/' + db_channel.image.name)
+        db_channel.cover_image = path
+
+    # チャンネル保存
+    db_channel.save()
+
+    print('%d entries to process in %s' % (
+        len(parsed.entries), db_channel.title))
+
+    # エピソード登録処理
+    for i, entry in enumerate(parsed.entries):
+        # 属性存在判定フラグ
+        missing_attr = False
+        for attr in ['title', 'title_detail', 'link', 'description']:
+            if not hasattr(entry, attr):
+                msg = 'Feedreader poll_feeds. Entry "%s" has no %s'\
+                    % (entry.link, attr)
+                logger.error(msg)
+                print(msg)
+                missing_attr = True
+
+        if missing_attr:
+            continue
+
+        if entry.title == "":
+            msg = 'Feedreader poll_feeds. Entry "%s" has a blank title'\
+                % (entry.link)
+            print(msg)
+            logger.warning(msg)
+            continue
+
+        db_entry, created = models.Episode.objects.get_or_create(
+            channel=db_channel, link=entry.link)
+
+        # エピソードが初回登録の場合、発行日時、タイトル、説明を追加する
+        if created:
+            # 発行日時
+            published_time = ''
+            if hasattr(entry, 'published'):
+
+                # 日付データに変換する
+                # TODO 例外確認
+                try:
+                    published_time = dateutil.parser.parse(
+                        entry.published).replace(tzinfo=tz.gettz('Asia/Tokyo'))
+                except dateutil.exceptions.ValueError:
+                    pass
+
+                # 未来日付の場合、現在日時を入れる
+                now = timezone.now()
+                if published_time > now:
+                    published_time = now
+
+            # 発行日時
+            db_entry.published_time = published_time
+
+            # タイトル: 'text/plain'の場合、htmlエスケープする
+            if entry.title_detail.type == 'text/plain':
+                db_entry.title = html.escape(entry.title)
+            else:
+                db_entry.title = entry.title
+
+            # 収録時間
+            if hasattr(entry, 'itunes_duration'):
+                db_entry.duration = entry.itunes_duration
+            else:
+                db_entry.duration = ''
+
+            # 音声ファイルURL
+            if hasattr(entry, 'links'):
+                for link in entry.links:
+                    if hasattr(link, 'type') and link.type == 'audio/mpeg':
+                        db_entry.audio_url = link.href
+                        print('link_href: ' + link.href)
+            else:
+                db_entry.audio_url = ''
+
+            # Lots of entries are missing descrtion_detail attributes.
+            # Escape their content by default.
+            if hasattr(entry, 'description_detail')\
+                    and entry.description_detail.type != 'text/plain':
+                db_entry.description = entry.description
+            else:
+                # エピソード説明: 'text/plain'の場合、htmlエスケープする
+                db_entry.description = html.escape(entry.description)
+
+            # エピソード保存
+            db_entry.save()

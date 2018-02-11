@@ -27,10 +27,10 @@ $(function() {
 <div id="wrapper">
   <div id="page-wrapper">
     <div class="row">
-      <div class="col-lg-12 full-width margin-top-20percent">
+      <div class="col-lg-12 full-width">
         {% if episode %}
         <h3>{{ episode.title }}</h3>
-            <a href="{% url 'feed:ch_detail' episode.channel.id %}"><img src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=150px/></a>
+            <a href="{{ episode.channel.get_absolute_url }}"><img src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=150px/></a>
             {% if like %}
               <p><button type="button" id="like" data-episode-id="{{ episode.id }}" class="btn btn-primary btn-xs">Likeから除外する</button></p>
             {% else %}
@@ -64,7 +64,7 @@ $(function() {
             <p>{{ episode.link }}</p>
             <p>{{ episode.audio_url }}</p>
             <audio src="{{ episode.audio_url }}" preload="auto" />
-            <p>{{ episode.release_date }}</p>
+            <p>{{ episode.published_time }}</p>
             <p>{{ episode.duration }}</p>
             <p>Channel: {{ episode.channel.title }}</p>
         {% else %}

@@ -2,6 +2,7 @@
 import uuid
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 
@@ -22,24 +23,38 @@ class Channel(TimeStampModel):
     チャンネル情報を保持する
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=2000, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    link = models.URLField(max_length=200, null=True, blank=True)
+    link = models.URLField(max_length=2000, null=True, blank=True)
     feed_url = models.URLField(max_length=200)
-    author_name = models.CharField(max_length=100, null=True, blank=True)
+    author = models.CharField(max_length=100, null=True, blank=True)
+    last_polled_time = models.DateTimeField(null=True, blank=True)
     cover_image = models.ImageField(
         upload_to='images/',
         width_field='width_field',
         height_field='height_field',
-        blank=True,
-        null=True
+        null=True,
+        blank=True
     )
-    width_field = models.IntegerField(default=0)
-    height_field = models.IntegerField(default=0)
+    width_field = models.IntegerField(default=400)
+    height_field = models.IntegerField(default=400)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.title
+        return self.title or self.feed_url
+
+    def get_absolute_url(self):
+        return reverse('feed:ch_detail', kwargs={'pk': self.pk})
+
+    def save(self, *args, **kwargs):
+        """
+        チャンネルを登録する
+        """
+        try:
+            Channel.objects.get(feed_url=self.feed_url)
+            super(Channel, self).save(*args, **kwargs)
+        except Channel.DoesNotExist:
+            super(Channel, self).save(*args, **kwargs)
 
 
 @receiver(post_delete, sender=Channel)
@@ -55,15 +70,18 @@ class Episode(TimeStampModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
     title = models.CharField(max_length=200)
-    link = models.URLField(max_length=200)
-    audio_url = models.URLField(max_length=200)
+    link = models.URLField(max_length=2000)
+    audio_url = models.URLField(max_length=2000)
     description = models.TextField(null=True, blank=True)
-    release_date = models.DateTimeField()
-    duration = models.CharField(max_length=30, null=True, blank=True)
+    published_time = models.DateTimeField(null=True, blank=True)
+    duration = models.CharField(max_length=10, null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('feed:ep_detail', kwargs={'pk': self.pk})
 
 
 class Subscription(TimeStampModel):
