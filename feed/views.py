@@ -179,14 +179,20 @@ def change_like(request):
 
         if len(like) == 0:
             # Like登録
-            utils.save_like(episode[0], user)
+            Like.objects.create(
+                episode=episode[0],
+                user=user
+            )
             response = {
                 'btn_display': 'Likeから除外する'
             }
             return JsonResponse(response)
         else:
             # Likeから削除
-            utils.delete_like(episode[0], user)
+            Like.objects.filter(
+                episode=episode[0],
+                user=user
+            ).delete()
             response = {
                 'btn_display': 'Like'
             }

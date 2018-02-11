@@ -1,41 +1,31 @@
-"""feedアプリのModelテスト"""
-import feedparser
+from django.utils import timezone
 from django.test import TestCase
-from feed.models import Channel, Episode, Subscription
+from feed.models import Channel, Episode, Subscription, Like
 from accounts.models import LogueUser
-from feed import utils
 
 
 class ChannelModelTest(TestCase):
     """
     チャンネルモデル
     """
-    def test_is_empty(self):
-        saved_channels = Channel.objects.all()
-        self.assertEqual(saved_channels.count(), 0)
-
     def test_save(self):
         """
-        チャンネルの新規登録ができる
+        チャンネルの新規登録ができる.
         """
-        feed_url = 'http://feeds.rebuild.fm/rebuildfm'
-        feeds = feedparser.parse(feed_url)
-        ch = feeds.channel
-
-        utils.save_channel(ch, feed_url)
-        c = Channel.objects.get(title='Rebuild')
-        actual = c.link
-        self.assertEqual(actual, 'http://rebuild.fm')
-
-    def test_did_not_save(self):
-        """
-        チャンネル情報に不備がある場合に登録されない
-        """
-        feed_url = 'http://feeds.test.fm/testfm'
-        ch = None
-        utils.save_channel(ch, feed_url)
-        actual = Channel.objects.filter(feed_url='http://feeds.test.fm/testfm')
-        self.assertEqual(actual.count(), 0)
+        Channel.objects.create(
+            title='examplefm',
+            description='testtesttest',
+            link='https://example.com',
+            feed_url='https://example.com/test.rss',
+            author='tester',
+            last_polled_time=timezone.now(),
+            cover_image='images/123456789.png',
+            width_field=200,
+            height_field=200
+        )
+        ch = Channel.objects.get(title='examplefm')
+        actual = ch.link
+        self.assertEqual(actual, 'https://example.com')
 
 
 class EpisodeModelTest(TestCase):
@@ -46,23 +36,29 @@ class EpisodeModelTest(TestCase):
         """
         エピソードの新規登録ができる
         """
-        Channel.objects.create(
-            title='test_title',
-            description='description',
-            link='http://test.fm',
-            feed_url='http://podcast.1242.com/sand/index.xml',
-            author_name='test_author',
-            cover_image='images/3aff6b6927bd46a289f39ba2e77a2b5e.png'
+        ch = Channel.objects.create(
+            title='examplefm',
+            description='testtesttest',
+            link='https://example.com',
+            feed_url='https://example.com/test.rss',
+            author='tester',
+            last_polled_time=timezone.now(),
+            cover_image='images/123456789.png',
+            width_field=200,
+            height_field=200
         )
-
-        feed_url = 'http://podcast.1242.com/sand/index.xml'
-        feeds = feedparser.parse(feed_url)
-        entries = feeds.entries
-
-        exist_ch = Channel.objects.filter(feed_url=feed_url)
-        utils.save_episode(exist_ch[0], entries)
-        actual = Episode.objects.filter(channel=exist_ch[0])
-        self.assertNotEqual(actual.count(), 0)
+        Episode.objects.create(
+            channel=ch,
+            title='test_title',
+            link='http://example.fm',
+            audio_url='http://files.example.fm/exampple-ep27.mp3',
+            description='description',
+            published_time=timezone.now(),
+            duration='35:12',
+        )
+        ep = Episode.objects.get(title='test_title')
+        actual = ep.link
+        self.assertEqual(actual, 'http://example.fm')
 
 
 class SubscriptionModelTest(TestCase):
@@ -73,19 +69,66 @@ class SubscriptionModelTest(TestCase):
         """
         購読情報の新規登録ができる
         """
-        feed_url = 'http://feeds.rebuild.fm/rebuildfm'
-        feeds = feedparser.parse(feed_url)
-        ch = feeds.channel
-
-        user = LogueUser.objects.create(
-            email='test@email.com', password='testpass')
-
-        utils.save_channel(ch, feed_url)
-        c = Channel.objects.get(title='Rebuild')
+        user = LogueUser.objects.create_user(
+            email='test@example.com', password='testtesttest')
+        ch = Channel.objects.create(
+            title='examplefm',
+            description='testtesttest',
+            link='https://example.com',
+            feed_url='https://example.com/test.rss',
+            author='tester',
+            last_polled_time=timezone.now(),
+            cover_image='images/123456789.png',
+            width_field=200,
+            height_field=200
+        )
         Subscription.objects.create(
-            channel=c,
+            channel=ch,
             user=user
         )
-        sub = Subscription.objects.get(user=user)
+        sub = Subscription.objects.get(channel=ch, user=user)
         actual = sub.user.email
-        self.assertEqual(actual, 'test@email.com')
+        self.assertEqual(actual, 'test@example.com')
+        actual = sub.channel.title
+        self.assertEqual(actual, 'examplefm')
+
+
+class LikeModelTest(TestCase):
+    """
+    Likeモデル
+    """
+    def test_save(self):
+        """
+        Likeの新規登録ができる
+        """
+        user = LogueUser.objects.create_user(
+            email='test@example.com', password='testtesttest')
+        ch = Channel.objects.create(
+            title='examplefm',
+            description='testtesttest',
+            link='https://example.com',
+            feed_url='https://example.com/test.rss',
+            author='tester',
+            last_polled_time=timezone.now(),
+            cover_image='images/123456789.png',
+            width_field=200,
+            height_field=200
+        )
+        ep = Episode.objects.create(
+            channel=ch,
+            title='test_title',
+            link='http://example.fm',
+            audio_url='http://files.example.fm/exampple-ep27.mp3',
+            description='description',
+            published_time=timezone.now(),
+            duration='35:12',
+        )
+        Like.objects.create(
+            episode=ep,
+            user=user
+        )
+        like = Like.objects.get(episode=ep, user=user)
+        actual = like.user.email
+        self.assertEqual(actual, 'test@example.com')
+        actual = like.episode.title
+        self.assertEqual(actual, 'test_title')

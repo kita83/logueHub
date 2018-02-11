@@ -2,11 +2,8 @@ import os
 import uuid
 import requests
 import feedparser
-import pytz
 import dateutil.parser
 from dateutil import tz
-from time import mktime
-from datetime import datetime
 
 from django.utils import timezone
 from django.utils import html
@@ -16,35 +13,6 @@ from . import models
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-def build_context(request, context={}):
-    """
-    リクエストデータを取り出し、コンテキストを返す.
-    """
-    channel_id = request.GET.get('channel_id', None)
-
-    channel = None
-    if channel_id:
-        try:
-            channel = models.Channel.objects.get(pk=channel_id)
-        except models.Channel.DoesNotExist:
-            pass
-        context['channel'] = channel
-    return context
-
-
-def get_exist_channel(require_url):
-    """
-    登録済みのチャンネルデータを返す
-    存在しない場合: None
-    """
-    try:
-        ch = models.Channel.objects.filter(feed_url=require_url)
-    except models.Channel.DoesNotExist:
-        pass
-
-    return ch
 
 
 def save_channel(ch, feed_url):
@@ -103,36 +71,6 @@ def save_episode(ch, entries):
             published_time=published_time,
             duration=duration
         )
-
-
-def save_subscription(ch, user):
-    """
-    アカウントとチャンネルの関連を Subscription に登録する
-    """
-    models.Subscription.objects.create(
-        channel=ch,
-        user=user
-    )
-
-
-def save_like(episode, user):
-    """
-    Like情報を登録する
-    """
-    models.Like.objects.create(
-        episode=episode,
-        user=user
-    )
-
-
-def delete_like(episode, user):
-    """
-    Like情報を削除する
-    """
-    models.Like.objects.filter(
-        episode=episode,
-        user=user
-    ).delete()
 
 
 def delete_previous_file(function):
@@ -321,23 +259,6 @@ def poll_feed(db_channel):
                 now = timezone.now()
                 if published_time > now:
                     published_time = now
-            
-            # if entry.published_parsed is None:
-            #         published_time = timezone.now()
-            # else:
-            #     published_time = datetime.fromtimestamp(
-            #         mktime(entry.published))
-            #     try:
-            #         published_time = pytz.timezone(
-            #             settings.TIME_ZONE).localize(
-            #                 published_time, is_dst=None)
-            #     except pytz.exceptions.AmbiguousTimeError:
-            #         pytz_timezone = pytz.timezone(settings.TIME_ZONE)
-            #         published_time = pytz_timezone.localize(
-            #             published_time, is_dst=False)
-            #     now = timezone.now()
-            #     if published_time > now:
-            #         published_time = now
 
             # 発行日時
             db_entry.published_time = published_time
