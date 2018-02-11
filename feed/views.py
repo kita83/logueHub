@@ -122,7 +122,10 @@ class EpisodeDetailView(generic.DetailView):
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
         # TODO: フィルタリングがうまくできているかテストする
-        context['like'] = Like.objects.filter(episode=context['episode'], user=user)
+        context['like'] = Like.objects.filter(
+            episode=context['episode'], user=user)
+        context['channel'] = Channel.objects.get(
+            id=context['episode'].channel.id)
         return context
 
 
