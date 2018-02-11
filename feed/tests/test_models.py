@@ -3,7 +3,7 @@ import feedparser
 from django.test import TestCase
 from feed.models import Channel, Episode, Subscription
 from accounts.models import LogueUser
-from feed import views, utils
+from feed import utils
 
 
 class ChannelModelTest(TestCase):
@@ -77,11 +77,15 @@ class SubscriptionModelTest(TestCase):
         feeds = feedparser.parse(feed_url)
         ch = feeds.channel
 
-        user = LogueUser.objects.create(email='test@email.com', password='testpass')
+        user = LogueUser.objects.create(
+            email='test@email.com', password='testpass')
 
         utils.save_channel(ch, feed_url)
         c = Channel.objects.get(title='Rebuild')
-        utils.save_subscription(c, user)
+        Subscription.objects.create(
+            channel=c,
+            user=user
+        )
         sub = Subscription.objects.get(user=user)
         actual = sub.user.email
         self.assertEqual(actual, 'test@email.com')

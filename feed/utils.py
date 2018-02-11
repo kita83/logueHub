@@ -1,11 +1,12 @@
 import os
-import datetime
 import uuid
 import requests
 import feedparser
 import pytz
 import dateutil.parser
+from dateutil import tz
 from time import mktime
+from datetime import datetime
 
 from django.utils import timezone
 from django.utils import html
@@ -15,6 +16,22 @@ from . import models
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+def build_context(request, context={}):
+    """
+    リクエストデータを取り出し、コンテキストを返す.
+    """
+    channel_id = request.GET.get('channel_id', None)
+
+    channel = None
+    if channel_id:
+        try:
+            channel = models.Channel.objects.get(pk=channel_id)
+        except models.Channel.DoesNotExist:
+            pass
+        context['channel'] = channel
+    return context
 
 
 def get_exist_channel(require_url):
@@ -28,17 +45,6 @@ def get_exist_channel(require_url):
         pass
 
     return ch
-
-
-def get_exist_epsode(require_ch):
-    """
-    登録済みのエピソードデータを返す
-    存在しない場合: None
-    """
-    rtn = models.Episode.objects.filter(channel=require_ch)
-    if not rtn:
-        return None
-    return rtn
 
 
 def save_channel(ch, feed_url):
@@ -81,12 +87,12 @@ def save_episode(ch, entries):
         audio_url = entry.links[0].href if hasattr(entry, 'links') else ''
         description = entry.description if hasattr(entry, 'description') else ''
         duration = entry.itunes_duration if hasattr(entry, 'duration') else ''
-        release_date = ''
+        published_time = ''
 
         if hasattr(entry, 'published'):
             # 日付データに変換する
             d = dateutil.parser.parse(entry.published)
-            release_date = d
+            published_time = d
 
         models.Episode.objects.create(
             channel=ch,
@@ -94,7 +100,7 @@ def save_episode(ch, entries):
             link=link,
             audio_url=audio_url,
             description=description,
-            release_date=release_date,
+            published_time=published_time,
             duration=duration
         )
 
@@ -176,7 +182,8 @@ def save_image(image_url):
     unique_name = get_image_name(filename)
 
     # 画像ファイル書き込み用パス
-    prefix = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/media/images/'
+    prefix = os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))) + '/media/images/'
     path = prefix + unique_name
 
     # DB登録用パス
@@ -216,27 +223,6 @@ def poll_feed(db_channel):
         logger.warning(msg)
         print(msg)
         return
-
-    # 発行日時
-    if hasattr(parsed.feed, 'published_parsed'):
-        if parsed.feed.published_parsed is None:
-            published_time = timezone.now()
-        else:
-            published_time = datetime.fromtimestamp(
-                mktime(parsed.feed.published_parsed)
-            )
-        try:
-            published_time = pytz.timezone(
-                settings.TIME_ZONE).localize(published_time, is_dst=None)
-        except pytz.exceptions.AmbiguousTimeError:
-            pytz_timezone = pytz.timezone(settings.TIME_ZONE)
-            published_time = pytz_timezone.localize(
-                published_time, is_dst=False)
-        if db_channel.published_time\
-                and db_channel.published_time >= published_time:
-            return
-
-        db_channel.published_time = published_time
 
     # タイトル、リンクの属性存在確認
     for attr in ['title', 'title_detail', 'link']:
@@ -281,10 +267,10 @@ def poll_feed(db_channel):
         # ストレージにイメージ画像を保存
         image_url = parsed.feed.image.href
         path = save_image(image_url)
-        # 画像が取得できた場合、以前の画像を削除する
-        if path and db_channel.image != '':
-            os.remove(settings.MEDIA_ROOT + '/' + db_channel.image.name)
-        db_channel.image = path
+        # TODO 画像が取得できた場合、以前の画像を削除する
+        # if path and db_channel.image != '':
+        #     os.remove(settings.MEDIA_ROOT + '/' + db_channel.image.name)
+        db_channel.cover_image = path
 
     # チャンネル保存
     db_channel.save()
@@ -292,6 +278,7 @@ def poll_feed(db_channel):
     print('%d entries to process in %s' % (
         len(parsed.entries), db_channel.title))
 
+    # エピソード登録処理
     for i, entry in enumerate(parsed.entries):
         # 属性存在判定フラグ
         missing_attr = False
@@ -318,28 +305,42 @@ def poll_feed(db_channel):
 
         # エピソードが初回登録の場合、発行日時、タイトル、説明を追加する
         if created:
-            if hasattr(entry, 'published_parsed'):
-                if entry.published_parsed is None:
-                    published_time = timezone.now()
-                else:
-                    published_time = datetime.fromtimestamp(
-                        mktime(entry.published_parsed))
-                    try:
-                        published_time = pytz.timezone(
-                                settings.TIME_ZONE
-                            ).localize(published_time, is_dst=None)
-                    except pytz.exceptions.AmbiguousTimeError:
-                        pytz_timezone = pytz.timezone(settings.TIME_ZONE)
-                        published_time = pytz_timezone.localize(
-                            published_time, is_dst=False)
+            # 発行日時
+            published_time = ''
+            if hasattr(entry, 'published'):
 
-                    # 未来日付の場合、現在日時を入れる
-                    now = timezone.now()
-                    if published_time > now:
-                        published_time = now
+                # 日付データに変換する
+                # TODO 例外確認
+                try:
+                    published_time = dateutil.parser.parse(
+                        entry.published).replace(tzinfo=tz.gettz('Asia/Tokyo'))
+                except dateutil.exceptions.ValueError:
+                    pass
 
-                # 発行日時
-                db_entry.published_time = published_time
+                # 未来日付の場合、現在日時を入れる
+                now = timezone.now()
+                if published_time > now:
+                    published_time = now
+            
+            # if entry.published_parsed is None:
+            #         published_time = timezone.now()
+            # else:
+            #     published_time = datetime.fromtimestamp(
+            #         mktime(entry.published))
+            #     try:
+            #         published_time = pytz.timezone(
+            #             settings.TIME_ZONE).localize(
+            #                 published_time, is_dst=None)
+            #     except pytz.exceptions.AmbiguousTimeError:
+            #         pytz_timezone = pytz.timezone(settings.TIME_ZONE)
+            #         published_time = pytz_timezone.localize(
+            #             published_time, is_dst=False)
+            #     now = timezone.now()
+            #     if published_time > now:
+            #         published_time = now
+
+            # 発行日時
+            db_entry.published_time = published_time
 
             # タイトル: 'text/plain'の場合、htmlエスケープする
             if entry.title_detail.type == 'text/plain':
@@ -349,17 +350,18 @@ def poll_feed(db_channel):
 
             # 収録時間
             if hasattr(entry, 'itunes_duration'):
-                db_channel.duration = entry.itunes_duration
+                db_entry.duration = entry.itunes_duration
             else:
-                db_channel.duration = ''
+                db_entry.duration = ''
 
             # 音声ファイルURL
             if hasattr(entry, 'links'):
                 for link in entry.links:
                     if hasattr(link, 'type') and link.type == 'audio/mpeg':
-                        db_channel.audio_url = link.href
+                        db_entry.audio_url = link.href
+                        print('link_href: ' + link.href)
             else:
-                db_channel.audio_url = ''
+                db_entry.audio_url = ''
 
             # Lots of entries are missing descrtion_detail attributes.
             # Escape their content by default.
