@@ -7,12 +7,17 @@
 <div id="page-wrapper">
   <div class="row">
     <div class="col-lg-12">
-      <h1 class="page-header">全チャンネルの未聴エピソードを表示</h1>
+      <h1 class="page-header">Channels</h1>
       {% if channels %}
         {% for channel in channels %}
-          <li class="list-group-item">
-            <a href="{{ channel.get_absolute_url }}"><img src="{{ STATIC_URL }}{{ channel.cover_image }}" width=60px/>{{ channel.title }} - {{ channel.author }}</a>
+        <div class="channel pull-left">
+          <li class="left clearfix">
+            <a href="{{ channel.get_absolute_url }}"><img class="img-rounded" src="{{ STATIC_URL }}{{ channel.cover_image }}" width=120px/></a>
           </li>
+          <li>
+            <a href="{{ channel.get_absolute_url }}">{{ channel.title }}</a>
+          </li>
+        </div>
         {% endfor %}
       {% else %}
         <p>There are no channels available.</p>

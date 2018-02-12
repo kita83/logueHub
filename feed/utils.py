@@ -45,34 +45,6 @@ def save_channel(ch, feed_url):
     )
 
 
-def save_episode(ch, entries):
-    """
-    feedデータを Episode に登録する
-    """
-    for entry in entries:
-        title = entry.title if hasattr(entry, 'title') else ''
-        link = entry.link if hasattr(entry, 'link') else ''
-        audio_url = entry.links[0].href if hasattr(entry, 'links') else ''
-        description = entry.description if hasattr(entry, 'description') else ''
-        duration = entry.itunes_duration if hasattr(entry, 'duration') else ''
-        published_time = ''
-
-        if hasattr(entry, 'published'):
-            # 日付データに変換する
-            d = dateutil.parser.parse(entry.published)
-            published_time = d
-
-        models.Episode.objects.create(
-            channel=ch,
-            title=title,
-            link=link,
-            audio_url=audio_url,
-            description=description,
-            published_time=published_time,
-            duration=duration
-        )
-
-
 def delete_previous_file(function):
     """不要となる古いファイルを削除する為のデコレータ実装.
 
@@ -157,16 +129,16 @@ def poll_feed(db_channel):
     # パース失敗の場合、処理終了
     if hasattr(parsed.feed, 'bozo_exception'):
         msg = 'logue poll_feeds found Malformed feed, "%s": %s'\
-            % (db_channel.xml_url, parsed.feed.bozo_exception)
+            % (db_channel.feed_url, parsed.feed.bozo_exception)
         logger.warning(msg)
         print(msg)
         return
 
     # タイトル、リンクの属性存在確認
-    for attr in ['title', 'title_detail', 'link']:
+    for attr in ['title', 'title_detail']:
         # 属性がない場合、エラー
         if not hasattr(parsed.feed, attr):
-            msg = 'Feedreader poll_feeds. Feed "%s" has no %s'\
+            msg = 'logue poll_feeds. Feed "%s" has no %s'\
                 % (db_channel.feed_url, attr)
             logger.error(msg)
             print(msg)
@@ -220,10 +192,9 @@ def poll_feed(db_channel):
     for i, entry in enumerate(parsed.entries):
         # 属性存在判定フラグ
         missing_attr = False
-        for attr in ['title', 'title_detail', 'link', 'description']:
+        for attr in ['title', 'title_detail', 'description']:
             if not hasattr(entry, attr):
-                msg = 'Feedreader poll_feeds. Entry "%s" has no %s'\
-                    % (entry.link, attr)
+                msg = 'logue poll_feeds. Episode has no %s' % (attr)
                 logger.error(msg)
                 print(msg)
                 missing_attr = True
@@ -232,14 +203,26 @@ def poll_feed(db_channel):
             continue
 
         if entry.title == "":
-            msg = 'Feedreader poll_feeds. Entry "%s" has a blank title'\
-                % (entry.link)
+            msg = 'logue poll_feeds. Episode has a blank title'
+            print(msg)
+            logger.warning(msg)
+            continue
+        
+        # 音声ファイルURL
+        audio_url = None
+        if hasattr(entry, 'links'):
+            for link in entry.links:
+                if hasattr(link, 'type') and link.type == 'audio/mpeg':
+                    audio_url = link.href
+
+        if not audio_url:
+            msg = 'logue poll_feeds. Episode has a no audio URL'
             print(msg)
             logger.warning(msg)
             continue
 
         db_entry, created = models.Episode.objects.get_or_create(
-            channel=db_channel, link=entry.link)
+            channel=db_channel, audio_url=audio_url)
 
         # エピソードが初回登録の場合、発行日時、タイトル、説明を追加する
         if created:

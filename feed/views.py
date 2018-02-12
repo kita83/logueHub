@@ -19,7 +19,7 @@ class IndexView(generic.ListView):
     """
     model = Episode
     template_name = 'feed/index.html'
-    # user = self.request.user
+    context_object_name = 'episodes'
     paginate_by = 8
     queryset = Episode.objects.filter(
         # user=user,
@@ -151,6 +151,7 @@ class LikeListView(generic.ListView):
     """
     model = Like
     template_name = 'feed/like_list.html'
+    context_object_name = 'likes'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)

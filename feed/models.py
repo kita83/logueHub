@@ -69,8 +69,8 @@ class Episode(TimeStampModel):
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
-    title = models.CharField(max_length=200)
-    link = models.URLField(max_length=2000)
+    title = models.CharField(max_length=200, null=True, blank=True)
+    link = models.URLField(max_length=2000, null=True, blank=True)
     audio_url = models.URLField(max_length=2000)
     description = models.TextField(null=True, blank=True)
     published_time = models.DateTimeField(null=True, blank=True)
