@@ -15,6 +15,13 @@
 	max-width: 1240px;
 }
 
+#page-wrapper {
+    position: inherit;
+    margin: 0 0 0 250px;
+    padding: 0 20px;
+    border-left: 1px solid #e7e7e7;
+}
+
 .channel {
     margin: 0px 20px 0px 0px;
     padding: 0;
@@ -23,6 +30,11 @@
 
   .channel li {
     margin-bottom: 5px;
+  }
+
+  .right-bar {
+    padding: 20px 0px 20px 20px;
+    border-left: 1px solid #eee;
   }
 
 /* 
