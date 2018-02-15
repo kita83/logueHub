@@ -1,5 +1,6 @@
 """feedアプリのモデル"""
 import uuid
+from django.utils import timezone
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
@@ -73,7 +74,7 @@ class Episode(TimeStampModel):
     link = models.URLField(max_length=2000, null=True, blank=True)
     audio_url = models.URLField(max_length=2000)
     description = models.TextField(null=True, blank=True)
-    published_time = models.DateTimeField(null=True, blank=True)
+    published_time = models.DateTimeField(default=timezone.now, null=True, blank=True)
     duration = models.CharField(max_length=10, null=True, blank=True)
     is_active = models.BooleanField(default=True)
 

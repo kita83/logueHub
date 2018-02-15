@@ -5,6 +5,7 @@ __pycache__/
 
 db.sqlite3
 
+shell/
 docs/
 media/
 
@@ -56,3 +57,4 @@ venv.bak/
 *.log
 .static_storage/
 local_settings.py
+logue/settings.py

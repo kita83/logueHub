@@ -90,7 +90,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'logue_db',
-        'USER': 'admin001',
+        'USER': 'admin002',
         'PASSWORD': 'vGqRxkCEiQ4qQUsD4c',
         'HOST': '',
         'PORT': '',

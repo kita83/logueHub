@@ -29,12 +29,12 @@ class Command(BaseCommand):
         num_channels = len(channels)
 
         if verbose:
-            print('%d feeds to process' % (num_channels))
+            print('%d channels to process' % (num_channels))
 
         for i, channel in enumerate(channels):
             if verbose:
-                print('(%d/%d) Processing Channels %s' % (
-                    i + 1, num_channels, channel.title))
+                print('(%d/%d) Processing Channels' % (
+                    i + 1, num_channels))
 
             poll_feed(channel)
         logger.info('logue monkey poll_feeds completed successfully')

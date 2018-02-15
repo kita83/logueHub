@@ -3,7 +3,9 @@ import uuid
 import requests
 import feedparser
 import dateutil.parser
-from dateutil import tz
+import pytz
+from time import mktime
+from datetime import datetime
 
 from django.utils import timezone
 from django.utils import html
@@ -138,7 +140,7 @@ def poll_feed(db_channel):
     for attr in ['title', 'title_detail']:
         # 属性がない場合、エラー
         if not hasattr(parsed.feed, attr):
-            msg = 'logue poll_feeds. Feed "%s" has no %s'\
+            msg = 'logue poll_feeds. Channel "%s" has no %s'\
                 % (db_channel.feed_url, attr)
             logger.error(msg)
             print(msg)
@@ -216,7 +218,8 @@ def poll_feed(db_channel):
                     audio_url = link.href
 
         if not audio_url:
-            msg = 'logue poll_feeds. Episode has a no audio URL'
+            msg = 'logue poll_feeds. Episode %s in %s has a no audio URL'\
+                % (entry.title, db_channel.title)
             print(msg)
             logger.warning(msg)
             continue
@@ -228,20 +231,38 @@ def poll_feed(db_channel):
         if created:
             # 発行日時
             published_time = ''
-            if hasattr(entry, 'published'):
+            # 日付データに変換する
+            # TODO 例外確認
+            if hasattr(entry, 'published_parsed'):
+                published_time = timezone.now()
+                # if entry.published_parsed is None:
+                #     published_time = timezone.now()
+                # else:
 
-                # 日付データに変換する
-                # TODO 例外確認
-                try:
-                    published_time = dateutil.parser.parse(
-                        entry.published).replace(tzinfo=tz.gettz('Asia/Tokyo'))
-                except dateutil.exceptions.ValueError:
-                    pass
+                #     published_time = datetime.fromtimestamp(
+                #         mktime(entry.published_parsed))
+                #     try:
+                #         published_time = pytz.timezone(
+                #             settings.TIME_ZONE).localize(
+                #                 published_time, is_dst=None)
+                #     except pytz.exceptions.AmbiguousTimeError:
+                #         pytz_timezone = pytz.timezone(settings.TIME_ZONE)
+                #         published_time = pytz_timezone.localize(
+                #             published_time, is_dst=False)
+                #     now = timezone.now()
+                #     if published_time > now:
+                #         published_time = now
+                # db_entry.published_time = published_time
+                # published_time = dateutil.parser.parse(
+                #     entry.published).astimezone(
+                #         pytz.timezone(settings.TIME_ZONE))
+                # published_time = dateutil.parser.parse(
+                #     entry.published).replace(tzinfo=tz.gettz('Asia/Tokyo'))
 
                 # 未来日付の場合、現在日時を入れる
-                now = timezone.now()
-                if published_time > now:
-                    published_time = now
+                # now = timezone.now()
+                # if published_time > now:
+                #     published_time = now
 
             # 発行日時
             db_entry.published_time = published_time
@@ -251,6 +272,12 @@ def poll_feed(db_channel):
                 db_entry.title = html.escape(entry.title)
             else:
                 db_entry.title = entry.title
+
+            # リンク
+            if hasattr(entry, 'link'):
+                db_entry.link = entry.link
+            else:
+                db_entry.link = ''
 
             # 収録時間
             if hasattr(entry, 'itunes_duration'):
@@ -263,7 +290,6 @@ def poll_feed(db_channel):
                 for link in entry.links:
                     if hasattr(link, 'type') and link.type == 'audio/mpeg':
                         db_entry.audio_url = link.href
-                        print('link_href: ' + link.href)
             else:
                 db_entry.audio_url = ''
 
