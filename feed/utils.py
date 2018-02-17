@@ -9,6 +9,7 @@ from datetime import datetime
 
 from django.utils import timezone
 from django.utils import html
+from PIL import Image
 from logue import settings
 from . import models
 
@@ -72,16 +73,17 @@ def delete_previous_file(function):
 
         # 保存前のファイルがあったら削除
         if previous:
-            os.remove(settings.MEDIA_ROOT + '/' + previous.image.name)
+            os.remove(settings.MEDIA_ROOT + '/' + previous.cover_image.name)
         return result
     return wrapper
 
 
-def save_image(image_url):
+def save_image(image_url, db_channel):
     """
     画像を保存する.
 
     :param image_url: 画像取得URL
+    :param db_channel: チャンネル
     :return: DB登録用パス
     """
     res = requests.get(image_url)
@@ -102,8 +104,14 @@ def save_image(image_url):
     rel_prefix = 'images/'
     rel_path = rel_prefix + unique_name
 
+    # 以前の画像を削除する
+    if db_channel.cover_image:
+        if os.path.exists(settings.MEDIA_ROOT + '/' + db_channel.cover_image.name):
+            os.remove(settings.MEDIA_ROOT + '/' + db_channel.cover_image.name)
+
     with open(path, 'wb') as file:
         file.write(res.content)
+
     return rel_path
 
 
@@ -178,11 +186,15 @@ def poll_feed(db_channel):
     if hasattr(parsed.feed, 'image'):
         # ストレージにイメージ画像を保存
         image_url = parsed.feed.image.href
-        path = save_image(image_url)
-        # TODO 画像が取得できた場合、以前の画像を削除する
-        # if path and db_channel.image != '':
-        #     os.remove(settings.MEDIA_ROOT + '/' + db_channel.image.name)
+        path = save_image(image_url, db_channel)
         db_channel.cover_image = path
+
+        db_channel.width_field = '400'
+        db_channel.height_field = '400'
+
+        img = Image.open(settings.MEDIA_ROOT + '/' + path)
+        img.thumbnail((400, 400), Image.ANTIALIAS)
+        img.save(settings.MEDIA_ROOT + '/' + path)
 
     # チャンネル保存
     db_channel.save()
