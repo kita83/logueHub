@@ -106,8 +106,9 @@ def save_image(image_url, db_channel):
 
     # 以前の画像を削除する
     if db_channel.cover_image:
-        if os.path.exists(settings.MEDIA_ROOT + '/' + db_channel.cover_image.name):
-            os.remove(settings.MEDIA_ROOT + '/' + db_channel.cover_image.name)
+        old_path = settings.MEDIA_ROOT + '/' + db_channel.cover_image.name
+        if os.path.exists(old_path):
+            os.remove(old_path)
 
     with open(path, 'wb') as file:
         file.write(res.content)
@@ -221,7 +222,7 @@ def poll_feed(db_channel):
             print(msg)
             logger.warning(msg)
             continue
-        
+
         # 音声ファイルURL
         audio_url = None
         if hasattr(entry, 'links'):
@@ -246,35 +247,19 @@ def poll_feed(db_channel):
             # 日付データに変換する
             # TODO 例外確認
             if hasattr(entry, 'published_parsed'):
-                published_time = timezone.now()
-                # if entry.published_parsed is None:
-                #     published_time = timezone.now()
-                # else:
-
-                #     published_time = datetime.fromtimestamp(
-                #         mktime(entry.published_parsed))
-                #     try:
-                #         published_time = pytz.timezone(
-                #             settings.TIME_ZONE).localize(
-                #                 published_time, is_dst=None)
-                #     except pytz.exceptions.AmbiguousTimeError:
-                #         pytz_timezone = pytz.timezone(settings.TIME_ZONE)
-                #         published_time = pytz_timezone.localize(
-                #             published_time, is_dst=False)
-                #     now = timezone.now()
-                #     if published_time > now:
-                #         published_time = now
-                # db_entry.published_time = published_time
-                # published_time = dateutil.parser.parse(
-                #     entry.published).astimezone(
-                #         pytz.timezone(settings.TIME_ZONE))
-                # published_time = dateutil.parser.parse(
-                #     entry.published).replace(tzinfo=tz.gettz('Asia/Tokyo'))
-
-                # 未来日付の場合、現在日時を入れる
-                # now = timezone.now()
-                # if published_time > now:
-                #     published_time = now
+                if entry.published_parsed is None:
+                    published_time = timezone.now()
+                else:
+                    published_time = datetime.fromtimestamp(mktime(entry.published_parsed))
+                    try:
+                        published_time = pytz.timezone(settings.TIME_ZONE).localize(published_time, is_dst=None)
+                    except pytz.exceptions.AmbiguousTimeError:
+                        pytz_timezone = pytz.timezone(settings.TIME_ZONE)
+                        published_time = pytz_timezone.localize(published_time, is_dst=False)
+                    now = timezone.now()
+                    if published_time > now:
+                        published_time = now
+                db_entry.published_time = published_time
 
             # 発行日時
             db_entry.published_time = published_time

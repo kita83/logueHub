@@ -35,6 +35,6 @@ class Command(BaseCommand):
             if verbose:
                 print('(%d/%d) Processing Channels' % (
                     i + 1, num_channels))
-
+            # feed取得
             poll_feed(channel)
         logger.info('logue monkey poll_feeds completed successfully')
