@@ -10,6 +10,9 @@
 .container {
 	max-width: 1240px;
 }
+ul {
+    list-style: none;
+}
 
 #page-wrapper {
     position: inherit;
@@ -18,20 +21,87 @@
     border-left: 1px solid #e7e7e7;
 }
 
-.channel {
-    margin: 0px 20px 0px 0px;
+.img-circle {
+    border-radius: 50%;
+}
+
+.well {
+    padding: 14px;
+    margin: 5px 5px 5px 0;
+}
+
+.ch-info {
+    margin-top: 20px;
+}
+
+.ep-header {
+    margin-top: 20px;
+}
+.ep-date {
+    font-size: 12px;
+    color: #888888;
+    margin-bottom: 0;
+}
+.ep-header .channel {
+    padding-right: 15px;
+    border-right: solid 1px #EEE; 
+}
+
+.ep-header h3 {
+    margin-top: 0px;
+}
+
+.ep-header h4 {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.ep-header .author {
+    font-size: 12px;
+    color: #888888;
+}
+
+.ep-header .description {
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.ep-header .link {
+    font-size: 12px;
+}
+
+.ep-body {
+    margin-top: 20px;
+}
+
+.action {
+    margin-top: 20px;
+}
+
+.img-tile {
     padding: 0;
-    list-style: none;
 }
 
-.channel li {
-    margin-bottom: 5px;
+.ch-info h3 {
+    margin-top: 0px;
 }
 
-/* 
-.no-margin {
-    margin: 0 !important;
-} 
-ul.nav {
-    padding-right: 25px;
-} */
+.ch-info h4 {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.ch-info .author {
+    font-size: 12px;
+    margin-bottom: 4px;
+    color: #888888;
+}
+
+.ch-info .description {
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.ch-info .link {
+    font-size: 12px;
+}

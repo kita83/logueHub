@@ -9,15 +9,11 @@
     <div class="col-lg-12">
       <h1 class="page-header">Channels</h1>
       {% if channels %}
-        {% for channel in channels %}
-        <div class="channel pull-left">
-          <li class="left clearfix">
-            <a href="{{ channel.get_absolute_url }}"><img class="img-rounded" src="{{ STATIC_URL }}{{ channel.cover_image }}" width=120px/></a>
-          </li>
-          <li>
-            <a href="{{ channel.get_absolute_url }}">{{ channel.title }}</a>
-          </li>
-        </div>
+      {% for channel in channels %}
+          <div class="col-lg-2">
+            <a href="{{ channel.get_absolute_url }}"><img class="img-circle" src="{{ STATIC_URL }}{{ channel.cover_image }}" width=120px/></a>
+            <p><a href="{{ channel.get_absolute_url }}">{{ channel.title }}</a></p>
+          </div>
         {% endfor %}
       {% else %}
         <p>There are no channels available.</p>

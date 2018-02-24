@@ -25,18 +25,16 @@
       {% endif %}
     </ul>
     </div>
-    <div class="col-lg-3">
-      <div class="right-bar">
-        {% if channel %}
-        <img class="img-rounded" src="{{ STATIC_URL }}{{ channel.cover_image }}" width=200px/>
-          <h4>{{ channel.title }}</h4>
-          <p>{{ channel.description }}</p>
-          <p><a href="{{ channel.link }}">Web Site</a></p>
-          <p>{{ channel.author_name }}</p>
-        {% else %}
-          <p>チャンネル情報が取得できませんでした</p>
-        {% endif %}
-      </div>
+    <div class="ch-info col-lg-3">
+      {% if channel %}
+      <img class="img-circle" src="{{ STATIC_URL }}{{ channel.cover_image }}" width=180px/>
+        <h4>{{ channel.title }}</h4>
+        <p class="author">{{ channel.author }}</p>
+        <p class="link"><a href="{{ channel.link }}"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
+        <p class="description">{{ channel.description }}</p>
+      {% else %}
+        <p>チャンネル情報が取得できませんでした</p>
+      {% endif %}
     </div>
   </div>
 </div>
