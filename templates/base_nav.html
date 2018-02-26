@@ -30,24 +30,16 @@
         <div class="sidebar-nav navbar-collapse">
             <ul class="nav" id="side-menu">
             <li>
-                <a href="{% url 'feed:index' %}">Recently</a>
+                <a href="{% url 'feed:index' %}">Trend</a>
             </li>
             {% if user.is_authenticated %}
-                <li><a href="{% url 'feed:all' %}">All</a></li>
+                <li><a href="{% url 'feed:channels' %}">Channels</a></li>
                 <li>
-                    <a href="">Collection</a>
+                    <a href="{% url 'feed:collection' %}">Collection</a>
                 </li>
                 <li><a href="{% url 'feed:like_list' %}">Likes</a></li>
                 <li>
                     <a href="#">Playlists<span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-                        <li>
-                            <a href="flot.html">MyPlaylist01</a>
-                        </li>
-                        <li>
-                            <a href="flot.html">MyPlaylist02</a>
-                        </li>
-                    </ul>
                 </li>
                 <li><a href="{% url 'feed:settings' %}">Settings</a></li>
             {% endif %}

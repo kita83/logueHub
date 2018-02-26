@@ -19,4 +19,8 @@ class AddCollectionForm(forms.ModelForm):
     """
     登録済のコレクションリストの選択フォーム
     """
-    add_collection = forms.BooleanField(required=True)
+    # add_collection = forms.BooleanField(required=True)
+
+    class Meta:
+        model = models.MstCollection
+        fields = ('title',)

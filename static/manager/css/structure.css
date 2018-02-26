@@ -1,7 +1,8 @@
+@import "less/mixins.less";
+@import "less/variables.less";
 /* ---------------------------------------------------------- */
 /* general */
 /* ---------------------------------------------------------- */
-
 /*　プレイヤー（再生バー）の高さ、幅、背景色の指定　*/
 /* .audiojs {
     background: #AAAAAA;
@@ -24,6 +25,16 @@ ul {
 .img-circle {
     border-radius: 50%;
 }
+
+.is-active {
+    color: #FF7A00;
+    border: 1px solid #FF7A00;
+    font-size: 12px;
+  }
+
+  .is-active:hover {
+    color: #FF7A00;
+  }
 
 .well {
     padding: 14px;
@@ -54,6 +65,7 @@ ul {
 .ep-header h4 {
     font-size: 16px;
     margin-bottom: 4px;
+    color: #000;
 }
 
 .ep-header .author {
@@ -72,6 +84,7 @@ ul {
 
 .ep-body {
     margin-top: 20px;
+    height: 100%;
 }
 
 .action {
@@ -104,4 +117,33 @@ ul {
 
 .ch-info .link {
     font-size: 12px;
+}
+
+.tile {
+    margin-top: 5px;
+}
+
+.recently {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.recently li {
+    margin: 0 0 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px dotted #999999;
+}
+
+.recently-body {
+    margin-left: 50px;
+}
+
+.recently-date {
+    font-size: 8px;
+}
+
+.recently li .recently-body p {
+    font-size: 12px;
+    margin: 0;
 }

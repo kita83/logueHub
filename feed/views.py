@@ -5,8 +5,10 @@ from django.views import generic
 from django.http import JsonResponse
 from django.db.models import Count
 from .forms import SubscriptionForm
-from .models import Channel, Episode, Like, Subscription
+from .models import (
+    Channel, Episode, Like, Subscription, MstCollection, Collection)
 from . import utils
+import markdown
 
 import logging
 
@@ -124,8 +126,8 @@ class EpisodeDetailView(generic.DetailView):
         # TODO: フィルタリングがうまくできているかテストする
         context['like'] = Like.objects.filter(
             episode=context['episode'], user=user)
-        context['channel'] = Channel.objects.get(
-            id=context['episode'].channel.id)
+        des = context['episode'].description
+        context['parsed_description'] = markdown.markdown(des)
         return context
 
 
@@ -142,6 +144,21 @@ class ChannelAllView(generic.ListView):
         context = super().get_context_data(*args, **kwargs)
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
+        return context
+
+
+class CollectionListView(generic.ListView):
+    """
+    Collectionされたエピソードリストを表示
+    """
+    model = MstCollection
+    template_name = 'feed/collection.html'
+    context_object_name = 'mst_collection'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['collection'] = Collection.objects.filter(
+            mst_collection=context['mst_collection'])
         return context
 
 
@@ -175,29 +192,65 @@ def change_like(request):
     if request.method == 'GET':
         query = request.GET.get('ep_id')
         # 登録エピソード取得
-        episode = Episode.objects.filter(id=query)
+        episode = Episode.objects.get(id=query)
         # 登録ユーザー取得
         user = request.user
         # 登録Likeデータ取得
-        like = Like.objects.filter(episode=episode[0], user=user)
+        like = Like.objects.filter(episode=episode, user=user)
 
         if len(like) == 0:
             # Like登録
             Like.objects.create(
-                episode=episode[0],
+                episode=episode,
                 user=user
             )
             response = {
-                'btn_display': 'Likeから除外する'
+                'liked': True
             }
             return JsonResponse(response)
         else:
             # Likeから削除
             Like.objects.filter(
-                episode=episode[0],
+                episode=episode,
                 user=user
             ).delete()
             response = {
-                'btn_display': 'Like'
+                'liked': False
             }
             return JsonResponse(response)
+
+
+def add_collection(request):
+    """
+    エピソードをコレクションに追加する
+    すでにLikeされている場合は削除する
+    """
+    if request.method == 'GET':
+        add_title = request.GET.get('new_item')
+        ep_id = request.GET.get('ep_id')
+        mst_id = request.GET.get('col_id')
+        # 登録ユーザー取得
+        user = request.user
+        # 登録エピソード取得
+        episode = Episode.objects.get(id=ep_id)
+        
+        if not add_title:
+            # 登録コレクション取得
+            mst = MstCollection.objects.get(id=mst_id)
+        else:
+            # 新規コレクション追加
+            mst = MstCollection.objects.create(
+                title=add_title,
+                user=user
+            )
+
+        # エピソード登録
+        Collection.objects.create(
+            mst_collection=mst,
+            episode=episode
+        )
+
+        response = {
+            'btn_collection': '<i class="fa fa-plus"></i> Collection'
+        }
+        return JsonResponse(response)
