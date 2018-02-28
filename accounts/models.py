@@ -42,11 +42,10 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
 
-
 class LogueUser(AbstractBaseUser, PermissionsMixin):
     """
     カスタムユーザーモデル
-    """     
+    """
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
@@ -82,11 +81,11 @@ class LogueUser(AbstractBaseUser, PermissionsMixin):
         between."""
         full_name = '%s %s' % (self.first_name, self.last_name)
         return full_name.strip()
- 
+
     def get_short_name(self):
         """Return the short name for the user."""
         return self.first_name
- 
+
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Send an email to this user."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
