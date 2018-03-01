@@ -12,13 +12,13 @@
             <h3 class="panel-title">{% trans 'Are you sure you want to sign out?' %}</h3>
         </div>
         <div class="panel-body">
-          <form class="logout" method="post" action="{% url 'account_logout' %}">
+          <form class="logout" method="post" align="center" action="{% url 'account_logout' %}">
             {% csrf_token %}
             {% if redirect_field_value %}
             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
             {% endif %}
             <button class="btn btn-lg btn-success btn-block" type="submit">{% trans 'Sign Out' %}</button>
-            <button class="btn btn-link" onclick="history.back()" type="button">{% trans 'Back' %}</button>
+            <button class="btn btn-link btn-back" onclick="history.back()" type="button">{% trans 'Back' %}</button>
           </form>
         </div>
       </div>

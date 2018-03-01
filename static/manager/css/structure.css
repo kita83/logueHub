@@ -147,3 +147,11 @@ ul {
     font-size: 12px;
     margin: 0;
 }
+
+.logout .btn-back {
+    margin-top: 10px;
+}
+
+.socialaccount_providers li {
+    margin-bottom: 5px;
+}
