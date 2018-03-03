@@ -43,7 +43,9 @@ $(function() {
     <div class="ep-header clearfix">
       <div class="channel col-lg-3">
         {% if episode.channel %}
-          <a href="{{ episode.channel.get_absolute_url }}"><img class="img-circle" src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=140px/></a>
+          <div class="channel-img">
+            <a href="{{ episode.channel.get_absolute_url }}"><img class="img-circle" src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=140px/></a>
+          </div>
           <a href="{{ episode.channel.get_absolute_url }}"><h4>{{ episode.channel.title }}</h4></a>
           <p class="author">{{ episode.channel.author }}</p>
           <p class="description">{{ episode.channel.description }}</p>

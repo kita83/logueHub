@@ -27,7 +27,9 @@
     </div>
     <div class="ch-info col-lg-3">
       {% if channel %}
-      <img class="img-circle" src="{{ STATIC_URL }}{{ channel.cover_image }}" width=180px/>
+        <div class="channel-img">
+          <img class="img-circle" src="{{ STATIC_URL }}{{ channel.cover_image }}" width=180px/>
+        </div>
         <h4>{{ channel.title }}</h4>
         <p class="author">{{ channel.author }}</p>
         <p class="link"><a href="{{ channel.link }}"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
