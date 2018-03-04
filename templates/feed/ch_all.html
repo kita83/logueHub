@@ -12,7 +12,7 @@
       {% for channel in channels %}
           <div class="col-lg-2">
             <a href="{{ channel.get_absolute_url }}"><img class="img-circle" src="{{ STATIC_URL }}{{ channel.cover_image }}" width=120px/></a>
-            <p><a href="{{ channel.get_absolute_url }}">{{ channel.title }}</a></p>
+            <!-- <p><a href="{{ channel.get_absolute_url }}">{{ channel.title }}</a></p> -->
           </div>
         {% endfor %}
       {% else %}
