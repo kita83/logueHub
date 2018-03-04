@@ -86,6 +86,9 @@ class Episode(TimeStampModel):
     def get_absolute_url(self):
         return reverse('feed:ep_detail', kwargs={'pk': self.pk})
 
+    def num_likad_entries(self):
+        return Like.objects.filter(episode=self).count()
+
 
 class Subscription(TimeStampModel):
     """

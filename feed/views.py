@@ -32,10 +32,15 @@ class IndexView(generic.ListView):
         context = super().get_context_data(*args, **kwargs)
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
+        # Like数の多いエピソードを取得
         # TODO: フィルタリングがうまくできているかテストする
-        context['likes'] = Like.objects.filter(
-                created__gt=datetime.date.today() - datetime.timedelta(days=7),
-            ).annotate(Count('user')).order_by('-user')[:8]
+        id_list = Like.objects.values('episode').annotate(
+            Count('episode')).order_by('-episode__count')[:10]
+        con_list = []
+        for item in id_list:
+            con_list.append(Episode.objects.get(id=item['episode']))
+        context['like_epsodes'] = con_list
+
         return context
 
 

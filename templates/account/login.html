@@ -65,6 +65,7 @@
             {% endif %}
             <a ./manage.py href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
             <button class="btn btn-lg btn-success btn-block" type="submit">{% trans "Sign In" %}</button>
+            <button class="btn btn-link btn-back" onclick="history.back()" type="button">{% trans 'Back' %}</button>
           </form>
         </div>
       </div>

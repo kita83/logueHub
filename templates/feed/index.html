@@ -13,17 +13,18 @@
       {% endif %}
       <h3 class="page-header">Trending Episode</h3>
       <ul class="chat">
-      {% for like in likes %}
+      {% for episode in like_epsodes %}
         <li class="left clearfix">
           <span class="chat-img pull-left">
-            <a href="{% url 'feed:ep_detail' like.episode.id %}"><img class="img-rounded" src="{{ STATIC_URL }}{{ like.episode.channel.cover_image }}" width=60px/></a>
+            <a href="{% url 'feed:ep_detail' episode.id %}"><img class="img-rounded" src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=60px/></a>
           </span>
           <div class="chat-body clearfix">
             <div class="header">
-              <small><a href="{% url 'feed:ch_detail' like.episode.channel.id %}" class="text-header">{{ like.episode.channel.title }}</a></small>
-              <small class="text-muted pull-right"><i class="fa fa-clock-o fa-fw"></i>{{ like.episode.published_time }}</small>
+              <small><a href="{% url 'feed:ch_detail' episode.channel.id %}" class="text-header">{{ episode.channel.title }}</a></small>
+              <small class="text-muted pull-right"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</small>
             </div>
-            <p class="track-title"><a href="{% url 'feed:ep_detail' like.episode.id %}">{{ like.episode.title }}</a></p>
+            <p class="track-title"><a href="{% url 'feed:ep_detail' episode.id %}">{{ episode.title }}</a></p>
+            <p>{{ episode.num_likad_entries }}</p>
           </div>
         </li>
       {% endfor %}
