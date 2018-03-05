@@ -7,14 +7,20 @@
         <li class="dropdown">
             {% if user.is_authenticated %}
             <form action="{% url 'feed:entry' %}" method="POST" class="form">
+                <!-- <div class="input-group"> -->
                 {% csrf_token %}
                 <li>
-                    {{ subscription_form }}
-                    <!-- <input id="input-url" name="input-url" class="form-control input-sm input-url" type="text" placeholder="新しいフィードURLを登録"> -->
+                {{ subscription_form }}
                 </li>
                 <li>
-                    <button type="submit" class="btn btn-primary btn-sm">{% trans "Submit" %}</button>
+                    <button type="submit" class="btn btn-primary btn-sm "><i class="fa fa-search"></i></button>
                 </li>
+                    <!-- <span class="input-group-btn">
+                        <button type="submit" class="btn btn-default">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span> -->
+                <!-- </div> -->
             </form>
             <li>{{ user.email }}</li>
             <li><a href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a></li>

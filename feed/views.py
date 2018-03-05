@@ -238,7 +238,7 @@ def add_collection(request):
         user = request.user
         # 登録エピソード取得
         episode = Episode.objects.get(id=ep_id)
-        
+
         if not add_title:
             # 登録コレクション取得
             mst = MstCollection.objects.get(id=mst_id)
