@@ -10,9 +10,10 @@
       <h1 class="page-header">Channels</h1>
       {% if channels %}
       {% for channel in channels %}
-          <div class="col-lg-2">
-            <a href="{{ channel.get_absolute_url }}"><img class="img-circle" src="{{ STATIC_URL }}{{ channel.cover_image }}" width=120px/></a>
-            <!-- <p><a href="{{ channel.get_absolute_url }}">{{ channel.title }}</a></p> -->
+          <div class="col-lg-2 channel-circle">
+            <a href="{{ channel.get_absolute_url }}">
+              <img class="img-circle" data-toggle="tooltip" data-placement="bottom" title="{{ channel.title }}" src="{{ STATIC_URL }}{{ channel.cover_image }}" width=130px/>
+            </a>
           </div>
         {% endfor %}
       {% else %}
@@ -21,4 +22,11 @@
     </div>  
   </div>
 </div>
+<script>
+// tooltip demo
+$('.channel-circle').tooltip({
+    selector: "[data-toggle=tooltip]",
+    container: "body"
+})
+</script>
 {% endblock %}
