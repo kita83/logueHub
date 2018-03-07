@@ -12,6 +12,7 @@ urlpatterns = [
     path('ch/<pk>/detail/', views.ChannelDetailView.as_view(), name='ch_detail'),
     path('ep/<pk>/detail/', views.EpisodeDetailView.as_view(), name='ep_detail'),
     path('change_like', views.change_like, name='change_like'),
+    path('change_subscription', views.change_subscription, name='change_subscription'),
     path('add_collection', views.add_collection, name='add_collection'),
     path('settings/', views.SettingsView.as_view(), name='settings'),
 ]

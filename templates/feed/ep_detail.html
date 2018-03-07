@@ -14,9 +14,15 @@ function updateButton(btn, is_active) {
       btn.html('<i class="fa fa-heart"></i> Like')
   }
 };
-// $(document).ready(function() {
-//     updateButton($('#like'))
-// });
+function updateSubButton(btn, is_active) {
+  if (is_active) {
+      btn.removeClass('btn-default').addClass('is_active')
+      btn.html('<i class="fa fa-plus-square"></i> Following')
+  } else {
+      btn.removeClass('is_active').addClass('btn-default')
+      btn.html('<i class="fa fa-plus-square"></i> Follow')
+  }
+};
 $(function() {
     $('#like').on('click', function() {
         var this_ = $(this)
@@ -36,7 +42,25 @@ $(function() {
         })
     });
 });
-
+$(function() {
+    $('#subscription').on('click', function() {
+        var this_ = $(this)
+        $.ajax({
+            'url':'{% url "feed:change_subscription" %}',
+            'type':'GET',
+            'data':{
+                'ch_id':this_.attr('data-channel-id'),
+            },
+            'dataType':'json'
+        })
+        .done(function(data){
+            updateSubButton(this_, data.subscription)
+        })
+        .fail(function(data){
+            $('#error').html('<p>' + '登録できませんでした' +'</p>')
+        })
+    });
+});
 </script>
 <div id="page-wrapper">
   <div class="row">
@@ -48,6 +72,13 @@ $(function() {
           </div>
           <a href="{{ episode.channel.get_absolute_url }}"><h4>{{ episode.channel.title }}</h4></a>
           <p class="author">{{ episode.channel.author }}</p>
+          <div class="sub-action">
+              {% if subscription %}
+                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn is_active btn-xs"><i class="fa fa-plus-square"></i> Following</button>
+              {% else %}
+                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> Follow</button>
+              {% endif %}
+            </div>
           <p class="description">{{ episode.channel.description }}</p>
           <p class="link"><a href="{{ episode.channel.link }}"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
         {% else %}

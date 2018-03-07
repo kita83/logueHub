@@ -97,6 +97,41 @@ def entry(request):
     return render(request, 'feed/index.html')
 
 
+def change_subscription(request):
+    """
+    下記モデルにリクエストFeedを新規登録、または購読解除する
+    Subscription
+    """
+    if request.method == 'GET':
+        query = request.GET.get('ch_id')
+        user = request.user
+        channel = Channel.objects.get(id=query)
+        sub = Subscription.objects.filter(
+            channel=channel,
+            user=user
+        )
+        if len(sub) == 0:
+            # 購読情報を登録
+            Subscription.objects.get_or_create(
+                channel=channel,
+                user=user
+            )
+            response = {
+                'subscription': True
+            }
+            return JsonResponse(response)
+        else:
+            # 購読解除
+            Subscription.objects.filter(
+                channel=channel,
+                user=user
+            ).delete()
+            response = {
+                'subscription': False
+            }
+            return JsonResponse(response)
+
+
 class ChannelDetailView(generic.DetailView):
     """
     チャンネル詳細画面
@@ -131,6 +166,8 @@ class EpisodeDetailView(generic.DetailView):
         # TODO: フィルタリングがうまくできているかテストする
         context['like'] = Like.objects.filter(
             episode=context['episode'], user=user)
+        context['subscription'] = Subscription.objects.filter(
+            channel=context['episode'].channel, user=user)
         des = context['episode'].description
         context['parsed_description'] = markdown.markdown(des)
         return context
@@ -138,12 +175,15 @@ class EpisodeDetailView(generic.DetailView):
 
 class ChannelAllView(generic.ListView):
     """
-    全チャンネルの未聴エピソードを表示
+    登録チャンネルを表示
     """
-    model = Channel
+    model = Subscription
     template_name = 'feed/ch_all.html'
-    context_object_name = 'channels'
+    context_object_name = 'subs'
     ordering = '-modified'
+
+    def get_queryset(self):
+            return Subscription.objects.filter(user=self.request.user)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -174,6 +214,9 @@ class LikeListView(generic.ListView):
     model = Like
     template_name = 'feed/like_list.html'
     context_object_name = 'likes'
+
+    def get_queryset(self):
+            return Like.objects.filter(user=self.request.user)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
