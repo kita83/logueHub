@@ -143,8 +143,11 @@ class ChannelDetailView(generic.DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        user = self.request.user
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
+        context['subscription'] = Subscription.objects.filter(
+            channel=context['channel'], user=user)
         context['episodes'] = Episode.objects.filter(
             channel=context['channel']
         ).order_by('-published_time')[:8]

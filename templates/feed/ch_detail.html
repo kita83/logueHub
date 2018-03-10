@@ -4,6 +4,37 @@
 
 {% block content %}
 {% static "" as STATIC_URL %}
+<script>
+function updateSubButton(btn, is_active) {
+  if (is_active) {
+      btn.removeClass('btn-default').addClass('is-active')
+      btn.html('<i class="fa fa-plus-square"></i> Following')
+  } else {
+      btn.removeClass('is-active').addClass('btn-default')
+      btn.html('<i class="fa fa-plus-square"></i> Follow')
+  }
+};
+$(function() {
+    $('#subscription').on('click', function() {
+        var this_ = $(this)
+        $.ajax({
+            'url':'{% url "feed:change_subscription" %}',
+            'type':'GET',
+            'data':{
+                'ch_id':this_.attr('data-channel-id'),
+            },
+            'dataType':'json'
+        })
+        .done(function(data){
+            updateSubButton(this_, data.subscription)
+        })
+        .fail(function(data){
+            $('#sub_error').html('<p>' + '登録できませんでした' +'</p>')
+            $('#sub_error').css('color', 'red')
+        })
+    });
+});
+</script>
 <div id="page-wrapper">
   <div class="row">
     <div class="col-lg-9">
@@ -32,8 +63,18 @@
         </div>
         <h4>{{ channel.title|safe }}</h4>
         <p class="author">{{ channel.author|safe }}</p>
-        <p class="link"><a href="{{ channel.link }}"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
-        <p class="description">{{ channel.description|safe }}</p>
+        <div class="sub-action">
+            {% if subscription %}
+              <button type="button" id="subscription" data-channel-id="{{ channel.id }}" class="btn is-active btn-xs"><i class="fa fa-plus-square"></i> Following</button>
+            {% else %}
+              <button type="button" id="subscription" data-channel-id="{{ channel.id }}" class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> Follow</button>
+            {% endif %}
+          </div>
+          <div id="sub_error">
+              {{ result }}
+            </div>
+          <p class="description">{{ channel.description|safe }}</p>
+          <p class="link"><a href="{{ channel.link }}"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
       {% else %}
         <p>チャンネル情報が取得できませんでした</p>
       {% endif %}
