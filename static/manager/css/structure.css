@@ -5,11 +5,59 @@
 /* ---------------------------------------------------------- */
 
 .container {
-	max-width: 1240px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.header-container {
+    background-color: #444;
+}
+
+.body-container {
+    max-width: 1240px;
+    margin: auto;
+}
+
+.navbar {
+    max-width: 1240px;
+    background-color: #444;
+    margin: auto;
+    border: none;
+}
+
+.nav>li>a:focus, .nav>li>a:hover {
+    text-decoration: none;
+    background-color: #444;
+}
+
+.nav .open > a,
+.nav .open > a:focus,
+.nav .open > a:hover {
+    background-color: #444;
+}
+
+.navbar-default .navbar-brand {
+    color: #fff;
+  }
+  .navbar-default .navbar-brand:hover,
+  .navbar-default .navbar-brand:focus {
+    color: #eee;
+  }
+
+.navbar-top-links li a {
+    padding-right: 0;
 }
 
 ul {
     list-style: none;
+}
+
+.navbar-top-links {
+    color: #fff;
+}
+
+.navbar-top-links a {
+    color: #fff;
 }
 
 .page-h4-header {

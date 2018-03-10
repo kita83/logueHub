@@ -26,19 +26,44 @@
 
 <body>
     <div id="wrapper" class="container">
-      <nav class="navbar navbar-default navbar-static-top manager-nav no-margin" role="navigation" style="margin-bottom: 0">
-        <div class="navbar-header">
-          <a href="{% url 'feed:index' %}" class="navbar-brand">logue snap</a>
-        </div>
+      <div class="header-container">
+        <nav class="navbar navbar-default navbar-static-top manager-nav no-margin" role="navigation" style="margin-bottom: 0">
+          <div class="navbar-header">
+            <a href="{% url 'feed:index' %}" class="navbar-brand">Logue Snap</a>
+          </div>
 
-        <!-- ナビゲーション -->
-        {% block nav %}
-        {% endblock %}
-      </nav>
+          <!-- ナビゲーション -->
+          {% block nav %}
+          {% endblock %}
+        </nav>
+      </div>
 
       <!-- コンテンツ -->
-      {% block content %}
-      {% endblock %}
+      <div class="body-container">
+        <!-- サイドバー -->
+        <div class="navbar-default sidebar" role="navigation">
+          <div class="sidebar-nav navbar-collapse">
+            <ul class="nav" id="side-menu">
+            <li>
+                <a href="{% url 'feed:index' %}">Trend</a>
+            </li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'feed:channels' %}">Channels</a></li>
+                <li>
+                    <a href="{% url 'feed:collection' %}">Collection</a>
+                </li>
+                <li><a href="{% url 'feed:like_list' %}">Likes</a></li>
+                <li>
+                    <a href="#">Playlists<span class="fa arrow"></span></a>
+                </li>
+                <li><a href="{% url 'feed:settings' %}">Settings</a></li>
+            {% endif %}
+            </ul>
+          </div>
+        </div>
+        {% block content %}
+        {% endblock %}
+      </div>
     </div>
 </body>
 </html>
