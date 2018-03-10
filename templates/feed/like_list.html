@@ -16,10 +16,10 @@
             </span>
             <div class="chat-body clearfix">
               <div class="header">
-                <small class="text-primary"><a href="{% url 'feed:ch_detail' like.episode.channel.id %}">{{ like.episode.channel.title }}</a></small>
+                <small class="text-primary"><a href="{% url 'feed:ch_detail' like.episode.channel.id %}">{{ like.episode.channel.title|safe }}</a></small>
                 <small class="text-muted pull-right"><i class="fa fa-clock-o fa-fw"></i>{{ like.episode.published_time }}</small>
               </div>
-              <p class="track-title"><a href="{% url 'feed:ep_detail' like.episode.id %}">{{ like.episode.title }}</a></p>
+              <p class="track-title"><a href="{% url 'feed:ep_detail' like.episode.id %}">{{ like.episode.title|safe }}</a></p>
             </div>
           </li>
         {% endfor %}

@@ -23,10 +23,11 @@ class IndexView(generic.ListView):
     template_name = 'feed/index.html'
     context_object_name = 'episodes'
     paginate_by = 8
-    queryset = Episode.objects.filter(
-        # user=user,
-        published_time__gt=datetime.date.today() - datetime.timedelta(days=20)
-    ).order_by('-published_time')
+
+    def get_queryset(self):
+        return Episode.objects.filter(
+            published_time__gt=datetime.date.today() - datetime.timedelta(days=20)
+        ).order_by('-published_time')
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)

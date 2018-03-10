@@ -9,7 +9,7 @@
     <div class="col-lg-9">
       {% for mst in mst_collection %}
         <li class="list-group-item">
-          <p>{{ mst.title }}</p>
+          <p>{{ mst.title|safe }}</p>
         </li>
       {% endfor %}
     </div>

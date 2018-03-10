@@ -16,10 +16,10 @@ function updateButton(btn, is_active) {
 };
 function updateSubButton(btn, is_active) {
   if (is_active) {
-      btn.removeClass('btn-default').addClass('is_active')
+      btn.removeClass('btn-default').addClass('is-active')
       btn.html('<i class="fa fa-plus-square"></i> Following')
   } else {
-      btn.removeClass('is_active').addClass('btn-default')
+      btn.removeClass('is-active').addClass('btn-default')
       btn.html('<i class="fa fa-plus-square"></i> Follow')
   }
 };
@@ -38,7 +38,7 @@ $(function() {
             updateButton(this_, data.liked)
         })
         .fail(function(data){
-            $('#error').html('<p>' + '登録できませんでした' +'</p>')
+            $('#like_error').html('<p>' + '登録できませんでした' +'</p>')
         })
     });
 });
@@ -57,7 +57,8 @@ $(function() {
             updateSubButton(this_, data.subscription)
         })
         .fail(function(data){
-            $('#error').html('<p>' + '登録できませんでした' +'</p>')
+            $('#sub_error').html('<p>' + '登録できませんでした' +'</p>')
+            $('#sub_error').css('color', 'red')
         })
     });
 });
@@ -70,16 +71,19 @@ $(function() {
           <div class="channel-img">
             <a href="{{ episode.channel.get_absolute_url }}"><img class="img-circle" src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=140px/></a>
           </div>
-          <a href="{{ episode.channel.get_absolute_url }}"><h4>{{ episode.channel.title }}</h4></a>
-          <p class="author">{{ episode.channel.author }}</p>
+          <a href="{{ episode.channel.get_absolute_url }}"><h4>{{ episode.channel.title|safe }}</h4></a>
+          <p class="author">{{ episode.channel.author|safe }}</p>
           <div class="sub-action">
-              {% if subscription %}
-                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn is_active btn-xs"><i class="fa fa-plus-square"></i> Following</button>
-              {% else %}
-                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> Follow</button>
-              {% endif %}
-            </div>
-          <p class="description">{{ episode.channel.description }}</p>
+            {% if subscription %}
+              <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn is-active btn-xs"><i class="fa fa-plus-square"></i> Following</button>
+            {% else %}
+              <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> Follow</button>
+            {% endif %}
+          </div>
+          <div id="sub_error">
+            {{ result }}
+          </div>
+          <p class="description">{{ episode.channel.description|safe }}</p>
           <p class="link"><a href="{{ episode.channel.link }}"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
         {% else %}
           <p>チャンネル情報が取得できませんでした</p>
@@ -88,7 +92,7 @@ $(function() {
       <div class="col-lg-9">
         {% if episode %}
           <p class="ep-date"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</p>
-          <h3>{{ episode.title }}</h3>
+          <h3>{{ episode.title|safe }}</h3>
           <audio controls>
             <source src="{{ episode.audio_url }}" type="audio/mp3">
           </audio>
@@ -120,7 +124,7 @@ $(function() {
                 </div>
             </div>
           </div>
-          <div id="error">
+          <div id="like_error">
             {{ result }}
           </div>
       {% else %}
@@ -129,19 +133,8 @@ $(function() {
       </div>
     </div>
     <div class="ep-body">
-      <div class="col-lg-6">
-        {{ parsed_description |safe }}
-      </div>
-      <div class="img-tile col-lg-6">
-          <img id="img01" class="tile img-rounded" src="{{ STATIC_URL }}/images/box.jpg" width=130px/>
-          <img id="img01" class="tile img-rounded" src="{{ STATIC_URL }}/images/box.jpg" width=130px/>
-          <img id="img01" class="tile img-rounded" src="{{ STATIC_URL }}/images/box.jpg" width=130px/>
-          <img id="img01" class="tile img-rounded" src="{{ STATIC_URL }}/images/box.jpg" width=130px/>
-          <img id="img01" class="tile img-rounded" src="{{ STATIC_URL }}/images/box.jpg" width=130px/>
-          <img id="img01" class="tile img-rounded" src="{{ STATIC_URL }}/images/box.jpg" width=130px/>
-          <img id="img01" class="tile img-rounded" src="{{ STATIC_URL }}/images/box.jpg" width=130px/>
-          <img id="img01" class="tile img-rounded" src="{{ STATIC_URL }}/images/box.jpg" width=130px/>
-          <img id="img01" class="tile img-rounded" src="{{ STATIC_URL }}/images/box.jpg" width=130px/>
+      <div class="col-lg-12">
+        {{ parsed_description|safe }}
       </div>
     </div>
   </div>

@@ -89,6 +89,10 @@ class Episode(TimeStampModel):
     def num_likad_entries(self):
         return Like.objects.filter(episode=self).count()
 
+    def get_current_subscribe(self):
+        return Subscription.objects.filter(
+            channel=self.channel, user=self.user)
+
 
 class Subscription(TimeStampModel):
     """

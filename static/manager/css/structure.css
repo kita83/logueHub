@@ -12,6 +12,12 @@ ul {
     list-style: none;
 }
 
+.page-h4-header {
+    padding-bottom: 6px;
+    margin: 50px 0 10px 0;
+    border-bottom: 1px solid #EEE;
+}
+
 #page-wrapper {
     position: inherit;
     margin: 0 0 0 250px;
@@ -90,6 +96,7 @@ ul {
 .ep-header .author {
     font-size: 12px;
     color: #888888;
+    margin-bottom: 5px;
 }
 
 .ep-header .description {
@@ -111,7 +118,7 @@ ul {
 }
 
 .sub-action {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .img-tile {
