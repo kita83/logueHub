@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Django stuff:
+*.log
+.static_storage/
+local_settings.py
+logue/settings.py
+
 db.sqlite3
 
 shell/
@@ -52,9 +58,3 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
-# Django stuff:
-*.log
-.static_storage/
-local_settings.py
-logue/settings.py
