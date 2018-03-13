@@ -4,7 +4,7 @@ from django.views.decorators.http import require_POST
 from django.views import generic
 from django.http import JsonResponse
 from django.db.models import Count
-from .forms import SubscriptionForm
+from .forms import SubscriptionForm, ContactForm
 from .models import (
     Channel, Episode, Like, Subscription, MstCollection, Collection)
 from . import utils
@@ -306,3 +306,13 @@ def add_collection(request):
             'btn_collection': '<i class="fa fa-plus"></i> Collection'
         }
         return JsonResponse(response)
+
+
+class ContactView(generic.FormView):
+    template_name = 'contact.html'
+    form_class = ContactForm
+    success_url = '/contact/'
+
+    def form_valid(self, form):
+        form.send_email()
+        return super(ContactView, self).form_valid(form)

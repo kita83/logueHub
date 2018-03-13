@@ -28,3 +28,18 @@ class AddCollectionForm(forms.ModelForm):
     class Meta:
         model = models.MstCollection
         fields = ('title',)
+
+
+class ContactForm(forms.Form):
+    name = forms.CharField()
+    message = forms.CharField(widget=forms.Textarea)
+
+    # メール送信処理
+    def send_email(self):
+        # send email using the self.cleaned_data dictionary
+        subject = self.cleaned_data['name']
+        message = self.cleaned_data['message']
+        from_email = settings.EMAIL_HOST_USER
+        to = [settings.EMAIL_HOST_USER]
+
+        send_mail(subject, message, from_email, to)
