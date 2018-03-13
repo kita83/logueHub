@@ -1,5 +1,6 @@
 from django import forms
 from . import models
+from logue import settings
 
 
 class SubscriptionForm(forms.Form):
@@ -31,8 +32,27 @@ class AddCollectionForm(forms.ModelForm):
 
 
 class ContactForm(forms.Form):
-    name = forms.CharField()
-    message = forms.CharField(widget=forms.Textarea)
+    """
+    問い合わせ用
+    """
+    name = forms.CharField(
+        label='name',
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control'
+            }
+        )
+    )
+    message = forms.CharField(
+        label='message',
+        required=True,
+        widget=forms.Textarea(
+            attrs={
+                'class': 'form-control'
+            }
+        )
+    )
 
     # メール送信処理
     def send_email(self):
@@ -42,4 +62,4 @@ class ContactForm(forms.Form):
         from_email = settings.EMAIL_HOST_USER
         to = [settings.EMAIL_HOST_USER]
 
-        send_mail(subject, message, from_email, to)
+        forms.send_mail(subject, message, from_email, to)

@@ -15,4 +15,5 @@ urlpatterns = [
     path('change_subscription', views.change_subscription, name='change_subscription'),
     path('add_collection', views.add_collection, name='add_collection'),
     path('settings/', views.SettingsView.as_view(), name='settings'),
+    path('contact/', views.ContactView.as_view(), name='contact'),
 ]

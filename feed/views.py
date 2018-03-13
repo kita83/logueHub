@@ -309,9 +309,9 @@ def add_collection(request):
 
 
 class ContactView(generic.FormView):
-    template_name = 'contact.html'
+    template_name = 'feed/contact.html'
     form_class = ContactForm
-    success_url = '/contact/'
+    success_url = '/index/'
 
     def form_valid(self, form):
         form.send_email()
