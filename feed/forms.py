@@ -1,6 +1,7 @@
 from django import forms
 from . import models
-from logue import settings
+from django.conf import settings
+from django.core.mail import send_mail
 
 
 class SubscriptionForm(forms.Form):
@@ -59,7 +60,8 @@ class ContactForm(forms.Form):
         # send email using the self.cleaned_data dictionary
         subject = self.cleaned_data['name']
         message = self.cleaned_data['message']
-        from_email = settings.EMAIL_HOST_USER
+        # from_email = settings.EMAIL_HOST_USER
+        from_email = 'kita83@outlook.com'
         to = [settings.EMAIL_HOST_USER]
 
-        forms.send_mail(subject, message, from_email, to)
+        send_mail(subject, message, from_email, to)

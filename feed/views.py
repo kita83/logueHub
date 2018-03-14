@@ -311,8 +311,14 @@ def add_collection(request):
 class ContactView(generic.FormView):
     template_name = 'feed/contact.html'
     form_class = ContactForm
-    success_url = '/index/'
+    success_url = '/'
 
     def form_valid(self, form):
         form.send_email()
         return super(ContactView, self).form_valid(form)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        # 登録用フォーム
+        context['subscription_form'] = SubscriptionForm
+        return context
