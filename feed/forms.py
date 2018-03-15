@@ -36,8 +36,17 @@ class ContactForm(forms.Form):
     """
     問い合わせ用
     """
-    name = forms.CharField(
-        label='name',
+    email = forms.EmailField(
+        label='メールアドレス',
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control'
+            }
+        )
+    )
+    subject = forms.CharField(
+        label='件名',
         required=True,
         widget=forms.TextInput(
             attrs={
@@ -46,7 +55,7 @@ class ContactForm(forms.Form):
         )
     )
     message = forms.CharField(
-        label='message',
+        label='内容',
         required=True,
         widget=forms.Textarea(
             attrs={
@@ -57,11 +66,9 @@ class ContactForm(forms.Form):
 
     # メール送信処理
     def send_email(self):
-        # send email using the self.cleaned_data dictionary
-        subject = self.cleaned_data['name']
+        subject = self.cleaned_data['subject']
         message = self.cleaned_data['message']
-        # from_email = settings.EMAIL_HOST_USER
-        from_email = 'kita83@outlook.com'
+        from_email = self.cleaned_data['email']
         to = [settings.EMAIL_HOST_USER]
 
         send_mail(subject, message, from_email, to)

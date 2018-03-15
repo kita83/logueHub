@@ -11,7 +11,7 @@
             <form action="{% url 'feed:contact' %}" method="POST">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <input type="submit" class="btn btn-success pull-right" value="send message">
+                <input type="submit" class="btn btn-success pull-right" value="送信">
             </form>
         </div>
     </div>

@@ -38,7 +38,8 @@ $(function() {
             updateButton(this_, data.liked)
         })
         .fail(function(data){
-            $('#like_error').html('<p>' + '登録できませんでした' +'</p>')
+          $('#error').attr('class', 'alert alert-danger alert-dismissable')
+            $('#error').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
         })
     });
 });
@@ -57,14 +58,15 @@ $(function() {
             updateSubButton(this_, data.subscription)
         })
         .fail(function(data){
-            $('#sub_error').html('<p>' + '登録できませんでした' +'</p>')
-            $('#sub_error').css('color', 'red')
+            $('#error').attr('class', 'alert alert-danger alert-dismissable')
+            $('#error').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
         })
     });
 });
 </script>
 <div id="page-wrapper">
   <div class="row">
+    <div id="error"></div>
     <div class="ep-header clearfix">
       <div class="channel col-lg-3">
         {% if episode.channel %}
@@ -79,9 +81,6 @@ $(function() {
             {% else %}
               <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> Follow</button>
             {% endif %}
-          </div>
-          <div id="sub_error">
-            {{ result }}
           </div>
           <p class="description">{{ episode.channel.description|safe }}</p>
           <p class="link"><a href="{{ episode.channel.link }}"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
