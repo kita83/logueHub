@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load i18n %}
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -27,7 +28,7 @@
 <body>
     <div id="wrapper" class="container">
       <div class="header-container">
-        <div id="error"></div>
+        <div id="info"></div>
         <nav class="navbar navbar-default navbar-static-top manager-nav no-margin" role="navigation" style="margin-bottom: 0">
           <div class="navbar-header">
             <a href="{% url 'feed:index' %}" class="navbar-brand">Logue Snap</a>
@@ -46,18 +47,15 @@
           <div class="sidebar-nav navbar-collapse">
             <ul class="nav" id="side-menu">
             <li>
-                <a href="{% url 'feed:index' %}">Trend</a>
+                <a href="{% url 'feed:index' %}">トレンド</a>
             </li>
             {% if user.is_authenticated %}
-                <li><a href="{% url 'feed:channels' %}">Channels</a></li>
+                <li><a href="{% url 'feed:channels' %}">登録チャンネル</a></li>
                 <li>
-                    <a href="{% url 'feed:collection' %}">Collection</a>
+                    <a href="{% url 'feed:collection' %}">コレクション</a>
                 </li>
-                <li><a href="{% url 'feed:like_list' %}">Likes</a></li>
-                <li>
-                    <a href="#">Playlists<span class="fa arrow"></span></a>
-                </li>
-                <li><a href="{% url 'feed:settings' %}">Settings</a></li>
+                <li><a href="{% url 'feed:like_list' %}">お気に入り</a></li>
+                <li><a href="{% url 'feed:settings' %}">設定</a></li>
             {% endif %}
             </ul>
           </div>

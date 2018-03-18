@@ -38,35 +38,61 @@ $(function() {
             updateButton(this_, data.liked)
         })
         .fail(function(data){
-          $('#error').attr('class', 'alert alert-danger alert-dismissable')
-            $('#error').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+            $('#info').attr('class', 'alert alert-danger alert-dismissable')
+            $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
         })
     });
 });
 $(function() {
-    $('#subscription').on('click', function() {
+    $('#collection').on('click', function() {
         var this_ = $(this)
+        var title = $('#id_add_collection').val()
+        var new_title = $('#id_new').val()
         $.ajax({
-            'url':'{% url "feed:change_subscription" %}',
+            'url':'{% url "feed:add_collection" %}',
             'type':'GET',
             'data':{
-                'ch_id':this_.attr('data-channel-id'),
+                'ep_id':this_.attr('data-episode-id'),
+                'col_id':title,
+                'new_title':new_title
             },
             'dataType':'json'
         })
         .done(function(data){
-            updateSubButton(this_, data.subscription)
+            $('#info').attr('class', 'alert alert-success alert-dismissable')
+            $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + 'コレクションに追加しました')
+            $('#addCollectionModal').modal('hide')
         })
         .fail(function(data){
-            $('#error').attr('class', 'alert alert-danger alert-dismissable')
-            $('#error').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+            $('#info').attr('class', 'alert alert-danger alert-dismissable')
+            $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+            $('#addCollectionModal').modal('hide')
+        })
+    });
+});
+$(function() {
+    $('#like').on('click', function() {
+        var this_ = $(this)
+        $.ajax({
+            'url':'{% url "feed:change_like" %}',
+            'type':'GET',
+            'data':{
+                'ep_id':this_.attr('data-episode-id'),
+            },
+            'dataType':'json'
+        })
+        .done(function(data){
+            updateButton(this_, data.liked)
+        })
+        .fail(function(data){
+          $('#info').attr('class', 'alert alert-danger alert-dismissable')
+            $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
         })
     });
 });
 </script>
 <div id="page-wrapper">
   <div class="row">
-    <div id="error"></div>
     <div class="ep-header clearfix">
       <div class="channel col-lg-3">
         {% if episode.channel %}
@@ -95,12 +121,15 @@ $(function() {
           <audio controls>
             <source src="{{ episode.audio_url }}" type="audio/mp3">
           </audio>
-          <div class="action">
+          <div class="action form-inline">
             {% if like %}
               <button type="button" id="like" data-episode-id="{{ episode.id }}" class="btn is-active btn-xs"><i class="fa fa-heart"></i> Liked</button>
             {% else %}
               <button type="button" id="like" data-episode-id="{{ episode.id }}" class="btn btn-default btn-xs"><i class="fa fa-heart"></i> Like</button>
             {% endif %}
+            <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#addCollectionModal">
+              <i class="fa fa-folder"></i> Collection
+            </button>
           </div>
           <!-- コレクション追加モーダル -->
           <div class="modal fade" id="addCollectionModal" tabindex="-1" role="dialog" aria-labelledby="addCollectionModalLabel" aria-hidden="true">
@@ -113,12 +142,12 @@ $(function() {
                   <div class="modal-body">
                       <form action="" name="add_collection" method="GET">
                           {% csrf_token %}
-                          {{ add_collection_form }}
+                          {{ add_collection }}
                       </form>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Add</button>
+                    <button type="button" id="collection" class="btn btn-primary" data-episode-id="{{ episode.id }}">Add</button>
                   </div>
                 </div>
             </div>

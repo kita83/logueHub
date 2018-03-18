@@ -146,7 +146,7 @@ body {
 .chat li {
   margin-bottom: 10px;
   padding-bottom: 5px;
-  border-bottom: 1px dotted #999999;
+  border-bottom: 1px solid #eee;
 }
 .chat li.left .chat-body {
   margin-left: 70px;

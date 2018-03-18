@@ -21,15 +21,32 @@ class SubscriptionForm(forms.Form):
     )
 
 
-class AddCollectionForm(forms.ModelForm):
+class AddCollectionForm(forms.Form):
     """
     登録済のコレクションリストの選択フォーム
     """
-    # add_collection = forms.BooleanField(required=True)
+    add_collection = forms.ModelChoiceField(
+        required=True,
+        label='選択してください',
+        queryset=models.MstCollection.objects.all(),
+        empty_label='--------------',
+        widget=forms.Select(
+            attrs={
+                'class': 'form-control'
+            }
+        )
+    )
 
-    class Meta:
-        model = models.MstCollection
-        fields = ('title',)
+    new = forms.CharField(
+        required=False,
+        label='または',
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': '新しいコレクションフォルダを追加'
+            }
+        )
+    )
 
 
 class ContactForm(forms.Form):

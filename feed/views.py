@@ -4,7 +4,7 @@ from django.views.decorators.http import require_POST
 from django.views import generic
 from django.http import JsonResponse
 from django.db.models import Count
-from .forms import SubscriptionForm, ContactForm
+from .forms import SubscriptionForm, ContactForm, AddCollectionForm
 from .models import (
     Channel, Episode, Like, Subscription, MstCollection, Collection)
 from . import utils
@@ -167,6 +167,10 @@ class EpisodeDetailView(generic.DetailView):
         user = self.request.user
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
+        # コレクション追加フォーム
+        col_form = AddCollectionForm()
+        col_form.fields['add_collection'].queryset = MstCollection.objects.filter(user=user)
+        context['add_collection'] = col_form
         # TODO: フィルタリングがうまくできているかテストする
         context['like'] = Like.objects.filter(
             episode=context['episode'], user=user)
@@ -275,24 +279,24 @@ def change_like(request):
 def add_collection(request):
     """
     エピソードをコレクションに追加する
-    すでにLikeされている場合は削除する
     """
     if request.method == 'GET':
-        add_title = request.GET.get('new_item')
+        new_title = request.GET.get('new_title')
         ep_id = request.GET.get('ep_id')
         mst_id = request.GET.get('col_id')
+        if new_title and mst_id:
+            raise ValueError('error!')
         # 登録ユーザー取得
         user = request.user
         # 登録エピソード取得
         episode = Episode.objects.get(id=ep_id)
-
-        if not add_title:
+        if not new_title:
             # 登録コレクション取得
             mst = MstCollection.objects.get(id=mst_id)
         else:
             # 新規コレクション追加
             mst = MstCollection.objects.create(
-                title=add_title,
+                title=new_title,
                 user=user
             )
 
@@ -303,7 +307,7 @@ def add_collection(request):
         )
 
         response = {
-            'btn_collection': '<i class="fa fa-plus"></i> Collection'
+            'btn_collection': True
         }
         return JsonResponse(response)
 

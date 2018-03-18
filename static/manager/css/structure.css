@@ -44,7 +44,6 @@
 
 .nav>li>a:focus, .nav>li>a:hover {
     text-decoration: none;
-    background-color: #444;
 }
 
 .nav .open > a,
@@ -228,7 +227,7 @@ ul {
 .recently li {
     margin: 0 0 10px 0;
     padding-bottom: 5px;
-    border-bottom: 1px dotted #999999;
+    border-bottom: 1px solid #eee;
 }
 
 .recently-body {
