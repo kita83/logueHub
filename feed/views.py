@@ -202,16 +202,39 @@ class ChannelAllView(generic.ListView):
 
 class CollectionListView(generic.ListView):
     """
-    Collectionされたエピソードリストを表示
+    コレクション一覧を表示
     """
     model = MstCollection
-    template_name = 'feed/collection.html'
+    template_name = 'feed/col_list.html'
     context_object_name = 'mst_collection'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(user=self.request.user)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['collection'] = Collection.objects.filter(
-            mst_collection=context['mst_collection'])
+        # 登録用フォーム
+        context['subscription_form'] = SubscriptionForm
+        return context
+
+
+class CollectionDetailView(generic.ListView):
+    """
+    Collectionされたエピソードリストを表示
+    """
+    model = Collection
+    template_name = 'feed/col_detail.html'
+    context_object_name = 'collection'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(mst_collection_id=self.kwargs['mst_coll_id'])
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        # 登録用フォーム
+        context['subscription_form'] = SubscriptionForm
         return context
 
 
@@ -224,7 +247,7 @@ class LikeListView(generic.ListView):
     context_object_name = 'likes'
 
     def get_queryset(self):
-            return Like.objects.filter(user=self.request.user)
+        return Like.objects.filter(user=self.request.user)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)

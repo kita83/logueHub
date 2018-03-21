@@ -152,7 +152,7 @@ class Collection(TimeStampModel):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.mst_collection.title
+        return self.episode.title
 
 
 class MstPlaylist(TimeStampModel):

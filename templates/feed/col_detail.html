@@ -1,0 +1,24 @@
+{% extends 'base_nav.html' %}
+{% load static %}
+{% block title %}コレクション詳細{% endblock %}
+
+{% block content %}
+{% static "" as STATIC_URL %}
+<div id="page-wrapper">
+  <div class="row">
+    <div class="ep-header clearfix">
+      <div class="channel col-lg-12">
+        <h2 class="page-header">コレクション詳細</h2>
+        <ul class="chat">
+        {% for col in collection %}
+          <li class="left clearfix">
+            <a href="{% url 'feed:ep_detail' col.episode.id %}">{{ col.episode.title|safe }}</a>
+          </li>
+        {% endfor %}
+        </ul>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
