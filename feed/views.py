@@ -285,7 +285,7 @@ def add_collection(request):
         ep_id = request.GET.get('ep_id')
         mst_id = request.GET.get('col_id')
         if new_title and mst_id:
-            raise ValueError('error!')
+            return JsonResponse({'is_success': False})
         # 登録ユーザー取得
         user = request.user
         # 登録エピソード取得
@@ -306,10 +306,7 @@ def add_collection(request):
             episode=episode
         )
 
-        response = {
-            'btn_collection': True
-        }
-        return JsonResponse(response)
+        return JsonResponse({'is_success': True})
 
 
 class ContactView(generic.FormView):

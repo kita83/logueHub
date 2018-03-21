@@ -26,9 +26,10 @@
     border-top: 1px solid #eee; 
 }
 
-.footer-container a {
+.footer-container a, .footer-container p {
     font-size: 12px;
     margin-right: 30px;
+    color: #AAA;
 }
 
 .navbar {
@@ -145,7 +146,11 @@ ul {
 }
 .ep-header .channel {
     padding-right: 15px;
-    border-right: solid 1px #EEE; 
+    border-right: solid 1px #EEE;
+}
+
+.ep-description {
+    border-right: solid 1px #EEE;
 }
 
 .ep-header h3 {
@@ -175,7 +180,9 @@ ul {
 
 .ep-body {
     margin-top: 20px;
+    padding-top: 20px;
     height: 100%;
+    border-top: solid 1px #EEE;
 }
 
 .action {
