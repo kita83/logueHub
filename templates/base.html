@@ -52,7 +52,14 @@
             {% if user.is_authenticated %}
                 <li><a href="{% url 'feed:channels' %}">登録チャンネル</a></li>
                 <li>
-                    <a href="{% url 'feed:col_list' %}">コレクション</a>
+                    <a href="{% url 'feed:col_list' %}">コレクション<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                      {% for mst in mst_collection %}
+                      <li>
+                        <a href="{% url 'feed:col_detail' mst.id %}">{{ mst.title|safe }}</a>
+                      </li>
+                      {% endfor %}
+                    </ul>
                 </li>
                 <li><a href="{% url 'feed:like_list' %}">お気に入り</a></li>
                 <li><a href="{% url 'feed:settings' %}">設定</a></li>

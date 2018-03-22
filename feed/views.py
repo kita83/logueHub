@@ -25,16 +25,18 @@ class IndexView(generic.ListView):
     paginate_by = 8
 
     def get_queryset(self):
+        sub = Subscription.objects.filter(user=self.request.user)
         return Episode.objects.filter(
-            published_time__gt=datetime.date.today() - datetime.timedelta(days=20)
-        ).order_by('-published_time')
+            published_time__gt=datetime.date.today() - datetime.timedelta(days=20)).order_by('-published_time')
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
-        # Like数の多いエピソードを取得
         # TODO: フィルタリングがうまくできているかテストする
+        # コレクションタイトル
+        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
+        # Like数の多いエピソードを取得
         id_list = Like.objects.values('episode').annotate(
             Count('episode')).order_by('-episode__count')[:10]
         con_list = []
@@ -59,6 +61,8 @@ class ChannelList(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ChannelList, self).get_context_data(**kwargs)
+        # コレクションタイトル
+        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
         self.extra_context.update(context)
         return self.extra_context
 
@@ -146,6 +150,8 @@ class ChannelDetailView(generic.DetailView):
         user = self.request.user
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
+        # コレクションタイトル
+        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
         context['subscription'] = Subscription.objects.filter(
             channel=context['channel'], user=user)
         context['episodes'] = Episode.objects.filter(
@@ -167,6 +173,8 @@ class EpisodeDetailView(generic.DetailView):
         user = self.request.user
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
+        # コレクションタイトル
+        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
         # コレクション追加フォーム
         col_form = AddCollectionForm()
         col_form.fields['add_collection'].queryset = MstCollection.objects.filter(user=user)
@@ -191,10 +199,12 @@ class ChannelAllView(generic.ListView):
     ordering = '-modified'
 
     def get_queryset(self):
-            return Subscription.objects.filter(user=self.request.user)
+        return Subscription.objects.filter(user=self.request.user)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        # コレクションタイトル
+        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
         return context
@@ -233,8 +243,11 @@ class CollectionDetailView(generic.ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        # コレクションタイトル
+        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
+        context['title'] = context['collection'][0].mst_collection.title
         return context
 
 
@@ -251,6 +264,8 @@ class LikeListView(generic.ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        # コレクションタイトル
+        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
         return context
@@ -261,6 +276,14 @@ class SettingsView(generic.TemplateView):
     各種設定項目を表示
     """
     template_name = 'feed/settings.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        # コレクションタイトル
+        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
+        # 登録用フォーム
+        context['subscription_form'] = SubscriptionForm
+        return context
 
 
 def change_like(request):
@@ -343,6 +366,8 @@ class ContactView(generic.FormView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        # コレクションタイトル
+        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
         return context
