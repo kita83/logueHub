@@ -130,7 +130,7 @@ s.setAttribute('data-timestamp', +new Date());
             {% endif %}
           </div>
           <p class="description">{{ episode.channel.description|safe }}</p>
-          <p class="link"><a href="{{ episode.channel.link }}"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
+          <p class="link"><a href="{{ episode.channel.link }}" target="_blank"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
         {% else %}
           <p>チャンネル情報が取得できませんでした</p>
         {% endif %}

@@ -126,6 +126,10 @@ def get_image_name(filename):
     name = str(uuid.uuid4()).replace('-', '')
     # 拡張子
     extension = os.path.splitext(filename)[-1]
+    # 末尾にパラメータを含む場合、除外する
+    if '?' in extension:
+        splited = extension.split('?')
+        extension = splited[0]
     return name + extension
 
 
@@ -259,8 +263,6 @@ def poll_feed(db_channel):
                     now = timezone.now()
                     if published_time > now:
                         published_time = now
-                db_entry.published_time = published_time
-
             # 発行日時
             db_entry.published_time = published_time
 
@@ -281,14 +283,6 @@ def poll_feed(db_channel):
                 db_entry.duration = entry.itunes_duration
             else:
                 db_entry.duration = ''
-
-            # 音声ファイルURL
-            if hasattr(entry, 'links'):
-                for link in entry.links:
-                    if hasattr(link, 'type') and link.type == 'audio/mpeg':
-                        db_entry.audio_url = link.href
-            else:
-                db_entry.audio_url = ''
 
             # Lots of entries are missing descrtion_detail attributes.
             # Escape their content by default.

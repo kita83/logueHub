@@ -47,6 +47,10 @@
     text-decoration: none;
 }
 
+.navbar-top-links>li>a:focus, .navbar-top-links>li>a:hover {
+    background-color: #444;
+}
+
 .nav .open > a,
 .nav .open > a:focus,
 .nav .open > a:hover {
@@ -62,6 +66,10 @@
   }
 
 .navbar-top-links li a {
+    padding-right: 0;
+}
+
+.navbar-top-links li a:hover {
     padding-right: 0;
 }
 

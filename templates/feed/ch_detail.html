@@ -44,7 +44,7 @@ $(function() {
         {% for episode in episodes %}
         <li class="left clearfix">
           <div class="header">
-            <small><a href="{% url 'feed:ch_detail' episode.channel.id %}" class="text-header">{{ episode.channel.title|safe }}</a></small>
+            <small><a href="" class="track-title">{{ episode.channel.title|safe }}</a></small>
             <small class="text-muted pull-right"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</small>
           </div>
           <p class="track-title"><a href="{% url 'feed:ep_detail' episode.id %}">{{ episode.title|safe }}</a></p>
@@ -74,7 +74,7 @@ $(function() {
               {{ result }}
             </div>
           <p class="description">{{ channel.description|safe }}</p>
-          <p class="link"><a href="{{ channel.link }}"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
+          <p class="link"><a href="{{ channel.link }}" target="_blank"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
       {% else %}
         <p>チャンネル情報が取得できませんでした</p>
       {% endif %}
