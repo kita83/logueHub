@@ -221,8 +221,10 @@ def poll_feed(db_channel):
         if missing_attr:
             continue
 
-        if entry.title == "":
-            msg = 'logue poll_feeds. Episode has a blank title'
+        # タイトル
+        if entry.title == '':
+            msg = 'logue poll_feeds. Entry "%s" has a blank title'\
+                % (entry.title)
             print(msg)
             logger.warning(msg)
             continue
@@ -284,13 +286,11 @@ def poll_feed(db_channel):
             else:
                 db_entry.duration = ''
 
-            # Lots of entries are missing descrtion_detail attributes.
-            # Escape their content by default.
+            # エピソード説明: 'text/plain'の場合、htmlエスケープする
             if hasattr(entry, 'description_detail')\
                     and entry.description_detail.type != 'text/plain':
                 db_entry.description = entry.description
             else:
-                # エピソード説明: 'text/plain'の場合、htmlエスケープする
                 db_entry.description = html.escape(entry.description)
 
             # エピソード保存

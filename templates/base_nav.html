@@ -6,22 +6,15 @@
     <ul class="nav navbar-top-links navbar-right">
         <li class="dropdown">
             {% if user.is_authenticated %}
-            <form action="{% url 'feed:entry' %}" method="POST" class="form">
-                <!-- <div class="input-group"> -->
+            <form method="POST" class="form">
                 {% csrf_token %}
                 <li>
                 {{ subscription_form }}
                 </li>
-                <li>
-                    <button type="submit" class="btn btn-primary btn-sm ">登録</button>
-                </li>
-                    <!-- <span class="input-group-btn">
-                        <button type="submit" class="btn btn-default">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </span> -->
-                <!-- </div> -->
             </form>
+                <li>
+                <button id="add_feed" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addFeedModal">検索</button>
+                </li>
             <li>{{ user.email }}</li>
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">

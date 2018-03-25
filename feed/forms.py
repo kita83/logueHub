@@ -13,9 +13,9 @@ class SubscriptionForm(forms.Form):
         required=False,
         widget=forms.TextInput(
             attrs={
-                'placeholder': '新しいフィードURLを登録',
+                'placeholder': '登録したいフィードのURLを入力',
                 'size': '70%',
-                'class': 'form-control'
+                'class': 'form-control',
             }
         )
     )

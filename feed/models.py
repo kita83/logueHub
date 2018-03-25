@@ -1,11 +1,19 @@
 """feedアプリのモデル"""
 import uuid
+import datetime
 from django.utils import timezone
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+
+
+class EpisodeManager(models.Manager):
+    def recently_published(self):
+        return self.filter(
+            published_time__gt=datetime.date.today() - datetime.timedelta(
+                days=20)).order_by('-published_time')
 
 
 class TimeStampModel(models.Model):
@@ -80,6 +88,9 @@ class Episode(TimeStampModel):
     duration = models.CharField(max_length=10, null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
+    objects = models.Manager()
+    recently = EpisodeManager()
+
     def __str__(self):
         return self.title
 
@@ -102,7 +113,7 @@ class Subscription(TimeStampModel):
     )
 
     def __str__(self):
-        return self.user.email
+        return self.channel.title
 
 
 class Like(TimeStampModel):

@@ -1,16 +1,19 @@
 import datetime
-from django.shortcuts import render, redirect
-from django.views.decorators.http import require_POST
-from django.views import generic
-from django.http import JsonResponse
-from django.db.models import Count
-from .forms import SubscriptionForm, ContactForm, AddCollectionForm
-from .models import (
-    Channel, Episode, Like, Subscription, MstCollection, Collection)
-from . import utils
-import markdown
-
 import logging
+
+import markdown
+import feedparser
+from django.utils import html
+from django.db.models import Count
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
+from django.views import generic
+from django.views.decorators.http import require_POST
+
+from . import utils
+from .forms import AddCollectionForm, ContactForm, SubscriptionForm
+from .models import (Channel, Collection, Episode, Like, MstCollection,
+                     Subscription)
 
 logger = logging.getLogger(__name__)
 
@@ -25,17 +28,18 @@ class IndexView(generic.ListView):
     paginate_by = 8
 
     def get_queryset(self):
-        sub = Subscription.objects.filter(user=self.request.user)
-        return Episode.objects.filter(
-            published_time__gt=datetime.date.today() - datetime.timedelta(days=20)).order_by('-published_time')
+        # sub = Subscription.objects.filter(user=self.request.user)
+        return Episode.recently.recently_published()
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
         # TODO: フィルタリングがうまくできているかテストする
-        # コレクションタイトル
-        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
+        # ログイン後であればコレクションタイトル取得
+        user = self.request.user
+        if hasattr(user, 'email'):
+            context['mst_collection'] = MstCollection.objects.filter(user=user)
         # Like数の多いエピソードを取得
         id_list = Like.objects.values('episode').annotate(
             Count('episode')).order_by('-episode__count')[:10]
