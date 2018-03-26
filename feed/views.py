@@ -96,11 +96,6 @@ def entry(request):
         if created:
             utils.poll_feed(channel)
 
-        # 購読情報を登録
-        Subscription.objects.get_or_create(
-            channel=channel,
-            user=user
-        )
         return redirect('feed:ch_detail', pk=channel.id)
 
     return render(request, 'feed/index.html')

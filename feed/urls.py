@@ -7,7 +7,6 @@ urlpatterns = [
     path('channels/', views.ChannelAllView.as_view(), name='channels'),
     path('like_list/', views.LikeListView.as_view(), name='like_list'),
     path('entry/', views.entry, name='entry'),
-    path('get_feed/', views.get_feed, name='get_feed'),
     path('likes/', views.LikeListView.as_view(), name='likes'),
     path('collection_list/', views.CollectionListView.as_view(), name='col_list'),
     path('collection/<uuid:mst_coll_id>/detail/', views.CollectionDetailView.as_view(), name='col_detail'),
