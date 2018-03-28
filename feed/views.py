@@ -1,9 +1,6 @@
-import datetime
 import logging
 
 import markdown
-import feedparser
-from django.utils import html
 from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -81,7 +78,6 @@ def entry(request):
     Channel, Episode, Tag
     """
     form = SubscriptionForm(request.POST)
-    user = request.user
 
     if form.is_valid():
         feed_url = form.cleaned_data['require_url']
