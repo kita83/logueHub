@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from django.core.management.base import BaseCommand
 from feed.models import Channel
 from feed.utils import poll_feed
+from datetime import datetime
 
 import logging
 
@@ -27,9 +30,13 @@ class Command(BaseCommand):
         verbose = options['verbose']
         channels = Channel.objects.all()
         num_channels = len(channels)
+        start = datetime.now()
+        exec_time = start.strftime('%Y/%m/%d %H:%M:%S')
 
         if verbose:
-            print('%d channels to process' % (num_channels))
+            print('##################################################')
+            print('%d channels to process.. started at %s' % (
+                num_channels, exec_time))
 
         for i, channel in enumerate(channels):
             if verbose:
@@ -37,4 +44,10 @@ class Command(BaseCommand):
                     i + 1, num_channels))
             # feed取得
             poll_feed(channel)
-        logger.info('logue monkey poll_feeds completed successfully')
+
+        end = datetime.now()
+        end_time = end.strftime('%Y/%m/%d %H:%M:%S')
+        print('logue poll_feeds completed successfully at %s' % (
+            end_time))
+        logger.info('logue poll_feeds completed successfully at %s' % (
+            end_time))
