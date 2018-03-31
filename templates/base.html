@@ -28,13 +28,10 @@
       <div class="header-container">
         <div id="info"></div>
         <nav class="navbar navbar-default navbar-static-top manager-nav no-margin" role="navigation" style="margin-bottom: 0">
-          <div class="navbar-header">
             <a href="{% url 'feed:index' %}" class="navbar-brand">Logue Snap</a>
-          </div>
-
-          <!-- ナビゲーション -->
-          {% block nav %}
-          {% endblock %}
+            <!-- ナビゲーション -->
+            {% block nav %}
+            {% endblock %}
         </nav>
       </div>
 
@@ -42,27 +39,27 @@
       <div class="body-container">
         <!-- サイドバー -->
         <div class="navbar-default sidebar" role="navigation">
-          <div class="sidebar-nav navbar-collapse">
-            <ul class="nav" id="side-menu">
-            <li>
-                <a href="{% url 'feed:index' %}">トレンド</a>
-            </li>
-            {% if user.is_authenticated %}
-                <li><a href="{% url 'feed:channels' %}">登録チャンネル</a></li>
+            <div class="sidebar-nav navbar-collapse">
+                <ul class="nav" id="side-menu">
                 <li>
-                    <a href="{% url 'feed:col_list' %}">コレクション<span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-                      {% for mst in mst_collection %}
-                      <li>
-                        <a href="{% url 'feed:col_detail' mst.id %}">{{ mst.title|safe }}</a>
-                      </li>
-                      {% endfor %}
-                    </ul>
+                    <a href="{% url 'feed:index' %}">トレンド</a>
                 </li>
-                <li><a href="{% url 'feed:like_list' %}">お気に入り</a></li>
-            {% endif %}
-            </ul>
-          </div>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'feed:channels' %}">登録チャンネル</a></li>
+                    <li>
+                        <a href="{% url 'feed:col_list' %}">コレクション<span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                        {% for mst in mst_collection %}
+                        <li>
+                            <a href="{% url 'feed:col_detail' mst.id %}">{{ mst.title|safe }}</a>
+                        </li>
+                        {% endfor %}
+                        </ul>
+                    </li>
+                    <li><a href="{% url 'feed:like_list' %}">お気に入り</a></li>
+                {% endif %}
+                </ul>
+            </div>
         </div>
         {% block content %}
         {% endblock %}

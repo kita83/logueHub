@@ -34,11 +34,19 @@ $(function() {
         })
     });
 });
+(function() { // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+  s.src = 'https://loguesnap.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+})();
 </script>
 <div id="page-wrapper">
   <div class="row">
     <div class="col-lg-9">
+      {% if not subscription %}
       <button type="button" class="subscribe btn btn-lg center-block">購読する</button>
+      {% endif %}
       {% if episodes %}
       <h4 class="page-h4-header">エピソード</h4>
       <ul class="chat">
@@ -56,6 +64,7 @@ $(function() {
         <p>There are no episodes available.</p>
       {% endif %}
     </ul>
+    <div id="disqus_thread" class="ch-comment"></div>
     </div>
     <div class="ch-info col-lg-3">
       {% if channel %}

@@ -2,19 +2,20 @@
 {% load i18n %}
 {# Load the tag library #}
 {% block nav %}
+    {% block sidebar %}
+    {% endblock %}
     <!-- ヘッダナビゲーション -->
-    <ul class="nav navbar-top-links navbar-right">
-        <li class="dropdown">
+    {% if user.is_authenticated %}
+        <form action="{% url 'feed:entry' %}" method="POST" class="nav-input form-inline">
+            {% csrf_token %}
+            {{ subscription_form }}
+            <button id="add_feed" class="btn btn-primary btn-sm">検索</button>
+        </form>
+    {% endif %}
+    <ul class="nav navbar-top-links pull-right">
+        <li class="dropdown  dropdown-menu-right">
+            <ul>
             {% if user.is_authenticated %}
-            <form method="POST" class="form">
-                {% csrf_token %}
-                <li>
-                {{ subscription_form }}
-                </li>
-                <li>
-                    <button id="add_feed" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addFeedModal">検索</button>
-                </li>
-            </form>
             <li>{{ user.email }}</li>
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -26,14 +27,22 @@
                     <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                     </li>
                     <li class="divider"></li>
-                    <li><a href="{% url 'account_logout' %}"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-                    </li>
+                    <li>
+                    <form method="post" action="{% url 'account_logout' %}" align="center">
+                        {% csrf_token %}
+                        {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                        {% endif %}
+                        <button class="nav-drop btn btn-link"><i class="fa fa-sign-out fa-fw"></i> {% trans 'Sign Out' %}</button>
+                    </form>
+                </li>
                 </ul>
             </li>
             {% else %}
             <li><a href="{% url 'account_login' %}">{% trans "Sign In" %}</a></li>
             <li><a href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a></li>
             {% endif %}
+        </ul>
         </li>
     </ul>
 {% endblock %}

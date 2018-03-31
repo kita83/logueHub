@@ -35,7 +35,7 @@ class Command(BaseCommand):
 
         if verbose:
             print('##################################################')
-            print('%d channels to process.. started at %s' % (
+            print('[%s] %d channels to process..' % (
                 num_channels, exec_time))
 
         for i, channel in enumerate(channels):
@@ -47,7 +47,7 @@ class Command(BaseCommand):
 
         end = datetime.now()
         end_time = end.strftime('%Y/%m/%d %H:%M:%S')
-        print('logue poll_feeds completed successfully at %s' % (
+        print('[%s] logue poll_feeds completed successfully' % (
             end_time))
-        logger.info('logue poll_feeds completed successfully at %s' % (
+        logger.info('[%s] logue poll_feeds completed successfully' % (
             end_time))
