@@ -73,8 +73,10 @@ $(function() {
 <div id="page-wrapper">
   <div class="row">
     <div class="col-lg-9">
-      {% if not subscription %}
-      <button type="button" id="top-sub" data-channel-id="{{ channel.id }}" class="subscribe btn btn-lg center-block">購読する</button>
+      {% if user.is_authenticated %}
+        {% if not subscription %}
+        <button type="button" id="top-sub" data-channel-id="{{ channel.id }}" class="subscribe btn btn-lg center-block">購読する</button>
+        {% endif %}
       {% endif %}
       {% if episodes %}
       <h4 class="page-h4-header">エピソード</h4>
@@ -102,15 +104,17 @@ $(function() {
         </div>
         <h4>{{ channel.title|safe }}</h4>
         <p class="author">{{ channel.author|safe }}</p>
-        <div class="sub-action">
+        {% if user.is_authenticated %}
+          <div class="sub-action">
             {% if subscription %}
               <button type="button" id="subscription" data-channel-id="{{ channel.id }}" class="btn is-active btn-xs"><i class="fa fa-plus-square"></i> Following</button>
             {% else %}
               <button type="button" id="subscription" data-channel-id="{{ channel.id }}" class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> Follow</button>
             {% endif %}
           </div>
-          <p class="description">{{ channel.description|safe }}</p>
-          <p class="link"><a href="{{ channel.link }}" target="_blank"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
+        {% endif %}
+        <p class="description">{{ channel.description|safe }}</p>
+        <p class="link"><a href="{{ channel.link }}" target="_blank"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
       {% else %}
         <p>チャンネル情報が取得できませんでした</p>
       {% endif %}

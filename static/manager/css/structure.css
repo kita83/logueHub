@@ -108,6 +108,7 @@
 
 .navbar-top-links li a:hover {
     padding-right: 0;
+    text-decoration: none;
 }
 
 .ch-comment {

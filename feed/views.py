@@ -5,7 +5,9 @@ from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views import generic
+from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 
 from . import utils
 from .forms import AddCollectionForm, ContactForm, SubscriptionForm
@@ -69,6 +71,7 @@ class ChannelList(generic.DetailView):
 
 
 @require_POST
+@login_required
 def entry(request):
     """
     下記モデルにリクエストFeedを新規登録する
@@ -97,6 +100,7 @@ def entry(request):
     return render(request, 'feed/index.html')
 
 
+@login_required
 def change_subscription(request):
     """
     下記モデルにリクエストFeedを新規登録、または購読解除する
@@ -146,9 +150,10 @@ class ChannelDetailView(generic.DetailView):
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
         # コレクションタイトル
-        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
-        context['subscription'] = Subscription.objects.filter(
-            channel=context['channel'], user=user)
+        if hasattr(user, 'email'):
+            context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
+            context['subscription'] = Subscription.objects.filter(
+                channel=context['channel'], user=user)
         context['episodes'] = Episode.objects.filter(
             channel=context['channel']
         ).order_by('-published_time')[:8]
@@ -168,17 +173,18 @@ class EpisodeDetailView(generic.DetailView):
         user = self.request.user
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
-        # コレクションタイトル
-        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
-        # コレクション追加フォーム
-        col_form = AddCollectionForm()
-        col_form.fields['add_collection'].queryset = MstCollection.objects.filter(user=user)
-        context['add_collection'] = col_form
-        # TODO: フィルタリングがうまくできているかテストする
-        context['like'] = Like.objects.filter(
-            episode=context['episode'], user=user)
-        context['subscription'] = Subscription.objects.filter(
-            channel=context['episode'].channel, user=user)
+        if hasattr(user, 'email'):
+            # コレクションタイトル
+            context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
+            # コレクション追加フォーム
+            col_form = AddCollectionForm()
+            col_form.fields['add_collection'].queryset = MstCollection.objects.filter(user=user)
+            context['add_collection'] = col_form
+            # TODO: フィルタリングがうまくできているかテストする
+            context['like'] = Like.objects.filter(
+                episode=context['episode'], user=user)
+            context['subscription'] = Subscription.objects.filter(
+                channel=context['episode'].channel, user=user)
         des = context['episode'].description
         context['parsed_description'] = markdown.markdown(des)
         return context
@@ -192,6 +198,10 @@ class ChannelAllView(generic.ListView):
     template_name = 'feed/ch_all.html'
     context_object_name = 'subs'
     ordering = '-modified'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ChannelAllView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         return Subscription.objects.filter(user=self.request.user)
@@ -213,6 +223,10 @@ class CollectionListView(generic.ListView):
     template_name = 'feed/col_list.html'
     context_object_name = 'mst_collection'
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ChannelAllView, self).dispatch(*args, **kwargs)
+
     def get_queryset(self):
         qs = super().get_queryset()
         return qs.filter(user=self.request.user)
@@ -231,6 +245,10 @@ class CollectionDetailView(generic.ListView):
     model = Collection
     template_name = 'feed/col_detail.html'
     context_object_name = 'collection'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ChannelAllView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -253,6 +271,10 @@ class LikeListView(generic.ListView):
     model = Like
     template_name = 'feed/like_list.html'
     context_object_name = 'likes'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ChannelAllView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         return Like.objects.filter(user=self.request.user)
@@ -281,6 +303,7 @@ class SettingsView(generic.TemplateView):
         return context
 
 
+@login_required
 def change_like(request):
     """
     エピソードをLike登録する
@@ -317,6 +340,7 @@ def change_like(request):
             return JsonResponse(response)
 
 
+@login_required
 def add_collection(request):
     """
     エピソードをコレクションに追加する
