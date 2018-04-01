@@ -24,6 +24,13 @@
     }
   };
   $(function() {
+    $('#addCollectionModal').on('hidden.bs.modal', function () {
+      $('.modal-error').html('')
+      $('.modal-error').remove()
+      $(this).find("input,textarea,select").val('').end();
+    });
+  });
+  $(function() {
       $('#like').on('click', function() {
           var this_ = $(this)
           $.ajax({
@@ -40,6 +47,7 @@
           .fail(function(data){
               $('#info').attr('class', 'alert alert-danger alert-dismissable')
               $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+              $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
           })
       });
   });
@@ -59,20 +67,26 @@
               'dataType':'json'
           })
           .done(function(data){
-            if (data.is_success) {
-              $('#info').attr('class', 'alert alert-success alert-dismissable')
-              $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + 'コレクションに追加しました')
+            if (data.result == 'success') {
               $('#addCollectionModal').modal('hide')
-            } else {
+              $('#info').attr('class', 'alert alert-warning alert-dismissable')
+              $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + 'コレクションに追加しました')
+              $('#info').fadeIn(1000).delay(2000).fadeOut(2000)
+            } else if (data.result == 'no_args') {
               // 選択値不正の場合
               $('.modal-error').html('<p>' + '*どちらか一方のコレクションを選択してください' + '</p>')
+              $('.modal-error').attr('class', 'text-danger')
+            } else if (data.result == 'registerd') {
+              // 既に登録済みの場合
+              $('.modal-error').html('<p>' + '*すでに登録済みです' + '</p>')
               $('.modal-error').attr('class', 'text-danger')
             }
           })
           .fail(function(data){
+              $('#addCollectionModal').modal('hide')
               $('#info').attr('class', 'alert alert-danger alert-dismissable')
               $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
-              $('#addCollectionModal').modal('hide')
+              $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
           })
       });
   });
@@ -91,8 +105,9 @@
               updateSubButton(this_, data.subscription)
           })
           .fail(function(data){
-              $('#error').attr('class', 'alert alert-danger alert-dismissable')
-              $('#error').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+              $('#info').attr('class', 'alert alert-danger alert-dismissable')
+              $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+              $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
           })
       });
   });
@@ -161,11 +176,11 @@
                     <h4 class="modal-title" id="modal-label">コレクションに追加</h4>
                   </div>
                   <div class="modal-body">
+                      <div class="modal-error"></div>
                       <form action="" name="add_collection" method="GET">
                           {% csrf_token %}
                           {{ add_collection }}
                       </form>
-                      <div class="modal-error"></div>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

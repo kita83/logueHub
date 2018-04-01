@@ -2,6 +2,17 @@
 /* general */
 /* ---------------------------------------------------------- */
 
+/* メッセージ */
+#info {
+    display: none;
+    width: 500px;
+    /* 画面上部に表示 */
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    margin-left: -175px; /* (width + padding-left + padding-right + border-left + border-right) の半分 */
+}
+
 .container {
     padding-left: 0;
     padding-right: 0;

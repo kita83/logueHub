@@ -27,10 +27,39 @@ $(function() {
         })
         .done(function(data){
             updateSubButton(this_, data.subscription)
+            $('#info').attr('class', 'alert alert-warning alert-dismissable')
+            $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録しました')
+            $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
         })
         .fail(function(data){
-            $('#sub_error').html('<p>' + '登録できませんでした' +'</p>')
-            $('#sub_error').css('color', 'red')
+          $('#info').attr('class', 'alert alert-danger alert-dismissable')
+          $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+          $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
+        })
+    });
+});
+$(function() {
+    $('#top-sub').on('click', function() {
+        var this_ = $(this)
+        $.ajax({
+            'url':'{% url "feed:change_subscription" %}',
+            'type':'GET',
+            'data':{
+                'ch_id':this_.attr('data-channel-id'),
+            },
+            'dataType':'json'
+        })
+        .done(function(data){
+            updateSubButton($('#subscription'), data.subscription)
+            $('#top-sub').remove()
+            $('#info').attr('class', 'alert alert-warning alert-dismissable')
+            $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録しました')
+            $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
+        })
+        .fail(function(data){
+            $('#info').attr('class', 'alert alert-danger alert-dismissable')
+            $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+            $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
         })
     });
 });
@@ -45,7 +74,7 @@ $(function() {
   <div class="row">
     <div class="col-lg-9">
       {% if not subscription %}
-      <button type="button" class="subscribe btn btn-lg center-block">購読する</button>
+      <button type="button" id="top-sub" data-channel-id="{{ channel.id }}" class="subscribe btn btn-lg center-block">購読する</button>
       {% endif %}
       {% if episodes %}
       <h4 class="page-h4-header">エピソード</h4>
@@ -80,9 +109,6 @@ $(function() {
               <button type="button" id="subscription" data-channel-id="{{ channel.id }}" class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> Follow</button>
             {% endif %}
           </div>
-          <div id="sub_error">
-              {{ result }}
-            </div>
           <p class="description">{{ channel.description|safe }}</p>
           <p class="link"><a href="{{ channel.link }}" target="_blank"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
       {% else %}
