@@ -277,6 +277,11 @@ ul {
     font-size: 12px;
 }
 
+.episode-title {
+    font-size: 14px;
+    margin: 0;
+}
+
 .tile {
     margin-top: 5px;
 }

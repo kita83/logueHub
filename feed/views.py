@@ -58,14 +58,15 @@ class ChannelList(generic.DetailView):
     extra_context = {}
 
     def dispatch(self, request, *args, **kwargs):
-        self.extra_context = utils.build_context(request)
+        # self.extra_context = utils.build_context(request)
         self.queryset = self.extra_context['channel_detail']
         return super(ChannelList, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ChannelList, self).get_context_data(**kwargs)
         # コレクションタイトル
-        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
+        context['mst_collection'] = MstCollection.objects.filter(
+            user=self.request.user)
         self.extra_context.update(context)
         return self.extra_context
 
@@ -225,7 +226,7 @@ class CollectionListView(generic.ListView):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(ChannelAllView, self).dispatch(*args, **kwargs)
+        return super(CollectionListView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -248,7 +249,7 @@ class CollectionDetailView(generic.ListView):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(ChannelAllView, self).dispatch(*args, **kwargs)
+        return super(CollectionDetailView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -274,7 +275,7 @@ class LikeListView(generic.ListView):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(ChannelAllView, self).dispatch(*args, **kwargs)
+        return super(LikeListView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         return Like.objects.filter(user=self.request.user)

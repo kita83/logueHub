@@ -10,6 +10,9 @@ from django.dispatch import receiver
 
 
 class EpisodeManager(models.Manager):
+    """
+    20日以内に配信されたエピソードを取得する
+    """
     def recently_published(self):
         return self.filter(
             published_time__gt=datetime.date.today() - datetime.timedelta(

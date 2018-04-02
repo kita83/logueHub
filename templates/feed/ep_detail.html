@@ -5,9 +5,6 @@
 {% block content %}
 {% static "" as STATIC_URL %}
 <script>
-  audiojs.events.ready(function() {
-    var as = audiojs.createAll();
-  });
   function updateButton(btn, is_active) {
     if (is_active) {
         btn.removeClass('btn-default').addClass('is-active')

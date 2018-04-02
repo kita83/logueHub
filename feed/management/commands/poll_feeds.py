@@ -36,7 +36,7 @@ class Command(BaseCommand):
         if verbose:
             print('##################################################')
             print('[%s] %d channels to process..' % (
-                num_channels, exec_time))
+                exec_time, num_channels))
 
         for i, channel in enumerate(channels):
             if verbose:

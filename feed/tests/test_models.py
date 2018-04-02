@@ -20,11 +20,11 @@ class ChannelModelTest(TestCase):
             author='tester',
             last_polled_time=timezone.now(),
             cover_image='images/123456789.png',
-            width_field=200,
-            height_field=200
+            width_field=400,
+            height_field=400
         )
-        ch = Channel.objects.get(title='examplefm')
-        actual = ch.link
+        ch_result = Channel.objects.get(title='examplefm')
+        actual = ch_result.link
         self.assertEqual(actual, 'https://example.com')
 
 

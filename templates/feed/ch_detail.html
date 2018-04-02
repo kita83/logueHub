@@ -84,10 +84,9 @@ $(function() {
         {% for episode in episodes %}
         <li class="left clearfix">
           <div class="header">
-            <small><a href="" class="track-title">{{ episode.channel.title|safe }}</a></small>
             <small class="text-muted pull-right"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</small>
           </div>
-          <p class="track-title"><a href="{% url 'feed:ep_detail' episode.id %}">{{ episode.title|safe }}</a></p>
+          <p class="episode-title"><a href="{% url 'feed:ep_detail' episode.id %}">{{ episode.title|safe }}</a></p>
           <audio src="{{ episode.audio_url }}" preload="auto"></audio>
         </li>
         {% endfor %}
