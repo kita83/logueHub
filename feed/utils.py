@@ -18,38 +18,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def save_channel(ch, feed_url):
-    """
-    feedデータを Channel に登録する
-    """
-    if ch is None:
-        return None
-
-    title = ch.title if hasattr(ch, 'title') else ''
-    author = ch.author if hasattr(ch, 'author') else ''
-    description = ch.summary if hasattr(ch, 'summary') else ''
-    link = ch.link if hasattr(ch, 'link') else ''
-    feed_url = feed_url
-    cover_image = ''
-
-    if hasattr(ch, 'image'):
-        path = ch.image.href
-        cover_image = save_image(path)
-
-    models.Channel.objects.create(
-        title=title,
-        description=description,
-        link=link,
-        feed_url=feed_url,
-        author_name=author,
-        cover_image=cover_image,
-        width_field=200,
-        height_field=200
-    )
-
-
 def delete_previous_file(function):
-    """不要となる古いファイルを削除する為のデコレータ実装.
+    """
+    不要となる古いファイルを削除する為のデコレータ実装.
 
     :param function: メイン関数
     :return: wrapper
@@ -117,7 +88,8 @@ def save_image(image_url, db_channel):
 
 
 def get_image_name(filename):
-    """カスタマイズした画像パスを取得する.
+    """
+    カスタマイズした画像パスを取得する.
 
     :param filename: 元ファイル名
     :return: カスタマイズしたファイル名を含む画像パス
@@ -133,18 +105,18 @@ def get_image_name(filename):
     return name + extension
 
 
-def poll_feed(db_channel):
+def poll_feed(feed_url):
     """
-    Read through a feed looking for new entries.
+    新規にフィードを取得する.
 
     :param db_channel: Channelモデルインスタンス
     """
-    parsed = feedparser.parse(db_channel.feed_url)
+    parsed = feedparser.parse(feed_url)
 
     # パース失敗の場合、処理終了
     if hasattr(parsed.feed, 'bozo_exception'):
         msg = 'logue poll_feeds found Malformed feed, "%s": %s'\
-            % (db_channel.feed_url, parsed.feed.bozo_exception)
+            % (feed_url, parsed.feed.bozo_exception)
         logger.warning(msg)
         print(msg)
         return
@@ -153,11 +125,12 @@ def poll_feed(db_channel):
     for attr in ['title', 'title_detail']:
         # 属性がない場合、エラー
         if not hasattr(parsed.feed, attr):
-            msg = 'logue poll_feeds. Channel "%s" has no %s'\
-                % (db_channel.feed_url, attr)
+            msg = 'Channel "%s" has no %s' % (feed_url, attr)
             logger.error(msg)
             print(msg)
             return
+
+    db_channel, created = models.Channel.objects.get_or_create(feed_url=feed_url)
 
     # タイトル: 'text/plain'の場合、htmlエスケープする
     if parsed.feed.title_detail.type == 'text/plain':

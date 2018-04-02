@@ -90,11 +90,13 @@ def entry(request):
             return render(request, 'feed/index.html')
 
         # チャンネル新規登録または、既存データ取得
-        channel, created = Channel.objects.get_or_create(feed_url=feed_url)
+        try:
+            channel = Channel.objects.get(feed_url=feed_url)
+        except Channel.DoesNotExist:
+            utils.poll_feed(feed_url)
+            channel = Channel.objects.get(feed_url=feed_url)
 
         # チャンネルが新規登録された場合, チャンネル、エピソードの最新情報を更新
-        if created:
-            utils.poll_feed(channel)
 
         return redirect('feed:ch_detail', pk=channel.id)
 
