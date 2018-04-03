@@ -130,7 +130,8 @@ def poll_feed(feed_url):
             print(msg)
             return
 
-    db_channel, created = models.Channel.objects.get_or_create(feed_url=feed_url)
+    db_channel, created = models.Channel.objects.get_or_create(
+        feed_url=feed_url)
 
     # タイトル: 'text/plain'の場合、htmlエスケープする
     if parsed.feed.title_detail.type == 'text/plain':
@@ -229,12 +230,16 @@ def poll_feed(feed_url):
                 if entry.published_parsed is None:
                     published_time = timezone.now()
                 else:
-                    published_time = datetime.fromtimestamp(mktime(entry.published_parsed))
+                    published_time = datetime.fromtimestamp(
+                        mktime(entry.published_parsed))
                     try:
-                        published_time = pytz.timezone(settings.TIME_ZONE).localize(published_time, is_dst=None)
+                        published_time = pytz.timezone(
+                            settings.TIME_ZONE
+                            ).localize(published_time, is_dst=None)
                     except pytz.exceptions.AmbiguousTimeError:
                         pytz_timezone = pytz.timezone(settings.TIME_ZONE)
-                        published_time = pytz_timezone.localize(published_time, is_dst=False)
+                        published_time = pytz_timezone.localize(
+                            published_time, is_dst=False)
                     now = timezone.now()
                     if published_time > now:
                         published_time = now

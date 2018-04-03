@@ -34,7 +34,7 @@ class Command(BaseCommand):
         exec_time = start.strftime('%Y/%m/%d %H:%M:%S')
 
         if verbose:
-            print('##################################################')
+            print('##########################################################################')
             print('[%s] %d channels to process..' % (
                 exec_time, num_channels))
 
@@ -43,7 +43,7 @@ class Command(BaseCommand):
                 print('(%d/%d) Processing Channels' % (
                     i + 1, num_channels))
             # feed取得
-            poll_feed(channel)
+            poll_feed(channel.feed_url)
 
         end = datetime.now()
         end_time = end.strftime('%Y/%m/%d %H:%M:%S')
