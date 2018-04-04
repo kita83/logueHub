@@ -4,6 +4,7 @@ import markdown
 from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from operator import itemgetter
 from django.views import generic
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
@@ -24,7 +25,7 @@ class IndexView(generic.ListView):
     model = Episode
     template_name = 'feed/index.html'
     context_object_name = 'episodes'
-    paginate_by = 8
+    paginate_by = 12
 
     def get_queryset(self):
         # sub = Subscription.objects.filter(user=self.request.user)
@@ -34,7 +35,6 @@ class IndexView(generic.ListView):
         context = super().get_context_data(*args, **kwargs)
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
-        # TODO: フィルタリングがうまくできているかテストする
         # ログイン後であればコレクションタイトル取得
         user = self.request.user
         if hasattr(user, 'email'):

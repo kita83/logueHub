@@ -315,6 +315,10 @@ ul {
     margin-top: 10px;
 }
 
+.socialaccount_providers {
+    padding-left: 0;
+}
+
 .socialaccount_providers li {
     margin-bottom: 5px;
 }

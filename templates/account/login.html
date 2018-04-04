@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load i18n %}
+{% load bootstrap4 %}
 {% load account socialaccount %}
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
@@ -13,9 +14,11 @@
         {% get_providers as socialaccount_providers %}
 
         {% if socialaccount_providers %}
+        <div class="panel-heading">
+          <h3 class="panel-title">Sign In</h3>
+        </div>
         <div class="panel-body">
-          <h1 class="h3 mb-3 font-weight-normal">Sign In</h1>
-          <p><a href="{{ signup_url }}">sign up</a></p>
+          <p><a href="{{ signup_url }}">アカウントをお持ちでない方はこちら</a></p>
 
           <div class="socialaccount_ballot">
             <ul class="socialaccount_providers">
@@ -36,12 +39,12 @@
                 {% endif %}
                 <li>
                   <a title="{{provider.name}}" class="btn btn-block btn-social btn-{{provider.id}} socialaccount_provider {{provider.id}}" 
-                     href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}"><i class="fa fa-{{ provider.id }}"></i> Sign in with {{provider.name}}</a>
+                     href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}"><i class="fa fa-{{ provider.id }}"></i>{{provider.name}} アカウントでログイン</a>
                 </li>
                 {% endfor %}
             </ul>
             
-            <div class="login-or">{% trans 'or' %}</div>
+            <div class="login-or">またはメールアドレスでログイン</div>
             
           </div>
           
@@ -53,14 +56,16 @@
           {% endif %}
 
           <form class="login form-signin" method="POST" action="{% url 'account_login' %}">
+            <div class="form-group">
             {% csrf_token %}
-            {{ form.as_p }}
+            {% bootstrap_form form show_label=False %}
+            <a ./manage.py href="{% url 'account_reset_password' %}">パスワードを忘れた場合</a>
             {% if redirect_field_value %}
             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            </div>
             {% endif %}
-            <a ./manage.py href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-            <button class="btn btn-lg btn-success btn-block" type="submit">{% trans "Sign In" %}</button>
-            <button class="btn btn-link btn-back" onclick="history.back()" type="button">{% trans 'Back' %}</button>
+            <button class="btn btn-lg btn-success btn-block" type="submit">ログイン</button>
+            <button class="btn btn-link btn-back" onclick="history.back()" type="button">戻る</button>
           </form>
         </div>
       </div>
