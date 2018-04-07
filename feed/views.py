@@ -16,6 +16,7 @@ from .models import (Channel, Collection, Episode, Like, MstCollection,
                      Subscription)
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
 class IndexView(generic.ListView):
@@ -93,6 +94,7 @@ def entry(request):
         try:
             channel = Channel.objects.get(feed_url=feed_url)
         except Channel.DoesNotExist:
+            logger.info('Save Channel by required feed url %s.', feed_url)
             utils.poll_feed(feed_url)
             channel = Channel.objects.get(feed_url=feed_url)
 
@@ -100,6 +102,7 @@ def entry(request):
 
         return redirect('feed:ch_detail', pk=channel.id)
 
+    logger.info('required feed url does not match.')
     return render(request, 'feed/index.html')
 
 

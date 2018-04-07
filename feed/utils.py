@@ -1,11 +1,11 @@
 import os
 import uuid
-import requests
-import feedparser
-import dateutil.parser
-import pytz
+import logging
 from time import mktime
 from datetime import datetime
+import requests
+import feedparser
+import pytz
 
 from django.utils import timezone
 from django.utils import html
@@ -13,7 +13,6 @@ from PIL import Image
 from logue import settings
 from . import models
 
-import logging
 
 logger = logging.getLogger(__name__)
 
