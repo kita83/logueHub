@@ -1,6 +1,19 @@
-_pycache__/
-db.sqlite3
+# Byte-compiled / optimized / DLL files
+__pycache__/
 *.py[cod]
+*$py.class
+
+# Django stuff:
+*.log
+.static_storage/
+logue/local_settings.py
+logue/settings.py
+
+db.sqlite3
+
+shell/
+docs/
+media/
 
 ## Directory-based project format:
 .idea/
@@ -27,3 +40,21 @@ db.sqlite3
 
 # VisualStudioCode settings
 .vscode/
+
+# Unit test / coverage reports
+cover/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/

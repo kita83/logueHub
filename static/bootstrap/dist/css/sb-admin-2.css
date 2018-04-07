@@ -103,8 +103,7 @@ body {
   .sidebar {
     z-index: 1;
     position: absolute;
-    width: 250px;
-    margin-top: 51px;
+    width: 180px;
   }
   .navbar-top-links .dropdown-messages,
   .navbar-top-links .dropdown-tasks,
@@ -147,13 +146,10 @@ body {
 .chat li {
   margin-bottom: 10px;
   padding-bottom: 5px;
-  border-bottom: 1px dotted #999999;
+  border-bottom: 1px solid #eee;
 }
 .chat li.left .chat-body {
-  margin-left: 60px;
-}
-.chat li.right .chat-body {
-  margin-right: 60px;
+  margin-left: 70px;
 }
 .chat li .chat-body p {
   margin: 0;

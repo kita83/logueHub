@@ -1,0 +1,123 @@
+{% extends 'base_nav.html' %}
+{% load static %}
+{% block title %}Channel Detail{% endblock %}
+
+{% block content %}
+{% static "" as STATIC_URL %}
+<script>
+function updateSubButton(btn, is_active) {
+  if (is_active) {
+      btn.removeClass('btn-default').addClass('is-active')
+      btn.html('<i class="fa fa-plus-square"></i> Following')
+  } else {
+      btn.removeClass('is-active').addClass('btn-default')
+      btn.html('<i class="fa fa-plus-square"></i> Follow')
+  }
+};
+$(function() {
+    $('#subscription').on('click', function() {
+        var this_ = $(this)
+        $.ajax({
+            'url':'{% url "feed:change_subscription" %}',
+            'type':'GET',
+            'data':{
+                'ch_id':this_.attr('data-channel-id'),
+            },
+            'dataType':'json'
+        })
+        .done(function(data){
+            updateSubButton(this_, data.subscription)
+            $('#info').attr('class', 'alert alert-warning alert-dismissable')
+            $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録しました')
+            $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
+        })
+        .fail(function(data){
+          $('#info').attr('class', 'alert alert-danger alert-dismissable')
+          $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+          $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
+        })
+    });
+});
+$(function() {
+    $('#top-sub').on('click', function() {
+        var this_ = $(this)
+        $.ajax({
+            'url':'{% url "feed:change_subscription" %}',
+            'type':'GET',
+            'data':{
+                'ch_id':this_.attr('data-channel-id'),
+            },
+            'dataType':'json'
+        })
+        .done(function(data){
+            updateSubButton($('#subscription'), data.subscription)
+            $('#top-sub').remove()
+            $('#info').attr('class', 'alert alert-warning alert-dismissable')
+            $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録しました')
+            $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
+        })
+        .fail(function(data){
+            $('#info').attr('class', 'alert alert-danger alert-dismissable')
+            $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+            $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
+        })
+    });
+});
+(function() { // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+  s.src = 'https://loguesnap.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+})();
+</script>
+<div id="page-wrapper">
+  <div class="row">
+    <div class="col-lg-9">
+      {% if user.is_authenticated %}
+        {% if not subscription %}
+        <button type="button" id="top-sub" data-channel-id="{{ channel.id }}" class="subscribe btn btn-lg center-block">購読する</button>
+        {% endif %}
+      {% endif %}
+      {% if episodes %}
+      <h4 class="page-h4-header">エピソード</h4>
+      <ul class="chat">
+        {% for episode in episodes %}
+        <li class="left clearfix">
+          <div class="header">
+            <small class="text-muted pull-right"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</small>
+          </div>
+          <p class="episode-title"><a href="{% url 'feed:ep_detail' episode.id %}">{{ episode.title|safe }}</a></p>
+          <audio src="{{ episode.audio_url }}" preload="auto"></audio>
+        </li>
+        {% endfor %}
+      {% else %}
+        <p>There are no episodes available.</p>
+      {% endif %}
+    </ul>
+    <div id="disqus_thread" class="ch-comment"></div>
+    </div>
+    <div class="ch-info col-lg-3">
+      {% if channel %}
+        <div class="channel-img">
+          <img class="img-circle" src="{{ STATIC_URL }}{{ channel.cover_image }}" width=180px/>
+        </div>
+        <h4>{{ channel.title|safe }}</h4>
+        <p class="author">{{ channel.author|safe }}</p>
+        {% if user.is_authenticated %}
+          <div class="sub-action">
+            {% if subscription %}
+              <button type="button" id="subscription" data-channel-id="{{ channel.id }}" class="btn is-active btn-xs"><i class="fa fa-plus-square"></i> Following</button>
+            {% else %}
+              <button type="button" id="subscription" data-channel-id="{{ channel.id }}" class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> Follow</button>
+            {% endif %}
+          </div>
+        {% endif %}
+        <p class="description">{{ channel.description|safe }}</p>
+        <p class="link"><a href="{{ channel.link }}" target="_blank"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
+      {% else %}
+        <p>チャンネル情報が取得できませんでした</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

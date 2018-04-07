@@ -1,55 +1,82 @@
 <!DOCTYPE html>
 {% load static %}
+{% load i18n %}
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>logue - {% block title %}{% endblock %}</title>
+  <title>logueHub - {% block title %}{% endblock %}</title>
   <link href="{% static 'bootstrap/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'bootstrap/vendor/metisMenu/metisMenu.min.css' %}" rel="stylesheet">
+  <link href="{% static 'bootstrap/vendor/bootstrap-social/bootstrap-social.css' %}" rel="stylesheet">
   <link href="{% static 'bootstrap/dist/css/sb-admin-2.css' %}" rel="stylesheet">
   <link href="{% static 'bootstrap/vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
 
-  <link href="{% static 'manager/css/structure.css' %}" rel="stylesheet" type="text/css">
-
   <script type="text/javascript" src="{% static 'bootstrap/vendor/jquery/jquery.min.js' %}"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-
+  
   <script src="{% static 'bootstrap/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
   <script src="{% static 'bootstrap/vendor/metisMenu/metisMenu.min.js' %}"></script>
   <script src="{% static 'bootstrap/vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
   <script src="{% static 'bootstrap/vendor/datatables-plugins/dataTables.bootstrap.min.js' %}"></script>
   <script src="{% static 'bootstrap/vendor/datatables-responsive/dataTables.responsive.js' %}"></script>
   <script src="{% static 'bootstrap/dist/js/sb-admin-2.js' %}"></script>
+  <script src="{% static 'manager/js/ajax.js' %}"></script>
+  <link href="{% static 'manager/css/structure.css' %}" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-    <div id="wrapper">
-      <nav class="navbar navbar-default navbar-static-top manager-nav no-margin" role="navigation">
-        <div class="navbar-header">
-          <a href="{% url 'feed:index' %}" class="navbar-brand">logue</a>
-        </div>
+    <div id="wrapper" class="container">
+      <div class="header-container">
+        <div id="info"></div>
+        <nav class="navbar navbar-default navbar-static-top manager-nav no-margin" role="navigation" style="margin-bottom: 0">
+            <a href="{% url 'feed:index' %}" class="navbar-brand">logueHub</a>
+            <!-- ナビゲーション -->
+            {% block nav %}
+            {% endblock %}
+        </nav>
+      </div>
 
-        <!-- ヘッダナビゲーション -->
-        {% block header_nav %}
-        {% endblock %}
-
+      <!-- コンテンツ -->
+      <div class="body-container">
         <!-- サイドバー -->
-        <!-- <div class="navbar-default sidebar" role="navigation">
-          <div class="sidebar-nav navbar-collapse">
-            <ul class="nav" id="side-menu">
-              {% if user.is_authenticated %}
-                <li>{{ user.username }}</li>
-                <li><a href="{% url 'account_logout' %}">ログアウト</a></li>
-              {% else %}
-                <li><a href="{% url 'account_login' %}">ログイン</a></li>
-                <li><a href="{% url 'account_signup' %}">サインアップ</a></li>
-              {% endif %}
-            </ul>
-          </div>
-        </div> -->
-      </nav>
-      {% block content %}
-      {% endblock %}
+        <div class="navbar-default sidebar" role="navigation">
+            <div class="sidebar-nav navbar-collapse">
+                <ul class="nav" id="side-menu">
+                <li>
+                    <a href="{% url 'feed:index' %}">トレンド</a>
+                </li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'feed:channels' %}">登録チャンネル</a></li>
+                    <li>
+                        <a href="{% url 'feed:col_list' %}">コレクション<span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                        {% for mst in mst_collection %}
+                        <li>
+                            <a href="{% url 'feed:col_detail' mst.id %}">{{ mst.title|safe }}</a>
+                        </li>
+                        {% endfor %}
+                        </ul>
+                    </li>
+                    <li><a href="{% url 'feed:like_list' %}">お気に入り</a></li>
+                {% endif %}
+                </ul>
+            </div>
+        </div>
+        {% block content %}
+        {% endblock %}
+      </div>
+      <div class="footer-container">
+        <ul class="footer-links navbar-nav">
+          <li class="footer-link">
+              <p class="footer_copyright" href="#">© 2018 logueHub</p>
+          </li>
+          <li class="footer-link">
+              <a href="#">利用規約</a>
+          </li>
+          <li class="footer-link">
+              <a href="{% url 'feed:contact' %}">お問い合わせ</a>
+          </li>
+        </ul>
+      </div>
     </div>
 </body>
 </html>
