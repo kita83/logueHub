@@ -83,6 +83,9 @@ class ContactForm(forms.Form):
 
     # メール送信処理
     def send_email(self):
+        """
+        メールを送信する
+        """
         subject = self.cleaned_data['subject']
         message = self.cleaned_data['message']
         from_email = self.cleaned_data['email']

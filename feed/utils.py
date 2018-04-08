@@ -224,7 +224,6 @@ def poll_feed(feed_url):
             # 発行日時
             published_time = ''
             # 日付データに変換する
-            # TODO 例外確認
             if hasattr(entry, 'published_parsed'):
                 if entry.published_parsed is None:
                     published_time = timezone.now()
