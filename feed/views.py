@@ -4,7 +4,6 @@ import markdown
 from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
-from operator import itemgetter
 from django.views import generic
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
