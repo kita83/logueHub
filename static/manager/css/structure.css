@@ -186,65 +186,64 @@ ul {
     color: #777;
 }
 
-.ep-header {
-    margin-top: 20px;
+.ep-container {
+    margin-top: 30px;
 }
+
 .ep-date {
     font-size: 12px;
     color: #888888;
     margin-bottom: 0;
 }
-.ep-header .channel {
-    padding-right: 15px;
-    border-right: solid 1px #EEE;
+
+.ep-title {
+    margin-bottom: 20px;
 }
 
-.ep-body {
-    display: flex;
-    flex-wrap: wrap;
-    padding-bottom: 20px;
+.channel {
+    padding-right: 15px;
 }
 
 .ep-description {
-    border-right: solid 1px #EEE;
+    padding-top: 20px;
+    padding-bottom: 50px;
+    border-top: 1px solid #eee;    
 }
 
-.ep-header h3 {
-    margin-top: 0px;
+.ep-body h3 {
+    margin-top: 5px;
 }
 
-.ep-header h4 {
+.ep-channel h4 {
     font-size: 16px;
     margin-bottom: 4px;
     color: #000;
 }
 
-.ep-header .author {
+.author {
     font-size: 12px;
     color: #888888;
     margin-bottom: 5px;
 }
 
-.ep-header .description {
+.description {
     font-size: 12px;
     margin-bottom: 4px;
 }
 
-.ep-header .link {
+.link {
     font-size: 12px;
 }
 
 .ep-body {
-    margin-top: 20px;
-    padding-top: 20px;
     height: 100%;
-    border-top: solid 1px #EEE;
+    margin-bottom: 20px;
+    border-right: 1px solid #eee;
 }
 
 .action {
-    margin-top: 20px;
+    margin-top: 5px;
 }
-
 .sub-action {
     margin-bottom: 5px;
 }
@@ -282,7 +281,7 @@ ul {
     margin: 0;
 }
 
-.tile {
+.title {
     margin-top: 5px;
 }
 
