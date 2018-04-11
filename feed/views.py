@@ -28,7 +28,6 @@ class IndexView(generic.ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        # sub = Subscription.objects.filter(user=self.request.user)
         return Episode.recently.recently_published()
 
     def get_context_data(self, *args, **kwargs):
