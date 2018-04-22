@@ -126,9 +126,6 @@ s.setAttribute('data-timestamp', +new Date());
         {% if episode %}
           <p class="ep-date"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</p>
           <h3>{{ episode.title|safe }}</h3>
-          <audio controls>
-            <source src="{{ episode.audio_url }}" type="audio/mp3">
-          </audio>
           {% if user.is_authenticated %}
             <div class="action form-inline">
               {% if like %}

@@ -19,7 +19,7 @@
 }
 
 .header-container {
-    background-color: #444;
+    background-color: #2b105e;
 }
 
 .body-container {
@@ -29,8 +29,10 @@
 
 .footer-container {
     max-width: 1240px;
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 30px;
+    margin-bottom: 55px;
     padding: 20px 0;
     border-top: 1px solid #eee; 
 }
@@ -43,7 +45,7 @@
 
 .navbar {
     max-width: 1240px;
-    background-color: #444;
+    background-color: #2b105e;
     margin: auto;
     border: none;
 }
@@ -63,13 +65,13 @@
 }
 
 .navbar-top-links>li>a:focus, .navbar-top-links>li>a:hover {
-    background-color: #444;
+    background-color: #2b105e;
 }
 
 .nav .open > a,
 .nav .open > a:focus,
 .nav .open > a:hover {
-    background-color: #444;
+    background-color: #2b105e;
 }
 
 .subscribe {
@@ -78,12 +80,14 @@
     border-color: #ccc;
     margin-top: 30px;
 }
+
 .subscribe:focus,
 .subscribe.focus {
   color: #333;
   background-color: #e6e6e6;
   border-color: #8c8c8c;
 }
+
 .subscribe:hover {
   color: #333;
   background-color: #e6e6e6;
@@ -328,7 +332,76 @@ ul {
 .btn-google.disabled,.btn-google[disabled],fieldset[disabled] .btn-google,.btn-google.disabled:hover,.btn-google[disabled]:hover,fieldset[disabled] .btn-google-plus:hover,.btn-google-plus.disabled:focus,.btn-google-plus[disabled]:focus,fieldset[disabled] .btn-google-plus:focus,.btn-google-plus.disabled:active,.btn-google-plus[disabled]:active,fieldset[disabled] .btn-google:active,.btn-google.disabled.active,.btn-google[disabled].active,fieldset[disabled] .btn-google.active{background-color:#dd4b39;border-color:rgba(0,0,0,0.2)}
 .btn-google .badge{color:#dd4b39;background-color:#fff}
 
-
 .nav-drop {
     padding: 0;
+}
+
+.player {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 80px;
+    line-height: 60px;
+    background-color: #CCC;
+}
+
+.audiojs {
+    height:  80px;
+    background: #CCC;
+    overflow: hidden;
+    width: 50%; 
+    margin: 0 auto;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;  
+    -o-box-shadow: none;
+    box-shadow: none;
+}
+
+.audiojs .play-pause { 
+    width: 50px;
+    height: 80px;
+    overflow: hidden;
+    padding: auto;
+    border-right: none;
+}
+/* 再生ボタン */
+.audiojs .play {
+    background: url(../bootstrap/vendor/font-awesome/play-btn1.svg) center center no-repeat;
+    margin-left: 1.45px;
+}
+/*　再生・停止ボタンなどの p 要素　*/
+.audiojs p {
+    width: 50px;
+    height: 50px;
+}
+/*　進行状態を表示するバーの部分　*/
+.audiojs .progress {
+    height: 4px;
+    width: 100%;
+    background: #9737f1;
+}
+/*　ロード状態を表示するバーの部分　*/
+.audiojs .loaded {
+    height: 4px;
+    background: #888;
+}
+/*　進行状態・ロードの状態を表示する部分　*/
+.audiojs .scrubber {
+    background: #aaa;
+    border-top: none;
+    width: 80%;
+    height: 4px;
+    margin: 23px 10px 29px 10px;
+    overflow: hidden;
+}
+/*　再生時間の部分　*/
+.audiojs .time {
+    float: left;
+    height: 80px;
+    line-height: 50px;
+    border-left: none;
+}
+.audiojs .error-message {
+    height: 24px;
+    line-height: 24px;
 }
