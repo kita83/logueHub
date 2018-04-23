@@ -13,6 +13,7 @@
 
   <script type="text/javascript" src="{% static 'bootstrap/vendor/jquery/jquery.min.js' %}"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/4.2.9/lang/ca.min.js" type="text/javascript"></script>
   
   <script src="{% static 'bootstrap/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
   <script src="{% static 'bootstrap/vendor/metisMenu/metisMenu.min.js' %}"></script>
@@ -22,12 +23,20 @@
   <script src="{% static 'bootstrap/dist/js/sb-admin-2.js' %}"></script>
   <script src="{% static 'manager/js/ajax.js' %}"></script>
   <script src="{% static 'manager/barbajs/barba.min.js' %}" type="text/javascript"></script>
-  <script src="{% static 'manager/audiojs/audio.min.js' %}" type="text/javascript"></script>
   <link href="{% static 'manager/css/structure.css' %}" rel="stylesheet" type="text/css">
   <script>
-  audiojs.events.ready(function() {
-    var as = audiojs.createAll();
+$(function() {
+  $('audio').each(function() {
+    new MediaElementPlayer('#' + 'audioplayer-123');
   });
+});
+var player = new MediaElement('player', {
+		pluginPath: "/path/to/shims/",
+		success: function(mediaElement, originalNode) {
+			// do things
+
+		}
+	});
   </script>
 </head>
 <body>
@@ -84,9 +93,9 @@
               </li>
           </ul>
       </div>
-        <div class="player">
-            <audio src="{{ episode.audio_url }}" preload="auto" />
-        </div>
     </div>
+            <div class="player">
+                <audio id='audioplayer-123' src="{{ episode.audio_url }}" controls ></audio>
+            </div>
 </body>
 </html>

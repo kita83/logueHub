@@ -340,13 +340,13 @@ ul {
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 80px;
+    height: 50px;
     line-height: 60px;
     background-color: #CCC;
 }
 
 .audiojs {
-    height:  80px;
+    height:  50px;
     background: #CCC;
     overflow: hidden;
     width: 50%; 
@@ -359,15 +359,18 @@ ul {
 
 .audiojs .play-pause { 
     width: 50px;
-    height: 80px;
+    height: 50px;
     overflow: hidden;
-    padding: auto;
     border-right: none;
+    margin: auto;
 }
 /* 再生ボタン */
 .audiojs .play {
-    background: url(../bootstrap/vendor/font-awesome/play-btn1.svg) center center no-repeat;
-    margin-left: 1.45px;
+    font-size: 20px;
+}
+/* 再生ボタン */
+.audiojs .play::before {
+    font-size: 20px;
 }
 /*　再生・停止ボタンなどの p 要素　*/
 .audiojs p {
