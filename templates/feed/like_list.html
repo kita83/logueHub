@@ -4,6 +4,29 @@
 
 {% block content %}
 {% static "" as STATIC_URL %}
+<script>
+  $(function() {
+    $('#remove').on('click', function() {
+        var this_ = $(this)
+        $.ajax({
+            'url':'{% url "feed:change_like" %}',
+            'type':'GET',
+            'data':{
+                'ep_id':this_.attr('data-episode-id'),
+            },
+            'dataType':'json'
+        })
+        .done(function(data){
+          $('#remove').remove();
+        })
+        .fail(function(data){
+            $('#info').attr('class', 'alert alert-danger alert-dismissable')
+            $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+            $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
+        })
+    });
+  });
+</script>
 <div id="page-wrapper">
   <div class="row">
     <div class="col-lg-12">
@@ -19,7 +42,10 @@
                 <small class="text-primary"><a href="{% url 'feed:ch_detail' like.episode.channel.id %}">{{ like.episode.channel.title|safe }}</a></small>
                 <small class="text-muted pull-right"><i class="fa fa-clock-o fa-fw"></i>{{ like.episode.published_time }}</small>
               </div>
-              <p class="track-title"><a href="{% url 'feed:ep_detail' like.episode.id %}">{{ like.episode.title|safe }}</a></p>
+              <p class="track-title">
+                <a href="{% url 'feed:ep_detail' like.episode.id %}">{{ like.episode.title|safe }}</a>
+                <button type="button" id="remove" data-episode-id="{{ like.episode.id }}" class="btn btn-default btn-xs pull-right">お気に入りから外す</button>
+              </p>
             </div>
           </li>
         {% endfor %}
