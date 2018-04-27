@@ -91,17 +91,17 @@ def entry(request):
         # チャンネル新規登録または、既存データ取得
         try:
             channel = Channel.objects.get(feed_url=feed_url)
+            return redirect('feed:ch_detail', pk=channel.id)
         except Channel.DoesNotExist:
             logger.info('Save Channel by required feed url %s.', feed_url)
-            utils.poll_feed(feed_url)
-            channel = Channel.objects.get(feed_url=feed_url)
-
-        # チャンネルが新規登録された場合, チャンネル、エピソードの最新情報を更新
-
-        return redirect('feed:ch_detail', pk=channel.id)
+            result = utils.poll_feed(feed_url)
+            # チャンネルが新規登録された場合, チャンネル、エピソードの最新情報を更新
+            if result == 'success':
+                channel = Channel.objects.get(feed_url=feed_url)
+                return redirect('feed:ch_detail', pk=channel.id)
 
     logger.info('required feed url does not match.')
-    return render(request, 'feed/index.html')
+    return redirect('feed:index')
 
 
 @login_required

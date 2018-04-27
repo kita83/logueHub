@@ -11,6 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
+    """
+    既存チャンネルの更新をする
+    Cronから定期的に呼ばれることを想定
+    """
     help = '新着エピソードを取得'
 
     def add_arguments(self, parser):
@@ -25,7 +29,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """
-        既存チャンネルの新着エピソードを取得
+        既存チャンネル新着エピソードを取得
         """
         verbose = options['verbose']
         channels = Channel.objects.all()
