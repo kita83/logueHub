@@ -184,7 +184,6 @@ class EpisodeDetailView(generic.DetailView):
             col_form = AddCollectionForm()
             col_form.fields['add_collection'].queryset = MstCollection.objects.filter(user=user)
             context['add_collection'] = col_form
-            # TODO: フィルタリングがうまくできているかテストする
             context['like'] = Like.objects.filter(
                 episode=context['episode'], user=user)
             context['subscription'] = Subscription.objects.filter(
@@ -307,6 +306,40 @@ class SettingsView(generic.TemplateView):
         return context
 
 
+class termsView(generic.TemplateView):
+    """
+    利用規約を表示
+    """
+    template_name = 'feed/terms.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        user = self.request.user
+        # ログイン後であればコレクションタイトル取得
+        if hasattr(user, 'email'):
+            context['mst_collection'] = MstCollection.objects.filter(user=user)
+        # 登録用フォーム
+        context['subscription_form'] = SubscriptionForm
+        return context
+
+
+class privacyView(generic.TemplateView):
+    """
+    プラバシーポリシーを表示
+    """
+    template_name = 'feed/privacy.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        user = self.request.user
+        # ログイン後であればコレクションタイトル取得
+        if hasattr(user, 'email'):
+            context['mst_collection'] = MstCollection.objects.filter(user=user)
+        # 登録用フォーム
+        context['subscription_form'] = SubscriptionForm
+        return context
+
+
 @login_required
 def change_like(request):
     """
@@ -380,6 +413,37 @@ def add_collection(request):
             return JsonResponse({'result': 'registerd'})
 
 
+@login_required
+def remove_collection(request):
+    """
+    コレクションからエピソードを削除する
+    """
+
+    if request.method == 'GET':
+        mst_id = request.GET.get('mst_id')
+        ep_id = request.GET.get('ep_id')
+        # 登録マスタコレクション取得
+        mst = MstCollection.objects.get(id=mst_id)
+        # 登録エピソード取得
+        episode = Episode.objects.get(id=ep_id)
+
+        if mst:
+            # コレクションからエピソード削除
+            Collection.objects.filter(
+                mst_collection=mst,
+                episode=episode
+            ).delete()
+            response = {
+                'isSuccess': True
+            }
+            return JsonResponse(response)
+        else:
+            response = {
+                'isSuccess': False
+            }
+            return JsonResponse(response)
+
+
 class ContactView(generic.FormView):
     template_name = 'feed/contact.html'
     form_class = ContactForm
@@ -391,8 +455,10 @@ class ContactView(generic.FormView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        # コレクションタイトル
-        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
+        user = self.request.user
+        # ログイン後であればコレクションタイトル取得
+        if hasattr(user, 'email'):
+            context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
         # 登録用フォーム
         context['subscription_form'] = SubscriptionForm
         return context

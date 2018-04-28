@@ -5,11 +5,11 @@
 /* メッセージ */
 #info {
     display: none;
-    width: 500px;
+    width: 300px;
     /* 画面上部に表示 */
     position: absolute;
-    top: 10%;
-    left: 50%;
+    top: 7%;
+    left: 90%;
     margin-left: -175px; /* (width + padding-left + padding-right + border-left + border-right) の半分 */
 }
 
@@ -133,7 +133,7 @@ ul {
 
 .page-h4-header {
     padding-bottom: 6px;
-    margin: 50px 0 10px 0;
+    margin: 57px 0 10px 0;
     border-bottom: 1px solid #eee;
 }
 

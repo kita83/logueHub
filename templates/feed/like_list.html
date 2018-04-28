@@ -6,28 +6,28 @@
 {% static "" as STATIC_URL %}
 <script>
   $(function() {
-    $('#remove').on('click', function() {
-        var this_ = $(this)
-        var item_id = this_.attr('data-episode-id')
-        $.ajax({
-            'url':'{% url "feed:change_like" %}',
-            'type':'GET',
-            'data':{
-                'ep_id':item_id,
-            },
-            'dataType':'json'
-        })
-        .done(function(data){
-          $('#' + item_id).remove();
-          $('#info').attr('class', 'alert alert-warning alert-dismissable')
-          $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + 'お気に入りを解除しました')
-          $('#info').fadeIn(1000).delay(2000).fadeOut(2000)
-        })
-        .fail(function(data){
-            $('#info').attr('class', 'alert alert-danger alert-dismissable')
-            $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '解除できませんでした')
-            $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
-        })
+    $('.remove').on('click', function() {
+      var this_ = $(this)
+      var item_id = this_.attr('data-episode-id')
+      $.ajax({
+        'url':'{% url "feed:change_like" %}',
+        'type':'GET',
+        'data':{
+            'ep_id':item_id,
+        },
+        'dataType':'json'
+      })
+      .done(function(data){
+        $('#' + item_id).remove();
+        $('#info').attr('class', 'alert alert-warning alert-dismissable')
+        $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + 'お気に入りを解除しました')
+        $('#info').fadeIn(1000).delay(2000).fadeOut(2000)
+      })
+      .fail(function(data){
+        $('#info').attr('class', 'alert alert-danger alert-dismissable')
+        $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '解除できませんでした')
+        $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
+      })
     });
   });
 </script>
@@ -48,7 +48,7 @@
               </div>
               <p class="track-title">
                 <a href="{% url 'feed:ep_detail' like.episode.id %}">{{ like.episode.title|safe }}</a>
-                <button type="button" id="remove" data-episode-id="{{ like.episode.id }}" class="btn btn-default btn-xs pull-right">お気に入りを解除</button>
+                <button type="button" data-episode-id="{{ like.episode.id }}" class="remove btn btn-default btn-xs pull-right">お気に入りを解除</button>
               </p>
             </div>
           </li>
