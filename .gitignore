@@ -39,7 +39,8 @@ media/
 .idea/mongoSettings.xml
 
 # VisualStudioCode settings
-.vscode/
+.idea
+.vscode
 
 # Unit test / coverage reports
 cover/
