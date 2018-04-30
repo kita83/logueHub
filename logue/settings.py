@@ -1,5 +1,4 @@
 import os
-from . import local_settings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -9,10 +8,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = local_settings.SECRET_KEY
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 ALLOWED_HOSTS = ['127.0.0.1', 'testserver']
 
@@ -75,15 +71,12 @@ WSGI_APPLICATION = 'logue.wsgi.application'
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Database
-# https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'logue_db',
         'USER': 'admin002',
-        'PASSWORD': local_settings.DB_PASSWORD,
+        'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': '',
         'PORT': '',
         'OPTIONS': {
@@ -91,15 +84,6 @@ DATABASES = {
         },
     }
 }
-
-import dj_database_url
-db_from_env = dj_database_url.config()
-DATABASES['default'].update(db_from_env)
-# DATABASES = {
-#     'default': dj_database_url.config()
-# }
-ALLOWED_HOSTS = ['*']
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -157,15 +141,6 @@ SITE_ID = 1
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/logue/'
-
-# django-allauth でSMTPサーバー認証を不要にする
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'kita83@gmail.com'
-EMAIL_HOST_PASSWORD = local_settings.EMAIL_HOST_PASSWORD
-EMAIL_USE_TLS = True
 
 # django-allauth でカスタムユーザーモデル使用時に username を使わない設定
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
@@ -274,3 +249,20 @@ DEFAULT_LOGGING = {
         },
     }
 }
+
+import dj_database_url
+db_from_env = dj_database_url.config()
+DATABASES['default'].update(db_from_env)
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+ALLOWED_HOSTS = ['*']
+
+STATIC_ROOT = 'staticfiles'
+
+DEBUG = False
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
