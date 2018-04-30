@@ -10,7 +10,6 @@ logue/local_settings.py
 
 db.sqlite3
 
-shell/
 docs/
 media/
 
