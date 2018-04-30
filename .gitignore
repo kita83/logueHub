@@ -7,7 +7,6 @@ __pycache__/
 *.log
 .static_storage/
 logue/local_settings.py
-logue/settings.py
 
 db.sqlite3
 
