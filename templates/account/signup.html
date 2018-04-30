@@ -1,9 +1,4 @@
-{% extends "base.html" %}
-
-{% load i18n %}
-{% load bootstrap4 %}
-{% block head_title %}{% trans "Signup" %}{% endblock %}
-
+{% extends "base.html" %} {% load i18n %} {% load bootstrap4 %} {% block head_title %}{% trans "Signup" %}{% endblock %}
 {% block content %}
 <div class="container">
   <div class="row">
@@ -13,17 +8,37 @@
           <h3 class="panel-title text-center">ユーザー登録</h1>
         </div>
         <div class="panel-body">
-          <p><a href="{{ login_url }}">すでに登録済みの方はこちら</a></p>
+          <p>
+            <a href="{{ login_url }}">すでに登録済みの方はこちら</a>
+          </p>
+          <div class="socialaccount_ballot">
+            <ul class="socialaccount_providers">
+              {% load socialaccount %} {% get_providers as socialaccount_providers %} {% for provider in socialaccount_providers %} 
+              {% if provider.id == "openid" %} {% for brand in provider.get_brands %}
+              <li>
+                <a title="{{brand.name}}" class="btn btn-block btn-social btn-{{provider.id}} socialaccount_provider {{provider.id}} {{brand.id}}"
+                  href="{% provider_login_url provider.id openid=brand.openid_url process=process %}">
+                  <i class="fa fa-{{ provider.id }}"></i> {{brand.name}}</a>
+              </li>
+              {% endfor %} {% endif %}
+              <li>
+                <a title="{{provider.name}}" class="btn btn-block btn-social btn-{{provider.id}} socialaccount_provider {{provider.id}}"
+                  href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
+                  <i class="fa fa-{{ provider.id }}"></i>{{provider.name}} アカウントでサインイン</a>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
           <form class="signup" id="signup_form" align="center" method="post" action="{% url 'account_signup' %}">
-            {% csrf_token %}
-            {% bootstrap_form form show_label=False %}
-            {% if redirect_field_value %}
-            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-            {% endif %}
+            {% csrf_token %} {% bootstrap_form form show_label=False %} {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" /> {% endif %}
+            <small>
+              <p>アカウントを作成する場合は、当サイトの利用規約と</br>プライバシーポリシーに同意したものとみなします。</p>
+            </small>
             <button class="btn btn-lg btn-success btn-block" type="submit">登録する</button>
             <button class="btn btn-link btn-back" onclick="history.back()" type="button">戻る</button>
           </form>
-      </div>
+        </div>
       </div>
     </div>
   </div>

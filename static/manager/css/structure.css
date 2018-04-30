@@ -5,11 +5,11 @@
 /* メッセージ */
 #info {
     display: none;
-    width: 500px;
+    width: 300px;
     /* 画面上部に表示 */
     position: absolute;
-    top: 10%;
-    left: 50%;
+    top: 7%;
+    left: 90%;
     margin-left: -175px; /* (width + padding-left + padding-right + border-left + border-right) の半分 */
 }
 
@@ -19,7 +19,7 @@
 }
 
 .header-container {
-    background-color: #444;
+    background-color: #2b105e;
 }
 
 .body-container {
@@ -29,8 +29,10 @@
 
 .footer-container {
     max-width: 1240px;
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 30px;
+    margin-bottom: 55px;
     padding: 20px 0;
     border-top: 1px solid #eee; 
 }
@@ -43,7 +45,7 @@
 
 .navbar {
     max-width: 1240px;
-    background-color: #444;
+    background-color: #2b105e;
     margin: auto;
     border: none;
 }
@@ -63,13 +65,13 @@
 }
 
 .navbar-top-links>li>a:focus, .navbar-top-links>li>a:hover {
-    background-color: #444;
+    background-color: #2b105e;
 }
 
 .nav .open > a,
 .nav .open > a:focus,
 .nav .open > a:hover {
-    background-color: #444;
+    background-color: #2b105e;
 }
 
 .subscribe {
@@ -78,12 +80,14 @@
     border-color: #ccc;
     margin-top: 30px;
 }
+
 .subscribe:focus,
 .subscribe.focus {
   color: #333;
   background-color: #e6e6e6;
   border-color: #8c8c8c;
 }
+
 .subscribe:hover {
   color: #333;
   background-color: #e6e6e6;
@@ -129,7 +133,7 @@ ul {
 
 .page-h4-header {
     padding-bottom: 6px;
-    margin: 50px 0 10px 0;
+    margin: 57px 0 10px 0;
     border-bottom: 1px solid #eee;
 }
 
@@ -186,65 +190,65 @@ ul {
     color: #777;
 }
 
-.ep-header {
-    margin-top: 20px;
+.ep-container {
+    margin-top: 30px;
 }
+
 .ep-date {
     font-size: 12px;
     color: #888888;
     margin-bottom: 0;
 }
-.ep-header .channel {
-    padding-right: 15px;
-    border-right: solid 1px #EEE;
+
+.ep-title {
+    margin-bottom: 20px;
 }
 
-.ep-body {
-    display: flex;
-    flex-wrap: wrap;
-    padding-bottom: 20px;
+.channel {
+    padding-right: 15px;
 }
 
 .ep-description {
-    border-right: solid 1px #EEE;
+    padding-top: 20px;
+    padding-bottom: 50px;
+    border-top: 1px solid #eee;    
 }
 
-.ep-header h3 {
-    margin-top: 0px;
+.ep-body h3 {
+    margin-top: 5px;
 }
 
-.ep-header h4 {
+.ep-channel h4 {
     font-size: 16px;
     margin-bottom: 4px;
     color: #000;
 }
 
-.ep-header .author {
+.author {
     font-size: 12px;
     color: #888888;
     margin-bottom: 5px;
 }
 
-.ep-header .description {
+.description {
     font-size: 12px;
     margin-bottom: 4px;
 }
 
-.ep-header .link {
+.link {
     font-size: 12px;
+    margin-bottom: 5px;
 }
 
 .ep-body {
-    margin-top: 20px;
-    padding-top: 20px;
     height: 100%;
-    border-top: solid 1px #EEE;
+    margin-bottom: 20px;
+    border-right: 1px solid #eee;
 }
 
 .action {
-    margin-top: 20px;
+    margin-top: 5px;
 }
-
 .sub-action {
     margin-bottom: 5px;
 }
@@ -282,7 +286,7 @@ ul {
     margin: 0;
 }
 
-.tile {
+.title {
     margin-top: 5px;
 }
 
@@ -327,7 +331,6 @@ ul {
 .btn-google:active,.btn-google-plus.active,.open>.dropdown-toggle.btn-google{background-image:none}
 .btn-google.disabled,.btn-google[disabled],fieldset[disabled] .btn-google,.btn-google.disabled:hover,.btn-google[disabled]:hover,fieldset[disabled] .btn-google-plus:hover,.btn-google-plus.disabled:focus,.btn-google-plus[disabled]:focus,fieldset[disabled] .btn-google-plus:focus,.btn-google-plus.disabled:active,.btn-google-plus[disabled]:active,fieldset[disabled] .btn-google:active,.btn-google.disabled.active,.btn-google[disabled].active,fieldset[disabled] .btn-google.active{background-color:#dd4b39;border-color:rgba(0,0,0,0.2)}
 .btn-google .badge{color:#dd4b39;background-color:#fff}
-
 
 .nav-drop {
     padding: 0;

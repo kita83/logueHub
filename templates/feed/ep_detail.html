@@ -111,54 +111,21 @@
           })
       });
   });
-  /**
-  *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-  *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
-  /*
-  var disqus_config = function () {
-  this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
-  this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-  };
-  */
-  (function() { // DON'T EDIT BELOW THIS LINE
-  var d = document, s = d.createElement('script');
-  s.src = 'https://loguesnap.disqus.com/embed.js';
-  s.setAttribute('data-timestamp', +new Date());
-  (d.head || d.body).appendChild(s);
-  })();
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://loguehub.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
 </script>
 <div id="page-wrapper">
   <div class="row">
-    <div class="ep-header clearfix">
-      <div class="channel col-lg-3">
-        {% if episode.channel %}
-          <div class="channel-img">
-            <a href="{{ episode.channel.get_absolute_url }}"><img class="img-circle" src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=150px/></a>
-          </div>
-          <a href="{{ episode.channel.get_absolute_url }}"><h4>{{ episode.channel.title|safe }}</h4></a>
-          <p class="author">{{ episode.channel.author|safe }}</p>
-          {% if user.is_authenticated %}
-            <div class="sub-action">
-              {% if subscription %}
-                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn is-active btn-xs"><i class="fa fa-plus-square"></i> Following</button>
-              {% else %}
-                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> Follow</button>
-              {% endif %}
-            </div>
-          {% endif %}
-          <p class="description">{{ episode.channel.description|safe }}</p>
-          <p class="link"><a href="{{ episode.channel.link }}" target="_blank"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
-        {% else %}
-          <p>チャンネル情報が取得できませんでした</p>
-        {% endif %}
-      </div>
-      <div class="col-lg-9">
+    <div class="ep-container">
+      <div class="ep-body col-lg-9">
+        <div class="ep-title">
         {% if episode %}
           <p class="ep-date"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</p>
           <h3>{{ episode.title|safe }}</h3>
-          <audio controls>
-            <source src="{{ episode.audio_url }}" type="audio/mp3">
-          </audio>
           {% if user.is_authenticated %}
             <div class="action form-inline">
               {% if like %}
@@ -193,17 +160,36 @@
               </div>
             </div>
           {% endif %}
-      {% else %}
+        {% else %}
           <p>エピソード情報が取得できませんでした</p>
-      {% endif %}
+        {% endif %}
+        </div>
+        <div class="ep-description">
+          {{ parsed_description|safe }}
+        </div>
+        <div id="disqus_thread" class="comment"></div>
       </div>
-    </div>
-    <div class="ep-body row-eq-height">
-      <div class="col-lg-8 ep-description">
-        {{ parsed_description|safe }}
-      </div>
-      <div class="col-lg-4 comment">
-        <div id="disqus_thread"></div>
+      <div class="ep-channel col-lg-3">
+        {% if episode.channel %}
+          <div class="channel-img">
+            <a href="{{ episode.channel.get_absolute_url }}"><img class="img-circle" src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=150px/></a>
+          </div>
+          <a href="{{ episode.channel.get_absolute_url }}"><h4>{{ episode.channel.title|safe }}</h4></a>
+          <p class="author">{{ episode.channel.author|safe }}</p>
+          <p class="link"><a href="{{ episode.channel.link }}" target="_blank"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
+          {% if user.is_authenticated %}
+            <div class="sub-action">
+              {% if subscription %}
+                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn is-active btn-xs"><i class="fa fa-plus-square"></i> Following</button>
+              {% else %}
+                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> Follow</button>
+              {% endif %}
+            </div>
+          {% endif %}
+          <p class="description">{{ episode.channel.description|safe }}</p>
+        {% else %}
+          <p>チャンネル情報が取得できませんでした</p>
+        {% endif %}
       </div>
     </div>
   </div>

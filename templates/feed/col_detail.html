@@ -4,6 +4,35 @@
 
 {% block content %}
 {% static "" as STATIC_URL %}
+<script>
+  $(function() {
+    $('.remove').on('click', function() {
+      var this_ = $(this)
+      var mst_id = this_.attr('data-mst-id')
+      var item_id = this_.attr('data-episode-id')
+      $.ajax({
+        'url':'{% url "feed:remove_collection" %}',
+        'type':'GET',
+        'data':{
+            'mst_id':mst_id,
+            'ep_id':item_id
+        },
+        'dataType':'json'
+      })
+      .done(function(data){
+        $('#' + item_id).remove();
+        $('#info').attr('class', 'alert alert-warning alert-dismissable')
+        $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + 'コレクションから削除しました')
+        $('#info').fadeIn(1000).delay(2000).fadeOut(2000)
+      })
+      .fail(function(data){
+        $('#info').attr('class', 'alert alert-danger alert-dismissable')
+        $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '削除できませんでした')
+        $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
+      })
+    });
+  });
+</script>
 <div id="page-wrapper">
   <div class="row">
     <div class="ep-header clearfix">
@@ -11,7 +40,7 @@
         <h2 class="page-header">{{ title|safe }}</h2>
         <ul class="chat">
         {% for col in collection %}
-          <li class="left clearfix">
+          <li class="left clearfix" id="{{ col.episode.id }}">
             <span class="chat-img pull-left">
               <a href="{% url 'feed:ep_detail' col.episode.id %}"><img class="img-rounded" src="{{ STATIC_URL }}{{ col.episode.channel.cover_image }}" width=60px/></a>
             </span>
@@ -20,7 +49,10 @@
                 <small><a href="{% url 'feed:ep_detail' col.episode.channel.id %}" class="text-header">{{ col.episode.channel.title|safe }}</a></small>
                 <small class="text-muted pull-right"><i class="fa fa-clock-o fa-fw"></i>{{ col.episode.published_time }}</small>
               </div>
-              <p class="track-title"><a href="{% url 'feed:ep_detail' col.episode.id %}">{{ col.episode.title|safe }}</a></p>
+              <p class="track-title">
+                <a href="{% url 'feed:ep_detail' col.episode.id %}">{{ col.episode.title|safe }}</a>
+                <button type="button" data-episode-id="{{ col.episode.id }}" data-mst-id="{{ col.mst_collection.id }}" class="remove btn btn-default btn-xs pull-right">コレクションから削除</button>
+              </p>
               <p class="list-info"><i class="fa fa-heart text-muted list-icon"></i> {{ col.episode.num_likad_entries }}</p>
             </div>
           </li>

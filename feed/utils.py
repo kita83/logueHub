@@ -109,6 +109,7 @@ def poll_feed(feed_url):
     新規にフィードを取得する.
 
     :param db_channel: Channelモデルインスタンス
+    :return str: 処理成功の場合'success'を返す
     """
     parsed = feedparser.parse(feed_url)
 
@@ -118,7 +119,7 @@ def poll_feed(feed_url):
             % (feed_url, parsed.feed.bozo_exception)
         logger.warning(msg)
         print(msg)
-        return
+        return ''
 
     # タイトル、リンクの属性存在確認
     for attr in ['title', 'title_detail']:
@@ -127,7 +128,21 @@ def poll_feed(feed_url):
             msg = 'Channel "%s" has no %s' % (feed_url, attr)
             logger.error(msg)
             print(msg)
-            return
+            return ''
+
+    # 音声ファイルURL有無チェック
+    entry = parsed.entries[0]
+    is_audiofeed = False
+    if hasattr(entry, 'links'):
+        for link in entry.links:
+            if hasattr(link, 'type') and link.type == 'audio/mpeg':
+                is_audiofeed = True
+
+    if not is_audiofeed:
+        msg = 'Channel "%s" has no audio link' % (feed_url)
+        logger.error(msg)
+        print(msg)
+        return ''
 
     db_channel, created = models.Channel.objects.get_or_create(
         feed_url=feed_url)
@@ -224,7 +239,6 @@ def poll_feed(feed_url):
             # 発行日時
             published_time = ''
             # 日付データに変換する
-            # TODO 例外確認
             if hasattr(entry, 'published_parsed'):
                 if entry.published_parsed is None:
                     published_time = timezone.now()
@@ -233,8 +247,7 @@ def poll_feed(feed_url):
                         mktime(entry.published_parsed))
                     try:
                         published_time = pytz.timezone(
-                            settings.TIME_ZONE
-                            ).localize(published_time, is_dst=None)
+                            settings.TIME_ZONE).localize(published_time, is_dst=None)
                     except pytz.exceptions.AmbiguousTimeError:
                         pytz_timezone = pytz.timezone(settings.TIME_ZONE)
                         published_time = pytz_timezone.localize(
@@ -272,3 +285,4 @@ def poll_feed(feed_url):
 
             # エピソード保存
             db_entry.save()
+    return 'success'

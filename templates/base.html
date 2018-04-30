@@ -10,9 +10,10 @@
   <link href="{% static 'bootstrap/vendor/bootstrap-social/bootstrap-social.css' %}" rel="stylesheet">
   <link href="{% static 'bootstrap/dist/css/sb-admin-2.css' %}" rel="stylesheet">
   <link href="{% static 'bootstrap/vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
-
+  
   <script type="text/javascript" src="{% static 'bootstrap/vendor/jquery/jquery.min.js' %}"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/barba.js/1.0.0/barba.min.js"></script>
   
   <script src="{% static 'bootstrap/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
   <script src="{% static 'bootstrap/vendor/metisMenu/metisMenu.min.js' %}"></script>
@@ -37,6 +38,8 @@
 
       <!-- コンテンツ -->
       <div class="body-container">
+        <div id="barba-wrapper">
+                <div class="barba-container">
         <!-- サイドバー -->
         <div class="navbar-default sidebar" role="navigation">
             <div class="sidebar-nav navbar-collapse">
@@ -65,18 +68,23 @@
         {% endblock %}
       </div>
       <div class="footer-container">
-        <ul class="footer-links navbar-nav">
-          <li class="footer-link">
-              <p class="footer_copyright" href="#">© 2018 logueHub</p>
-          </li>
-          <li class="footer-link">
-              <a href="#">利用規約</a>
-          </li>
-          <li class="footer-link">
-              <a href="{% url 'feed:contact' %}">お問い合わせ</a>
-          </li>
-        </ul>
+          <ul class="footer-links navbar-nav">
+              <li class="footer-link">
+                <p class="footer_copyright" href="#">© 2018 logueHub</p>
+              </li>
+              <li class="footer-link">
+                  <a href="{% url 'feed:terms' %}">利用規約</a>
+              </li>
+              <li class="footer-link">
+                  <a href="{% url 'feed:privacy' %}">プライバシーポリシー</a>
+              </li>
+              <li class="footer-link">
+                  <a href="{% url 'feed:contact' %}">お問い合わせ</a>
+              </li>
+          </ul>
       </div>
+    </div>
+    </div>
     </div>
 </body>
 </html>
