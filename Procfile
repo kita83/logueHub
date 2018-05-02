@@ -1,1 +1,1 @@
-web: gunicorn logueHub.wsgi
+web: gunicorn loguehub.wsgi
