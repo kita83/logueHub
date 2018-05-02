@@ -11,9 +11,12 @@ import os
 import threading
 import requests
 import time
+import pymysql
 
 from django.core.wsgi import get_wsgi_application
 from whitenoise.django import DjangoWhiteNoise
+
+pymysql.install_as_MySQLdb()
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "logue.settings")
 
