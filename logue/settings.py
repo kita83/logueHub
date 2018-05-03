@@ -67,9 +67,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'logue.wsgi.application'
 
-# Simplified static file serving.
-# https://warehouse.python.org/project/whitenoise/
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DATABASES = {
     'default': {
@@ -249,6 +246,12 @@ DEFAULT_LOGGING = {
         },
     }
 }
+
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 import dj_database_url
 db_from_env = dj_database_url.config()
