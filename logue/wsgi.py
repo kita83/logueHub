@@ -9,8 +9,8 @@ https://docs.djangoproject.com/en/2.0/howto/deployment/wsgi/
 
 import os
 import threading
-import requests
 import time
+import requests
 import pymysql
 
 from django.core.wsgi import get_wsgi_application
