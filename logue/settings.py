@@ -1,4 +1,8 @@
 import os
+from socket import gethostname
+
+
+hostname = gethostname()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -9,8 +13,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
-
-ALLOWED_HOSTS = ['127.0.0.1', 'testserver']
 
 # Application definition
 INSTALLED_APPS = [
@@ -67,20 +69,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'logue.wsgi.application'
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'logue_db',
-        'USER': 'admin002',
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': '',
-        'PORT': '',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
+if 'local' in hostname:
+    DEBUG = True
+    ALLOWED_HOSTS = ['127.0.0.1', 'testserver']
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'logue_db',
+            'USER': 'admin002',
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': '',
+            'PORT': '',
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+            },
+        }
     }
-}
+else:
+    DEBUG = False
+    ALLOWED_HOSTS = ['*']
+    import dj_database_url
+    db_from_env = dj_database_url.config()
+    DATABASES['default'].update(db_from_env)
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -253,16 +265,6 @@ DEFAULT_LOGGING = {
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 # STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
-
-import dj_database_url
-db_from_env = dj_database_url.config()
-DATABASES['default'].update(db_from_env)
-
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-ALLOWED_HOSTS = ['*']
-
-DEBUG = False
 
 try:
     from .local_settings import *
