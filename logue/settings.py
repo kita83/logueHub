@@ -1,3 +1,4 @@
+
 import os
 from socket import gethostname
 
@@ -69,6 +70,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'logue.wsgi.application'
 
 if 'local' in hostname:
+    from .local_settings import *
     DEBUG = True
     ALLOWED_HOSTS = ['127.0.0.1', 'testserver']
     DATABASES = {
@@ -76,7 +78,7 @@ if 'local' in hostname:
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'logue_db',
             'USER': 'admin002',
-            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'PASSWORD': DB_PASSWORD,
             'HOST': '',
             'PORT': '',
             'OPTIONS': {
