@@ -11,7 +11,7 @@ logue/local_settings.py
 db.sqlite3
 
 docs/
-media/
+/media/*
 
 ## Directory-based project format:
 .idea/
