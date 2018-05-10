@@ -75,15 +75,15 @@ if 'local' in hostname:
     ALLOWED_HOSTS = ['127.0.0.1', 'testserver']
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'logue_db',
-            'USER': 'admin002',
+            'USER': 'admin001',
             'PASSWORD': DB_PASSWORD,
-            'HOST': '',
-            'PORT': '',
-            'OPTIONS': {
-                'charset': 'utf8mb4',
-            },
+            'HOST': 'localhost',
+            'PORT': '5432'
+            # 'OPTIONS': {
+            #     'charset': 'utf8mb4',
+            # },
         }
     }
 else:
