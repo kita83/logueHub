@@ -279,3 +279,4 @@ STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 # メディアファイルの設定
 AWS_PUBLIC_MEDIA_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'logue.backends.PublicMediaStorage'
+MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)

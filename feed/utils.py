@@ -66,8 +66,9 @@ def save_image(image_url, db_channel):
     unique_name = get_image_name(filename)
 
     # 画像ファイル書き込み用パス
-    prefix = os.path.dirname(
-        os.path.dirname(os.path.abspath(__file__))) + '/media/images/'
+    # prefix = os.path.dirname(
+    #     os.path.dirname(os.path.abspath(__file__))) + '/media/images/'
+    prefix = settings.MEDIA_URL + 'images/'
     path = prefix + unique_name
 
     # DB登録用パス
@@ -76,7 +77,7 @@ def save_image(image_url, db_channel):
 
     # 以前の画像を削除する
     if db_channel.cover_image:
-        old_path = settings.MEDIA_ROOT + '/' + db_channel.cover_image.name
+        old_path = settings.MEDIA_URL + '/' + db_channel.cover_image.name
         if os.path.exists(old_path):
             os.remove(old_path)
 
