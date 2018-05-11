@@ -172,7 +172,7 @@ s.setAttribute('data-timestamp', +new Date());
       <div class="ep-channel col-lg-3">
         {% if episode.channel %}
           <div class="channel-img">
-            <a href="{{ episode.channel.get_absolute_url }}"><img class="img-circle" src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=150px/></a>
+            <a href="{{ episode.channel.get_absolute_url }}"><img class="img-circle" src="{{ MEDIA_URL }}{{ episode.channel.cover_image }}" width=150px/></a>
           </div>
           <a href="{{ episode.channel.get_absolute_url }}"><h4>{{ episode.channel.title|safe }}</h4></a>
           <p class="author">{{ episode.channel.author|safe }}</p>

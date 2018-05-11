@@ -12,7 +12,7 @@
       {% for sub in subs %}
           <div class="col-lg-2 channel-circle">
             <a href="{{ sub.channel.get_absolute_url }}">
-              <img class="img-circle" data-toggle="tooltip" data-placement="bottom" title="{{ sub.channel.title|safe }}" src="{{ STATIC_URL }}{{ sub.channel.cover_image }}" width=145px/>
+              <img class="img-circle" data-toggle="tooltip" data-placement="bottom" title="{{ sub.channel.title|safe }}" src="{{ MEDIA_URL }}{{ sub.channel.cover_image }}" width=145px/>
             </a>
           </div>
         {% endfor %}

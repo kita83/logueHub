@@ -99,7 +99,7 @@ s.setAttribute('data-timestamp', +new Date());
     <div class="ch-info col-lg-3">
       {% if channel %}
         <div class="channel-img">
-          <img class="img-circle" src="{{ STATIC_URL }}{{ channel.cover_image }}" width=180px/>
+          <img class="img-circle" src="{{ MEDIA_URL }}{{ channel.cover_image }}" width=180px/>
         </div>
         <h4>{{ channel.title|safe }}</h4>
         <p class="author">{{ channel.author|safe }}</p>
