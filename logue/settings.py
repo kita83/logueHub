@@ -1,4 +1,3 @@
-
 import os
 from socket import gethostname
 
@@ -69,6 +68,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'logue.wsgi.application'
+SITE_ID = 1
 
 if 'local' in hostname:
     from .local_settings import *
@@ -82,11 +82,12 @@ if 'local' in hostname:
             'PASSWORD': DB_PASSWORD,
             'HOST': 'localhost',
             'PORT': '5432'
-            # 'OPTIONS': {
-            #     'charset': 'utf8mb4',
-            # },
         }
     }
+
+    MEDIA_URL = '/media/'
+    STATIC_URL = '/static/'
+
 else:
     DEBUG = False
     ALLOWED_HOSTS = ['*']
@@ -96,6 +97,33 @@ else:
     }
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+    # S3共通の設定
+    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = 'loguehub'
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',  # 1日はそのキャッシュを使う
+    }
+
+    # 静的ファイルの設定
+    AWS_LOCATION = 'static'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+
+    # メディアファイルの設定
+    AWS_PUBLIC_MEDIA_LOCATION = 'media'
+    DEFAULT_FILE_STORAGE = 'logue.backends.PublicMediaStorage'
+    MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)
+    AWS_PRELOAD_METADATA = True
+
+
+STATIC_ROOT = 'staticfiles'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, "media"),
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -129,26 +157,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
-
-STATIC_ROOT = 'staticfiles'
-STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-    os.path.join(BASE_DIR, "media"),
-)
-
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
-
-SITE_ID = 1
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/logue/'
@@ -260,23 +272,3 @@ DEFAULT_LOGGING = {
         },
     }
 }
-
-
-# S3共通の設定
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = 'loguehub'
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',  # 1日はそのキャッシュを使う
-}
-
-
-# 静的ファイルの設定
-AWS_LOCATION = 'static'
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
-# メディアファイルの設定
-AWS_PUBLIC_MEDIA_LOCATION = 'media'
-DEFAULT_FILE_STORAGE = 'logue.backends.PublicMediaStorage'
-MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)

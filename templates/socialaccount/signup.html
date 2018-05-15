@@ -17,31 +17,6 @@
           <p>
             <a href="{{ login_url }}">すでに登録済みの方はこちら</a>
           </p>
-          <div class="socialaccount_ballot">
-            <ul class="socialaccount_providers">
-              {% load socialaccount %} 
-
-              {% get_providers as socialaccount_providers %} 
-
-              {% for provider in socialaccount_providers %} 
-                {% if provider.id == "openid" %} 
-                  {% for brand in provider.get_brands %}
-                  <li>
-                    <a title="{{brand.name}}" class="btn btn-block btn-social btn-{{provider.id}} socialaccount_provider {{provider.id}} {{brand.id}}"
-                      href="{% provider_login_url provider.id openid=brand.openid_url process=process %}">
-                      <i class="fa fa-{{ provider.id }}"></i> {{brand.name}}</a>
-                  </li>
-                  {% endfor %} 
-                {% endif %}
-                <li>
-                  <a title="{{provider.name}}" 
-                    class="btn btn-block btn-social btn-{{provider.id}} socialaccount_provider {{provider.id}}"
-                    href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
-                    <i class="fa fa-{{ provider.id }}"></i>{{provider.name}} アカウントでサインイン</a>
-                </li>
-              {% endfor %}
-            </ul>
-          </div>
           <form class="signup" id="signup_form" align="center" method="post" action="{% url 'account_signup' %}">
             {% csrf_token %} 
             {% bootstrap_form form show_label=False %} 
