@@ -1,21 +1,11 @@
-
 import os
 from socket import gethostname
 
 
-hostname = gethostname()
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
+HOSTNAME = gethostname()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -25,7 +15,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    # 'debug_toolbar',
+    'debug_toolbar',
     'bootstrap4',
     'allauth',
     'allauth.account',
@@ -47,10 +37,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
-
-ROOT_URLCONF = 'logue.urls'
 
 TEMPLATES = [
     {
@@ -63,14 +51,46 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.static',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'logue.wsgi.application'
+# 国際化
+LANGUAGE_CODE = 'ja-JP'
+TIME_ZONE = 'Asia/Tokyo'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
 
-if 'local' in hostname:
+SITE_ID = 1
+WSGI_APPLICATION = 'logue.wsgi.application'
+ROOT_URLCONF = 'logue.urls'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_URL = '/static/'
+STATIC_ROOT = 'staticfiles'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, "media"),
+)
+
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/logue/'
+
+# 継承したユーザークラス定義
+AUTH_USER_MODEL = 'accounts.LogueUser'
+
+# django-allauth でカスタムユーザーモデル使用時に username を使わない設定
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'None'
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+SOCIALACCOUNT_AUTO_SIGNUP = True
+
+if 'local' in HOSTNAME:
     from .local_settings import *
     DEBUG = True
     ALLOWED_HOSTS = ['127.0.0.1', 'testserver']
@@ -82,11 +102,9 @@ if 'local' in hostname:
             'PASSWORD': DB_PASSWORD,
             'HOST': 'localhost',
             'PORT': '5432'
-            # 'OPTIONS': {
-            #     'charset': 'utf8mb4',
-            # },
         }
     }
+    MEDIA_URL = '/media/'
 else:
     DEBUG = False
     ALLOWED_HOSTS = ['*']
@@ -96,10 +114,27 @@ else:
     }
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+    # S3共通の設定
+    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = 'loguehub'
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',  # キャッシュ有効期間:1日
+    }
+
+    # 静的ファイルの設定
+    AWS_LOCATION = 'static'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+
+    # メディアファイルの設定
+    AWS_PUBLIC_MEDIA_LOCATION = 'media'
+    DEFAULT_FILE_STORAGE = 'logue.backends.PublicMediaStorage'
+    MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)
+    AWS_PRELOAD_METADATA = True
 
 # Password validation
-# https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -115,52 +150,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/2.0/topics/i18n/
-
-LANGUAGE_CODE = 'ja-JP'
-
-TIME_ZONE = 'Asia/Tokyo'
-
-USE_I18N = True
-
-USE_L10N = True
-
-USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
-
-STATIC_ROOT = 'staticfiles'
-STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-    os.path.join(BASE_DIR, "media"),
-)
-
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
-
-SITE_ID = 1
-
-LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/logue/'
-
-# django-allauth でカスタムユーザーモデル使用時に username を使わない設定
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-
-# 継承したユーザークラスを定義
-AUTH_USER_MODEL = 'accounts.LogueUser'
 
 # django-debug-toolbar の設定
 DEBUG_TOOLBAR_PANELS = (
@@ -197,6 +190,7 @@ TEST_APPS = (
     'feed',
     'accounts',
 )
+
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = [
     '--with-coverage',  # coverage を取る
@@ -260,23 +254,3 @@ DEFAULT_LOGGING = {
         },
     }
 }
-
-
-# S3共通の設定
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = 'loguehub'
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',  # 1日はそのキャッシュを使う
-}
-
-
-# 静的ファイルの設定
-AWS_LOCATION = 'static'
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
-# メディアファイルの設定
-AWS_PUBLIC_MEDIA_LOCATION = 'media'
-DEFAULT_FILE_STORAGE = 'logue.backends.PublicMediaStorage'
-MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)

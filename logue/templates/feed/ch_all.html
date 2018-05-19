@@ -1,0 +1,31 @@
+{% extends 'base_nav.html' %}
+{% load static %}
+{% block title %}Channels{% endblock %}
+
+{% block content %}
+{% static "" as STATIC_URL %}
+<div id="page-wrapper">
+  <div class="row">
+    <div class="col-lg-12">
+      <h2 class="page-header">登録チャンネル</h2>
+      {% if subs %}
+      {% for sub in subs %}
+          <div class="col-lg-2 channel-circle">
+            <a href="{{ sub.channel.get_absolute_url }}">
+              <img class="img-circle" data-toggle="tooltip" data-placement="bottom" title="{{ sub.channel.title|safe }}" src="{{ STATIC_URL }}{{ sub.channel.cover_image }}" width=145px/>
+            </a>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>There are no channels available.</p>
+      {% endif %}
+    </div>  
+  </div>
+</div>
+<script>
+$('.channel-circle').tooltip({
+    selector: "[data-toggle=tooltip]",
+    container: "body"
+})
+</script>
+{% endblock %}

@@ -1,0 +1,201 @@
+{% extends 'base_nav.html' %}
+{% load static %}
+{% block title %}Episode Detail{% endblock %}
+
+{% block content %}
+{% static "" as STATIC_URL %}
+<script>
+  function updateButton(btn, is_active) {
+    if (is_active) {
+        btn.removeClass('btn-default').addClass('is-active')
+        btn.html('<i class="fa fa-heart"></i> Liked')
+    } else {
+        btn.removeClass('is-active').addClass('btn-default')
+        btn.html('<i class="fa fa-heart"></i> Like')
+    }
+  };
+  function updateSubButton(btn, is_active) {
+    if (is_active) {
+        btn.removeClass('btn-default').addClass('is-active')
+        btn.html('<i class="fa fa-plus-square"></i> Following')
+    } else {
+        btn.removeClass('is-active').addClass('btn-default')
+        btn.html('<i class="fa fa-plus-square"></i> Follow')
+    }
+  };
+  $(function() {
+    $('#addCollectionModal').on('hidden.bs.modal', function () {
+      $('.modal-error').html('')
+      $('.modal-error').remove()
+      $(this).find("input,textarea,select").val('').end();
+    });
+  });
+  $(function() {
+      $('#like').on('click', function() {
+          var this_ = $(this)
+          $.ajax({
+              'url':'{% url "feed:change_like" %}',
+              'type':'GET',
+              'data':{
+                  'ep_id':this_.attr('data-episode-id'),
+              },
+              'dataType':'json'
+          })
+          .done(function(data){
+              updateButton(this_, data.liked)
+          })
+          .fail(function(data){
+              $('#info').attr('class', 'alert alert-danger alert-dismissable')
+              $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+              $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
+          })
+      });
+  });
+  $(function() {
+      $('#collection').on('click', function() {
+          var this_ = $(this)
+          var title = $('#id_add_collection').val()
+          var new_title = $('#id_new').val()
+          $.ajax({
+              'url':'{% url "feed:add_collection" %}',
+              'type':'GET',
+              'data':{
+                  'ep_id':this_.attr('data-episode-id'),
+                  'col_id':title,
+                  'new_title':new_title
+              },
+              'dataType':'json'
+          })
+          .done(function(data){
+            if (data.result == 'success') {
+              $('#addCollectionModal').modal('hide')
+              $('#info').attr('class', 'alert alert-warning alert-dismissable')
+              $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + 'コレクションに追加しました')
+              $('#info').fadeIn(1000).delay(2000).fadeOut(2000)
+            } else if (data.result == 'no_args') {
+              // 選択値不正の場合
+              $('.modal-error').html('<p>' + '*どちらか一方のコレクションを選択してください' + '</p>')
+              $('.modal-error').attr('class', 'text-danger')
+            } else if (data.result == 'registerd') {
+              // 既に登録済みの場合
+              $('.modal-error').html('<p>' + '*すでに登録済みです' + '</p>')
+              $('.modal-error').attr('class', 'text-danger')
+            }
+          })
+          .fail(function(data){
+              $('#addCollectionModal').modal('hide')
+              $('#info').attr('class', 'alert alert-danger alert-dismissable')
+              $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+              $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
+          })
+      });
+  });
+  $(function() {
+      $('#subscription').on('click', function() {
+          var this_ = $(this)
+          $.ajax({
+              'url':'{% url "feed:change_subscription" %}',
+              'type':'GET',
+              'data':{
+                  'ch_id':this_.attr('data-channel-id'),
+              },
+              'dataType':'json'
+          })
+          .done(function(data){
+              updateSubButton(this_, data.subscription)
+          })
+          .fail(function(data){
+              $('#info').attr('class', 'alert alert-danger alert-dismissable')
+              $('#info').html('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' + '登録できませんでした')
+              $('#info').fadeIn(1000).delay(2000).fadeOut(2000);
+          })
+      });
+  });
+audiojs.events.ready(function() {
+  var as = audiojs.createAll();
+});
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://loguehub.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<div id="page-wrapper">
+  <div class="row">
+    <div class="ep-container">
+      <div class="ep-body col-lg-9">
+        <div class="ep-title">
+        {% if episode %}
+          <p class="ep-date"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</p>
+          <h3>{{ episode.title|safe }}</h3>
+          {% if user.is_authenticated %}
+            <div class="action form-inline">
+              {% if like %}
+                <button type="button" id="like" data-episode-id="{{ episode.id }}" class="btn is-active btn-xs"><i class="fa fa-heart"></i> Liked</button>
+              {% else %}
+                <button type="button" id="like" data-episode-id="{{ episode.id }}" class="btn btn-default btn-xs"><i class="fa fa-heart"></i> Like</button>
+              {% endif %}
+              <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#addCollectionModal">
+                <i class="fa fa-folder"></i> Collection
+              </button>
+            </div>
+            <!-- コレクション追加モーダル -->
+            <div class="modal fade" id="addCollectionModal" tabindex="-1" role="dialog" aria-labelledby="addCollectionModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>                        
+                    <h4 class="modal-title" id="modal-label">コレクションに追加</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="modal-error"></div>
+                    <form action="" name="add_collection" method="GET">
+                      {% csrf_token %}
+                      {{ add_collection }}
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" id="collection" class="btn btn-primary" data-episode-id="{{ episode.id }}">Add</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% else %}
+          <p>エピソード情報が取得できませんでした</p>
+        {% endif %}
+        <audio src="{{ episode.audio_url }}" preload="auto"></audio>
+        </div>
+        <div class="ep-description">
+          {{ parsed_description|safe }}
+        </div>
+        <div id="disqus_thread" class="comment"></div>
+      </div>
+      <div class="ep-channel col-lg-3">
+        {% if episode.channel %}
+          <div class="channel-img">
+            <a href="{{ episode.channel.get_absolute_url }}"><img class="img-circle" src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=150px/></a>
+          </div>
+          <a href="{{ episode.channel.get_absolute_url }}"><h4>{{ episode.channel.title|safe }}</h4></a>
+          <p class="author">{{ episode.channel.author|safe }}</p>
+          <p class="link"><a href="{{ episode.channel.link }}" target="_blank"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
+          {% if user.is_authenticated %}
+            <div class="sub-action">
+              {% if subscription %}
+                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn is-active btn-xs"><i class="fa fa-plus-square"></i> Following</button>
+              {% else %}
+                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> Follow</button>
+              {% endif %}
+            </div>
+          {% endif %}
+          <p class="description">{{ episode.channel.description|safe }}</p>
+        {% else %}
+          <p>チャンネル情報が取得できませんでした</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

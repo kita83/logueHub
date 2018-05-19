@@ -68,12 +68,11 @@ def save_image(image_url, db_channel):
     # 画像ファイル書き込み用パス
     # prefix = os.path.dirname(
     #     os.path.dirname(os.path.abspath(__file__))) + '/media/images/'
-    prefix = settings.MEDIA_URL + 'images/'
+    prefix = settings.MEDIA_ROOT + '/images/'
     path = prefix + unique_name
 
     # DB登録用パス
-    rel_prefix = 'images/'
-    rel_path = rel_prefix + unique_name
+    rel_path = 'images/' + unique_name
 
     # 以前の画像を削除する
     if db_channel.cover_image:
