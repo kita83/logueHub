@@ -41,7 +41,7 @@
           </span>
           <div class="recently-body clearfix">
             <p class="track-title"><a href="{% url 'feed:ep_detail' episode.id %}">{{ episode.title|safe }}</a></p>
-            <small class="recently-date text-muted"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time|safe }}</small>
+            <small class="recently-date text-muted"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</small>
           </div>
         </li>
       {% endfor %}

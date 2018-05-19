@@ -111,6 +111,9 @@
           })
       });
   });
+audiojs.events.ready(function() {
+  var as = audiojs.createAll();
+});
 (function() { // DON'T EDIT BELOW THIS LINE
 var d = document, s = d.createElement('script');
 s.src = 'https://loguehub.disqus.com/embed.js';
@@ -163,6 +166,7 @@ s.setAttribute('data-timestamp', +new Date());
         {% else %}
           <p>エピソード情報が取得できませんでした</p>
         {% endif %}
+        <audio src="{{ episode.audio_url }}" preload="auto"></audio>
         </div>
         <div class="ep-description">
           {{ parsed_description|safe }}
