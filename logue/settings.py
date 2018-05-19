@@ -15,7 +15,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    'debug_toolbar',
     'bootstrap4',
     'allauth',
     'allauth.account',
@@ -171,20 +170,6 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.redirects.RedirectsPanel',
 )
 
-def custom_show_toolbar(request):
-    return True
-
-DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
-    'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
-    # 'EXTRA_SIGNALS': ['myproject.signals.MySignal'],
-    'TAG': 'div',
-    'ENABLE_STACKTRACES': True,
-    'DEBUG_TOOLBAR_MEDIA_URL': '/path/to/debug_toolbar',
-}
-
-INTERNAL_IPS = ('127.0.0.1',)
-
 # django-nose, coverage configure
 TEST_APPS = (
     'feed',
@@ -254,3 +239,26 @@ DEFAULT_LOGGING = {
         },
     }
 }
+
+if DEBUG is True:
+    INSTALLED_APPS += (
+        'debug_toolbar',
+        )
+
+if DEBUG is True:
+    class AllIPS(list):
+        def __contains__(self, item):
+            return True
+    INTERNAL_IPS = AllIPS()
+
+    def custom_show_toolbar(request):
+        return True
+
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+        'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
+        # 'EXTRA_SIGNALS': ['myproject.signals.MySignal'],
+        'TAG': 'div',
+        'ENABLE_STACKTRACES': True,
+        'DEBUG_TOOLBAR_MEDIA_URL': '/path/to/debug_toolbar',
+    }
