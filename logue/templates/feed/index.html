@@ -1,0 +1,53 @@
+{% extends 'base_nav.html' %}
+{% load static %}
+{% block title %}トレンド{% endblock %}
+
+{% block content %}
+{% static "" as STATIC_URL %}
+<div id="page-wrapper">
+  <div class="row">
+      {% if user.is_authenticated %}
+      <div class="col-lg-8">
+      {% else %}
+      <div class="col-lg-12">
+      {% endif %}
+      <h2 class="page-header">トレンド</h2>
+      <ul class="chat">
+      {% for episode in like_epsodes %}
+        <li class="left clearfix">
+          <span class="chat-img pull-left">
+            <a href="{% url 'feed:ep_detail' episode.id %}"><img class="img-rounded" src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=60px/></a>
+          </span>
+          <div class="chat-body clearfix">
+            <div class="header">
+              <small><a href="{% url 'feed:ch_detail' episode.channel.id %}" class="text-header">{{ episode.channel.title|safe }}</a></small>
+              <small class="text-muted pull-right"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</small>
+            </div>
+            <p class="track-title"><a href="{% url 'feed:ep_detail' episode.id %}">{{ episode.title|safe }}</a></p>
+            <p class="list-info"><i class="fa fa-heart text-muted list-icon"></i> {{ episode.num_likad_entries }}</p>
+          </div>
+        </li>
+      {% endfor %}
+      </ul>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="col-lg-4">
+      <h4 class="page-h4-header">最近追加されたエピソード</h4>
+      <ul class="recently">
+      {% for episode in episodes %}
+        <li class="left clearfix">
+          <span class="recently-img pull-left">
+            <a href="{% url 'feed:ep_detail' episode.id %}"><img class="img-rounded" src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=40px/></a>
+          </span>
+          <div class="recently-body clearfix">
+            <p class="track-title"><a href="{% url 'feed:ep_detail' episode.id %}">{{ episode.title|safe }}</a></p>
+            <small class="recently-date text-muted"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time|safe }}</small>
+          </div>
+        </li>
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -68,7 +68,7 @@ def save_image(image_url, db_channel):
     # 画像ファイル書き込み用パス
     # prefix = os.path.dirname(
     #     os.path.dirname(os.path.abspath(__file__))) + '/media/images/'
-    prefix = settings.MEDIA_ROOT + 'images/'
+    prefix = settings.MEDIA_ROOT + '/images/'
     path = prefix + unique_name
 
     # DB登録用パス
