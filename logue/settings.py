@@ -36,7 +36,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 TEMPLATES = [
@@ -68,7 +68,6 @@ WSGI_APPLICATION = 'logue.wsgi.application'
 ROOT_URLCONF = 'logue.urls'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
@@ -104,6 +103,7 @@ if 'local' in HOSTNAME:
         }
     }
     MEDIA_URL = '/media/'
+    STATIC_URL = '/static/'
 else:
     DEBUG = False
     ALLOWED_HOSTS = ['*']
@@ -240,12 +240,11 @@ DEFAULT_LOGGING = {
     }
 }
 
-if DEBUG is True:
+if DEBUG:
     INSTALLED_APPS += (
         'debug_toolbar',
         )
 
-if DEBUG is True:
     class AllIPS(list):
         def __contains__(self, item):
             return True

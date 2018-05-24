@@ -9,7 +9,7 @@
     <div class="col-lg-12">
       <h2 class="page-header">登録チャンネル</h2>
       {% if subs %}
-      {% for sub in subs %}
+        {% for sub in subs %}
           <div class="col-lg-2 channel-circle">
             <a href="{{ sub.channel.get_absolute_url }}">
               <img class="img-circle" data-toggle="tooltip" data-placement="bottom" title="{{ sub.channel.title|safe }}" src="{{ STATIC_URL }}{{ sub.channel.cover_image }}" width=145px/>
@@ -17,7 +17,7 @@
           </div>
         {% endfor %}
       {% else %}
-        <p>There are no channels available.</p>
+        <p>まだ登録がありません。</p>
       {% endif %}
     </div>  
   </div>
