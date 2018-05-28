@@ -1,19 +1,19 @@
 function updateButton(btn, is_active) {
     if (is_active) {
         btn.removeClass('btn-default').addClass('is-active')
-        btn.html('<i class="fa fa-heart"></i> Liked')
+        btn.html('<i class="fas fa-heart"></i> Liked')
     } else {
         btn.removeClass('is-active').addClass('btn-default')
-        btn.html('<i class="fa fa-heart"></i> Like')
+        btn.html('<i class="fas fa-heart"></i> Like')
     }
   };
   function updateSubButton(btn, is_active) {
     if (is_active) {
         btn.removeClass('btn-default').addClass('is-active')
-        btn.html('<i class="fa fa-plus-square"></i> Following')
+        btn.html('<i class="fas fa-plus-square"></i> Following')
     } else {
         btn.removeClass('is-active').addClass('btn-default')
-        btn.html('<i class="fa fa-plus-square"></i> Follow')
+        btn.html('<i class="fas fa-plus-square"></i> Follow')
     }
   };
   $(function() {

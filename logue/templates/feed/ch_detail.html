@@ -8,10 +8,10 @@
 function updateSubButton(btn, is_active) {
   if (is_active) {
       btn.removeClass('btn-default').addClass('is-active')
-      btn.html('<i class="fa fa-plus-square"></i> Following')
+      btn.html('<i class="fas fa-plus-square"></i> Following')
   } else {
       btn.removeClass('is-active').addClass('btn-default')
-      btn.html('<i class="fa fa-plus-square"></i> Follow')
+      btn.html('<i class="fas fa-plus-square"></i> Follow')
   }
 };
 $(function() {
@@ -84,7 +84,7 @@ s.setAttribute('data-timestamp', +new Date());
         {% for episode in episodes %}
         <li class="left clearfix">
           <div class="header">
-            <small class="text-muted pull-right"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</small>
+            <small class="text-muted pull-right"><i class="far fa-clock fa-fw"></i>{{ episode.published_time }}</small>
           </div>
           <p class="episode-title"><a href="{% url 'feed:ep_detail' episode.id %}">{{ episode.title|safe }}</a></p>
           <audio src="{{ episode.audio_url }}" preload="auto"></audio>
@@ -106,14 +106,14 @@ s.setAttribute('data-timestamp', +new Date());
         {% if user.is_authenticated %}
           <div class="sub-action">
             {% if subscription %}
-              <button type="button" id="subscription" data-channel-id="{{ channel.id }}" class="btn is-active btn-xs"><i class="fa fa-plus-square"></i> Following</button>
+              <button type="button" id="subscription" data-channel-id="{{ channel.id }}" class="btn is-active btn-xs"><i class="fas fa-plus-square"></i> Following</button>
             {% else %}
-              <button type="button" id="subscription" data-channel-id="{{ channel.id }}" class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> Follow</button>
+              <button type="button" id="subscription" data-channel-id="{{ channel.id }}" class="btn btn-default btn-xs"><i class="fas fa-plus-square"></i> Follow</button>
             {% endif %}
           </div>
         {% endif %}
         <p class="description">{{ channel.description|safe }}</p>
-        <p class="link"><a href="{{ channel.link }}" target="_blank"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
+        <p class="link"><a href="{{ channel.link }}" target="_blank"><i class="fas fa-external-link-alt fa-fw"></i> Website</a></p>
       {% else %}
         <p>チャンネル情報が取得できませんでした</p>
       {% endif %}

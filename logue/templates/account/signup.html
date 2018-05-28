@@ -4,7 +4,7 @@
 {% load bootstrap4 %} 
 {% load account socialaccount %}
 
-{% block head_title %}{% trans "Signup" %}{% endblock %}
+{% block title %}ユーザー登録{% endblock %}
 {% block content %}
 <div class="container">
   <div class="row">
@@ -29,7 +29,7 @@
                   <li>
                     <a title="{{brand.name}}" class="btn btn-block btn-social btn-{{provider.id}} socialaccount_provider {{provider.id}} {{brand.id}}"
                       href="{% provider_login_url provider.id openid=brand.openid_url process=process %}">
-                      <i class="fa fa-{{ provider.id }}"></i> {{brand.name}}</a>
+                      <i class="fab fa-{{ provider.id }}"></i> {{brand.name}}</a>
                   </li>
                   {% endfor %} 
                 {% endif %}
@@ -37,7 +37,7 @@
                   <a title="{{provider.name}}" 
                     class="btn btn-block btn-social btn-{{provider.id}} socialaccount_provider {{provider.id}}"
                     href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
-                    <i class="fa fa-{{ provider.id }}"></i>{{provider.name}} アカウントでサインイン</a>
+                    <i class="fab fa-{{ provider.id }}"></i>{{provider.name}} アカウントでサインイン</a>
                 </li>
               {% endfor %}
             </ul>
