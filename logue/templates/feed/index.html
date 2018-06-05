@@ -17,7 +17,7 @@
         {% for episode in like_epsodes %}
           <li class="left clearfix">
             <span class="chat-img pull-left">
-              <a href="{% url 'feed:ep_detail' episode.id %}"><img class="img-rounded" src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=60px/></a>
+              <a href="{% url 'feed:ep_detail' episode.id %}"><img class="img-rounded" src="{{ MEDIA_URL }}{{ episode.channel.cover_image }}" width=60px/></a>
             </span>
             <div class="chat-body clearfix">
               <div class="header">
