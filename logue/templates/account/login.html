@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load bootstrap4 %}
 {% load account socialaccount %}
+{% block title %}ログイン{% endblock %}
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 {% block content %}
@@ -33,14 +34,14 @@
                       <a title="{{brand.name}}" 
                         class="btn btn-block btn-social btn-{{provider.id}} socialaccount_provider {{provider.id}} {{brand.id}}" 
                         href="{% provider_login_url provider.id openid=brand.openid_url process=process %}">
-                        <i class="fa fa-{{ provider.id }}"></i> {{brand.name}}</a>
+                        <i class="fab fa-{{ provider.id }}"></i> {{brand.name}}</a>
                     </li>
                     {% endfor %}
                   {% endif %}
                   <li>
                     <a title="{{provider.name}}" class="btn btn-block btn-social btn-{{provider.id}} socialaccount_provider {{provider.id}}" 
                       href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
-                      <i class="fa fa-{{ provider.id }}"></i>{{provider.name}} アカウントでログイン</a>
+                      <i class="fab fa-{{ provider.id }}"></i>{{provider.name}} アカウントでログイン</a>
                   </li>
                 {% endfor %}
             </ul>

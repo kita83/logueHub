@@ -47,13 +47,13 @@
             <div class="chat-body clearfix">
               <div class="header">
                 <small><a href="{% url 'feed:ep_detail' col.episode.channel.id %}" class="text-header">{{ col.episode.channel.title|safe }}</a></small>
-                <small class="text-muted pull-right"><i class="fa fa-clock-o fa-fw"></i>{{ col.episode.published_time }}</small>
+                <small class="text-muted pull-right"><i class="far fa-clock fa-fw"></i>{{ col.episode.published_time }}</small>
               </div>
               <p class="track-title">
                 <a href="{% url 'feed:ep_detail' col.episode.id %}">{{ col.episode.title|safe }}</a>
                 <button type="button" data-episode-id="{{ col.episode.id }}" data-mst-id="{{ col.mst_collection.id }}" class="remove btn btn-default btn-xs pull-right">コレクションから削除</button>
               </p>
-              <p class="list-info"><i class="fa fa-heart text-muted list-icon"></i> {{ col.episode.num_likad_entries }}</p>
+              <p class="list-info"><i class="fas fa-heart text-muted list-icon"></i> {{ col.episode.num_likad_entries }}</p>
             </div>
           </li>
         {% endfor %}

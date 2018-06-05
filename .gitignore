@@ -10,8 +10,8 @@ logue/local_settings.py
 db.sqlite3
 
 docs/
-/media/images/*
-!/media/images/.gitkeep
+/logue/media/images/*
+!/logue/media/images/.gitkeep
 
 ## Directory-based project format:
 .idea/

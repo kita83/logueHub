@@ -56,10 +56,6 @@
     float: left;
 }
 
-.navbar-default .sidebar {
-    width: 180px;
-}
-
 .nav>li>a:focus, .nav>li>a:hover {
     text-decoration: none;
 }
@@ -247,7 +243,7 @@ ul {
 }
 
 .action {
-    margin-top: 5px;
+    margin: 5px 0 10px 0;
 }
 .sub-action {
     margin-bottom: 5px;
@@ -325,6 +321,25 @@ ul {
 
 .socialaccount_providers li {
     margin-bottom: 5px;
+}
+
+/* Override SBAdmin2 */
+.navbar-default.sidebar {
+    width: 180px;
+    margin-top: 0;
+}
+
+.page-header {
+    margin-bottom: 10px;
+}
+
+.chat li {
+    padding-bottom: 10px;
+    border-bottom: 1px dotted #aaa;
+}
+
+.chat li.left .chat-body {
+    margin-left: 70px;
 }
 
 .btn-google{color:#fff;background-color:#dd4b39;border-color:rgba(0,0,0,0.2)}.btn-google:hover,.btn-google:focus,.btn-google:active,.btn-google.active,.open>.dropdown-toggle.btn-google{color:#fff;background-color:#c23321;border-color:rgba(0,0,0,0.2)}

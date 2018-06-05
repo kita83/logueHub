@@ -17,15 +17,15 @@
         {% for episode in like_epsodes %}
           <li class="left clearfix">
             <span class="chat-img pull-left">
-              <a href="{% url 'feed:ep_detail' episode.id %}"><img class="img-rounded" src="{{ STATIC_URL }}{{ episode.channel.cover_image }}" width=60px/></a>
+              <a href="{% url 'feed:ep_detail' episode.id %}"><img class="img-rounded" src="{{ MEDIA_URL }}{{ episode.channel.cover_image }}" width=60px/></a>
             </span>
             <div class="chat-body clearfix">
               <div class="header">
                 <small><a href="{% url 'feed:ch_detail' episode.channel.id %}" class="text-header">{{ episode.channel.title|safe }}</a></small>
-                <small class="text-muted pull-right"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</small>
+                <small class="text-muted pull-right"><i class="far fa-clock fa-fw"></i>{{ episode.published_time }}</small>
               </div>
               <p class="track-title"><a href="{% url 'feed:ep_detail' episode.id %}">{{ episode.title|safe }}</a></p>
-              <p class="list-info"><i class="fa fa-heart text-muted list-icon"></i> {{ episode.num_likad_entries }}</p>
+              <p class="list-info"><i class="fas fa-heart text-muted list-icon"></i> {{ episode.num_likad_entries }}</p>
             </div>
           </li>
         {% endfor %}
@@ -45,7 +45,7 @@
           </span>
           <div class="recently-body clearfix">
             <p class="track-title"><a href="{% url 'feed:ep_detail' episode.id %}">{{ episode.title|safe }}</a></p>
-            <small class="recently-date text-muted"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</small>
+            <small class="recently-date text-muted"><i class="far fa-clock fa-fw"></i>{{ episode.published_time }}</small>
           </div>
         </li>
       {% endfor %}

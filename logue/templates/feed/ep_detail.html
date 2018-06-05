@@ -8,19 +8,19 @@
   function updateButton(btn, is_active) {
     if (is_active) {
         btn.removeClass('btn-default').addClass('is-active')
-        btn.html('<i class="fa fa-heart"></i> Liked')
+        btn.html('<i class="fas fa-heart"></i> Liked')
     } else {
         btn.removeClass('is-active').addClass('btn-default')
-        btn.html('<i class="fa fa-heart"></i> Like')
+        btn.html('<i class="fas fa-heart"></i> Like')
     }
   };
   function updateSubButton(btn, is_active) {
     if (is_active) {
         btn.removeClass('btn-default').addClass('is-active')
-        btn.html('<i class="fa fa-plus-square"></i> Following')
+        btn.html('<i class="fas fa-plus-square"></i> Following')
     } else {
         btn.removeClass('is-active').addClass('btn-default')
-        btn.html('<i class="fa fa-plus-square"></i> Follow')
+        btn.html('<i class="fas fa-plus-square"></i> Follow')
     }
   };
   $(function() {
@@ -127,17 +127,17 @@ s.setAttribute('data-timestamp', +new Date());
       <div class="ep-body col-lg-9">
         <div class="ep-title">
         {% if episode %}
-          <p class="ep-date"><i class="fa fa-clock-o fa-fw"></i>{{ episode.published_time }}</p>
+          <p class="ep-date"><i class="far fa-clock fa-fw"></i>{{ episode.published_time }}</p>
           <h3>{{ episode.title|safe }}</h3>
           {% if user.is_authenticated %}
             <div class="action form-inline">
               {% if like %}
-                <button type="button" id="like" data-episode-id="{{ episode.id }}" class="btn is-active btn-xs"><i class="fa fa-heart"></i> Liked</button>
+                <button type="button" id="like" data-episode-id="{{ episode.id }}" class="btn is-active btn-xs"><i class="fas fa-heart"></i> Liked</button>
               {% else %}
-                <button type="button" id="like" data-episode-id="{{ episode.id }}" class="btn btn-default btn-xs"><i class="fa fa-heart"></i> Like</button>
+                <button type="button" id="like" data-episode-id="{{ episode.id }}" class="btn btn-default btn-xs"><i class="fas fa-heart"></i> Like</button>
               {% endif %}
               <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#addCollectionModal">
-                <i class="fa fa-folder"></i> Collection
+                <i class="fas fa-folder-open"></i> Collection
               </button>
             </div>
             <!-- コレクション追加モーダル -->
@@ -180,13 +180,13 @@ s.setAttribute('data-timestamp', +new Date());
           </div>
           <a href="{{ episode.channel.get_absolute_url }}"><h4>{{ episode.channel.title|safe }}</h4></a>
           <p class="author">{{ episode.channel.author|safe }}</p>
-          <p class="link"><a href="{{ episode.channel.link }}" target="_blank"><i class="fa fa-external-link fa-fw"></i> Website</a></p>
+          <p class="link"><a href="{{ episode.channel.link }}" target="_blank"><i class="fas fa-external-link-alt fa-fw"></i> Website</a></p>
           {% if user.is_authenticated %}
             <div class="sub-action">
               {% if subscription %}
-                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn is-active btn-xs"><i class="fa fa-plus-square"></i> Following</button>
+                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn is-active btn-xs"><i class="fas fa-plus-square"></i> Following</button>
               {% else %}
-                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn btn-default btn-xs"><i class="fa fa-plus-square"></i> Follow</button>
+                <button type="button" id="subscription" data-channel-id="{{ episode.channel.id }}" class="btn btn-default btn-xs"><i class="fas fa-plus-square"></i> Follow</button>
               {% endif %}
             </div>
           {% endif %}
