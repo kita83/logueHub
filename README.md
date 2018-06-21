@@ -22,5 +22,5 @@ Podcastブックマーク & 購読管理サービス
 [@strkita](https://twitter.com/strkita)
 
 ## License
-MIT License
-Copyright (c) [2018] [Hiroaki Kitada]
+MIT License  
+Copyright (c) 2018 Hiroaki Kitada
