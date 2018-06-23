@@ -68,7 +68,7 @@ WSGI_APPLICATION = 'logue.wsgi.application'
 ROOT_URLCONF = 'logue.urls'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-STATIC_ROOT = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/logue/'
