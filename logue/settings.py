@@ -50,6 +50,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.static',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -67,11 +68,7 @@ WSGI_APPLICATION = 'logue.wsgi.application'
 ROOT_URLCONF = 'logue.urls'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-STATIC_ROOT = 'staticfiles'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-    # os.path.join(BASE_DIR, "media"),
-)
+STATIC_ROOT = '/static/'
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/logue/'

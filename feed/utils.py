@@ -49,26 +49,28 @@ def delete_previous_file(function):
 
 
 def save_image(image_url, db_channel):
-    """
-    画像を保存する.
+    """画像を保存する.
 
-    :param image_url: 画像取得URL
-    :param db_channel: チャンネル
-    :return: DB登録用パス
+    Arguments:
+        image_url -- 画像取得URL
+        db_channel -- チャンネル
+
+    Returns:
+        rel_path -- DB登録用パス
     """
     res = requests.get(image_url)
-
     if res.status_code != 200:
         return ''
 
     # 保存する画像名を取得
-    filename = image_url.split("/")[-1]
+    filename = image_url.split('/')[-1]
     unique_name = get_image_name(filename)
 
     # 画像ファイル書き込み用パス
-    # prefix = os.path.dirname(
-    #     os.path.dirname(os.path.abspath(__file__))) + '/logue/media/images/'
-    prefix = settings.MEDIA_URL + 'images/'
+    if settings.DEBUG:
+        prefix = settings.MEDIA_ROOT + '/images/'
+    else:
+        prefix = settings.MEDIA_URL + 'images/'
     path = prefix + unique_name
 
     # DB登録用パス
@@ -76,7 +78,10 @@ def save_image(image_url, db_channel):
 
     # 以前の画像を削除する
     if db_channel.cover_image:
-        old_path = settings.MEDIA_URL + '/' + db_channel.cover_image.name
+        if settings.DEBUG:
+            old_path = settings.MEDIA_ROOT + '/' + db_channel.cover_image.name
+        else:
+            old_path = settings.MEDIA_URL + db_channel.cover_image.name
         if os.path.exists(old_path):
             os.remove(old_path)
 

@@ -1,7 +1,7 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 
-{% load i18n %} 
-{% load bootstrap4 %} 
+{% load i18n %}
+{% load bootstrap4 %}
 {% load account socialaccount %}
 
 {% block title %}ユーザー登録{% endblock %}
@@ -19,34 +19,33 @@
           </p>
           <div class="socialaccount_ballot">
             <ul class="socialaccount_providers">
-              {% load socialaccount %} 
-
-              {% get_providers as socialaccount_providers %} 
-
-              {% for provider in socialaccount_providers %} 
-                {% if provider.id == "openid" %} 
+              {% load socialaccount %}
+              {% get_providers as socialaccount_providers %}
+              {% for provider in socialaccount_providers %}
+                {% if provider.id == "openid" %}
                   {% for brand in provider.get_brands %}
                   <li>
                     <a title="{{brand.name}}" class="btn btn-block btn-social btn-{{provider.id}} socialaccount_provider {{provider.id}} {{brand.id}}"
                       href="{% provider_login_url provider.id openid=brand.openid_url process=process %}">
                       <i class="fab fa-{{ provider.id }}"></i> {{brand.name}}</a>
                   </li>
-                  {% endfor %} 
+                  {% endfor %}
                 {% endif %}
                 <li>
-                  <a title="{{provider.name}}" 
+                  <a title="{{provider.name}}"
                     class="btn btn-block btn-social btn-{{provider.id}} socialaccount_provider {{provider.id}}"
                     href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
                     <i class="fab fa-{{ provider.id }}"></i>{{provider.name}} アカウントでサインイン</a>
                 </li>
               {% endfor %}
             </ul>
+            <div class="login-or">またはメールアドレスを登録</div>
           </div>
           <form class="signup" id="signup_form" align="center" method="post" action="{% url 'account_signup' %}">
-            {% csrf_token %} 
-            {% bootstrap_form form show_label=False %} 
+            {% csrf_token %}
+            {% bootstrap_form form show_label=False %}
             {% if redirect_field_value %}
-              <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" /> 
+              <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
             {% endif %}
             <small>
               <p>アカウントを作成する場合は、当サイトの利用規約と</br>プライバシーポリシーに同意したものとみなします。</p>
