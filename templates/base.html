@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load static from staticfiles %}
+{% load static %}
 {% load i18n %}
 <html lang="ja">
 <head>
@@ -11,23 +11,22 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'UA-44242049-3');
   </script>
   <link href="{% static 'bootstrap/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'bootstrap/vendor/bootstrap-social/bootstrap-social.css' %}" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/3.3.7+1/css/sb-admin-2.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
-  <link href="{% static 'manager/css/structure.css' %}" rel="stylesheet" type="text/css">
+  <link href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous" rel="stylesheet">
+  <link href="{% static 'manager/css/structure.css' %}" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-  <script src="{% static 'bootstrap/vendor/metisMenu/metisMenu.min.js' %}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/3.3.7+1/js/sb-admin-2.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-  <script type="text/javascript" src="{% static 'bootstrap/vendor/jquery/jquery.min.js' %}"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/audiojs/1.0.1/audio.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/audiojs/1.0.1/audiojs.swf"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/audiojs/1.0.1/player-graphics.gif"></script>
-  <script src="{% static 'bootstrap/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'bootstrap/vendor/metisMenu/metisMenu.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'bootstrap/vendor/jquery/jquery.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'bootstrap/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
   <script type="text/javascript" src="{% static 'manager/js/ajax.js' %}"></script>
 </head>
 <body>
@@ -41,7 +40,6 @@
             {% endblock %}
         </nav>
       </div>
-
       <!-- コンテンツ -->
       <div class="body-container">
         <!-- サイドバー -->
