@@ -1,7 +1,7 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 
-{% load i18n %} 
-{% load bootstrap4 %} 
+{% load i18n %}
+{% load bootstrap4 %}
 {% load account socialaccount %}
 {% block title %}ユーザー登録{% endblock %}
 
@@ -14,11 +14,11 @@
           <h3 class="panel-title text-center">ユーザー登録</h1>
         </div>
         <div class="panel-body">
-          <form class="signup" id="signup_form" align="center" method="post" action="{% url 'account_signup' %}">
-            {% csrf_token %} 
-            {% bootstrap_form form show_label=False %} 
+          <form class="signup" id="signup_form" align="center" method="post" action="{% url 'socialaccount_signup' %}">
+            {% csrf_token %}
+            {% bootstrap_form form show_label=False %}
             {% if redirect_field_value %}
-              <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" /> 
+              <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
             {% endif %}
             <small>
               <p>アカウントを作成する場合は、当サイトの利用規約と</br>プライバシーポリシーに同意したものとみなします。</p>
