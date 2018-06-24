@@ -12,6 +12,7 @@ db.sqlite3
 docs/
 /media/images/*
 !/media/images/.gitkeep
+/static_root/
 
 ## Directory-based project format:
 .idea/
