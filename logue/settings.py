@@ -130,8 +130,9 @@ else:
 
     # メディアファイルの設定
     AWS_PUBLIC_MEDIA_LOCATION = 'media'
-    DEFAULT_FILE_STORAGE = 'logue.backends.MediaStorage'
-    MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)
+    DEFAULT_FILE_STORAGE = 'logue.backends.PublicMediaStorage'
+    # MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)
+    MEDIA_URL = "https://s3-ap-northeast-1.amazonaws.com/%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)
     AWS_PRELOAD_METADATA = True
 
 # Password validation
