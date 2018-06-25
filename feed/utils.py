@@ -85,7 +85,7 @@ def save_image(image_url, db_channel):
         if os.path.exists(old_path):
             os.remove(old_path)
 
-    logger.warning('path: ' + path)
+    logger.info('path: ' + path)
 
     with open(path, 'wb') as file:
         file.write(res.content)
