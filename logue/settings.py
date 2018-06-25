@@ -130,7 +130,7 @@ else:
 
     # メディアファイルの設定
     AWS_PUBLIC_MEDIA_LOCATION = 'media'
-    DEFAULT_FILE_STORAGE = 'logue.backends.PublicMediaStorage'
+    DEFAULT_FILE_STORAGE = 'logue.backends.MediaStorage'
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)
     AWS_PRELOAD_METADATA = True
 

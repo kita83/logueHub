@@ -9,13 +9,17 @@
     <div class="ep-header clearfix">
       <div class="channel col-lg-12">
         <h2 class="page-header">コレクション一覧</h2>
-        <ul class="chat">
-        {% for mst in mst_collection %}
-          <li class="left clearfix">
-            <a href="{% url 'feed:col_detail' mst.id %}">{{ mst.title|safe }}</a>
-          </li>
-        {% endfor %}
-        </ul>
+        {% if mst_collection %}
+          <ul class="chat">
+            {% for mst in mst_collection %}
+              <li class="left clearfix">
+                <a href="{% url 'feed:col_detail' mst.id %}">{{ mst.title|safe }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>まだ登録がありません。</p>
+        {% endif %}
       </div>
       </div>
     </div>
