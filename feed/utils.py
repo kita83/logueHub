@@ -197,9 +197,9 @@ def poll_feed(feed_url):
         db_channel.width_field = '400'
         db_channel.height_field = '400'
 
-        img = Image.open(settings.MEDIA_URL + '/' + path)
-        img.thumbnail((400, 400), Image.ANTIALIAS)
-        img.save(settings.MEDIA_URL + '/' + path)
+        # img = Image.open(settings.MEDIA_URL + '/' + path)
+        # img.thumbnail((400, 400), Image.ANTIALIAS)
+        # img.save(settings.MEDIA_URL + '/' + path)
 
     # チャンネル保存
     db_channel.save()
