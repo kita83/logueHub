@@ -89,11 +89,11 @@ def save_image(image_url, db_channel):
 
     logger.info('rel_path: ' + rel_path)
 
-    s3 = boto3.resource('s3')
-    s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME).upload_file(res.content, rel_path)
+    # s3 = boto3.resource('s3')
+    # s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME).upload_file(res.content, rel_path)
 
-    # with default_storage.open(rel_path, 'wb') as file:
-    #     file.write(res.content)
+    with default_storage.open(rel_path, 'wb') as file:
+        file.write(res.content)
 
     return rel_path
 
@@ -197,9 +197,9 @@ def poll_feed(feed_url):
         db_channel.width_field = '400'
         db_channel.height_field = '400'
 
-        img = Image.open(settings.MEDIA_ROOT + '/' + path)
+        img = Image.open(settings.MEDIA_URL + '/' + path)
         img.thumbnail((400, 400), Image.ANTIALIAS)
-        img.save(settings.MEDIA_ROOT + '/' + path)
+        img.save(settings.MEDIA_URL + '/' + path)
 
     # チャンネル保存
     db_channel.save()
