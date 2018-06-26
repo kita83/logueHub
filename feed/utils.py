@@ -7,6 +7,7 @@ import requests
 import feedparser
 import pytz
 
+from django.core.files.storage import default_storage
 from django.utils import timezone
 from django.utils import html
 from PIL import Image
@@ -85,9 +86,9 @@ def save_image(image_url, db_channel):
         if os.path.exists(old_path):
             os.remove(old_path)
 
-    logger.info('path: ' + path)
+    logger.info('rel_path: ' + rel_path)
 
-    with open(path, 'wb') as file:
+    with default_storage.open(rel_path, 'wb') as file:
         file.write(res.content)
 
     return rel_path
