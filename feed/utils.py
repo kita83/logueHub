@@ -89,11 +89,6 @@ def save_image(image_url, db_channel):
 
     logger.info('rel_path: ' + rel_path)
 
-    img = Image.open(res.content)
-    img.thumbnail((400,400), Image.ANTIALIAS)
-    out = BytesIO()
-    img.save(out, 'img')
-
     with default_storage.open(rel_path, 'wb') as file:
         file.write(res.content)
 
