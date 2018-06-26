@@ -1,4 +1,5 @@
 import os
+from io import BytesIO
 import uuid
 import logging
 from time import mktime
@@ -7,7 +8,6 @@ import requests
 import feedparser
 import pytz
 import boto3
-
 from django.core.files.storage import default_storage
 from django.utils import timezone
 from django.utils import html
@@ -89,8 +89,8 @@ def save_image(image_url, db_channel):
 
     logger.info('rel_path: ' + rel_path)
 
-    img = PIL.Image(res.content)
-    img.thumbnail((400,600), Image.ANTIALIAS)
+    img = Image.open(res.content)
+    img.thumbnail((400,400), Image.ANTIALIAS)
     out = BytesIO()
     img.save(out, 'img')
 
