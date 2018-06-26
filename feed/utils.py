@@ -89,8 +89,10 @@ def save_image(image_url, db_channel):
 
     logger.info('rel_path: ' + rel_path)
 
-    # s3 = boto3.resource('s3')
-    # s3.Bucket(settings.AWS_STORAGE_BUCKET_NAME).upload_file(res.content, rel_path)
+    img = PIL.Image(res.content)
+    img.thumbnail((400,600), Image.ANTIALIAS)
+    out = BytesIO()
+    img.save(out, 'img')
 
     with default_storage.open(rel_path, 'wb') as file:
         file.write(res.content)
