@@ -116,7 +116,7 @@ else:
     # S3共通の設定
     AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = 'loguehub'
+    AWS_STORAGE_BUCKET_NAME = 'loguehub.herokuapp.com'
     AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
     AWS_S3_OBJECT_PARAMETERS = {
         'CacheControl': 'max-age=86400',  # キャッシュ有効期間:1日
@@ -130,8 +130,8 @@ else:
     # メディアファイルの設定
     AWS_PUBLIC_MEDIA_LOCATION = 'media'
     DEFAULT_FILE_STORAGE = 'logue.backends.PublicMediaStorage'
-    # MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)
-    MEDIA_URL = "https://s3-ap-northeast-1.amazonaws.com/%s/%s/" % (AWS_STORAGE_BUCKET_NAME, AWS_PUBLIC_MEDIA_LOCATION)
+    MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)
+    # MEDIA_URL = "https://s3-ap-northeast-1.amazonaws.com/%s/%s/" % (AWS_STORAGE_BUCKET_NAME, AWS_PUBLIC_MEDIA_LOCATION)
     AWS_PRELOAD_METADATA = True
 
 # Password validation
