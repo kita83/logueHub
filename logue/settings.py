@@ -91,7 +91,7 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 if 'local' in HOSTNAME:
     from .local_settings import *
     DEBUG = True
-    ALLOWED_HOSTS = ['127.0.0.1', 'testserver']
+    ALLOWED_HOSTS = ['127.0.0.1']
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -104,6 +104,31 @@ if 'local' in HOSTNAME:
     }
     MEDIA_URL = '/media/'
     STATIC_URL = '/static/'
+    # Debug-Toolbar
+    INTERNAL_IPS = ('127.0.0.1',)
+    MIDDLEWARE += (
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    )
+    INSTALLED_APPS += (
+        'debug_toolbar',
+    )
+    DEBUG_TOOLBAR_PANELS = [
+        'debug_toolbar.panels.versions.VersionsPanel',
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.settings.SettingsPanel',
+        'debug_toolbar.panels.headers.HeadersPanel',
+        'debug_toolbar.panels.request.RequestPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        'debug_toolbar.panels.cache.CachePanel',
+        'debug_toolbar.panels.signals.SignalsPanel',
+        'debug_toolbar.panels.logging.LoggingPanel',
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+    ]
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+    }
 else:
     DEBUG = False
     ALLOWED_HOSTS = ['*']
@@ -119,7 +144,8 @@ else:
     AWS_STORAGE_BUCKET_NAME = 'loguehub'
     AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
     AWS_S3_OBJECT_PARAMETERS = {
-        'CacheControl': 'max-age=86400',  # キャッシュ有効期間:1日
+        # キャッシュ有効期間:1日
+        'CacheControl': 'max-age=86400',
     }
 
     # 静的ファイルの設定
@@ -131,7 +157,6 @@ else:
     AWS_PUBLIC_MEDIA_LOCATION = 'media'
     DEFAULT_FILE_STORAGE = 'logue.backends.PublicMediaStorage'
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_PUBLIC_MEDIA_LOCATION)
-    # MEDIA_URL = "https://s3-ap-northeast-1.amazonaws.com/%s/%s/" % (AWS_STORAGE_BUCKET_NAME, AWS_PUBLIC_MEDIA_LOCATION)
     AWS_PRELOAD_METADATA = True
 
 # Password validation
@@ -175,8 +200,10 @@ TEST_APPS = (
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = [
-    '--with-coverage',  # coverage を取る
-    '--cover-html',  # coverage を html で cover/ に出力する
+    # coverage を取る
+    '--with-coverage',
+    # coverage を html で cover/ に出力する
+    '--cover-html',
     '--cover-package=' + ",".join(TEST_APPS),
 ]
 
