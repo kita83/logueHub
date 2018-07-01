@@ -1,7 +1,6 @@
 # logueHub
-Podcastブックマーク & 購読管理サービス  
-[https://loguehub.herokuapp.com/](https://loguehub.herokuapp.com/)  
-あとでドメイン取ります。  
+Podcastブックマーク & 購読管理サービス
+[http://www.loguehub.com](http://www.loguehub.com)
 ![index](https://user-images.githubusercontent.com/17686263/41716912-ee13a23c-7592-11e8-8e3a-f191177fe48f.png)
 ![detail](https://user-images.githubusercontent.com/17686263/41717069-7ab6591e-7593-11e8-867a-32211a44fcad.png)
 
@@ -18,10 +17,10 @@ Podcastブックマーク & 購読管理サービス
 - 音声ファイルから特定部分を抽出、お気に入りとして登録 → シェア
 - 言及されたキーワードを自動的に抽出し、リンク生成
 - 会話の盛り上がりを可視化
-など  
+など
 
 ## Author
-Twitter: [@strkita](https://twitter.com/strkita)  
+Twitter: [@strkita](https://twitter.com/strkita)
 GitHub: [kita83](https://github.com/kita83)
 
 ## License
