@@ -1,3 +1,4 @@
+"""モデル単位のテスト"""
 from django.utils import timezone
 from django.test import TestCase
 from feed.models import Channel, Episode, Subscription, Like
@@ -51,7 +52,7 @@ class EpisodeModelTest(TestCase):
             channel=ch,
             title='test_title',
             link='http://example.fm',
-            audio_url='http://files.example.fm/exampple-ep27.mp3',
+            audio_url='http://files.example.fm/example-ep27.mp3',
             description='description',
             published_time=timezone.now(),
             duration='35:12',
@@ -67,7 +68,7 @@ class SubscriptionModelTest(TestCase):
     """
     def test_save(self):
         """
-        購読情報の新規登録ができる
+        新規の購読登録ができる
         """
         user = LogueUser.objects.create_user(
             email='test@example.com', password='testtesttest')

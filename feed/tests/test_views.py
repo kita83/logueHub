@@ -23,8 +23,8 @@ class UrlResolveTest(TestCase):
         ch = Channel.objects.create(
             feed_url='https://example.com/test.rss'
         )
-        response = self.client.post(
-            reverse('feed:ch_detail', {'pk': ch.id})
+        response = self.client.get(
+            reverse('feed:ch_detail', kwargs={'pk': ch.id})
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'feed/ch_detail.html')
@@ -87,18 +87,6 @@ class FeedViewTest(TestCase):
         get_ch = Channel.objects.filter(feed_url='https://example.com/test.rss')
         # 取得したIDが同じであることを確認
         self.assertEqual(actual, get_ch[0].id)
-
-    def test_not_get_exist_url(self):
-        """
-        同一URLがなければ None を返す
-        """
-        Channel.objects.create(
-            title='test_title',
-            feed_url='http://feeds.test.fm/testfm',
-            author_name='john'
-        )
-        ch = Channel.objects.filter(feed_url='http://feeds.test.fm/testfm')
-        self.assertEqual(ch, None)
 
     # def test_did_not_save(self):
     #     """

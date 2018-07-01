@@ -1,0 +1,6 @@
+deployment:
+  staging:
+    branch: master
+    commands:
+      - git push git@github.com:kita83/logueHub.git $CIRCLE_SHA1:master
+      - heroku run rake db:migrate --app circleci-heroku
