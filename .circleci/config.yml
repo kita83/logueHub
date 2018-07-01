@@ -27,12 +27,3 @@ jobs:
       - store_artifacts:
           path: test-results
           destination: tr1
-      - deploy:
-          name: Deploy Master to Heroku
-          - add_ssh_keys:
-              fingerprints:
-              - "ioGb2l+7ryraXRjpmfbTdLu1Q7b+W7plg8XcZURAYtQ"
-          command: |
-              if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                  git push heroku master
-              fi
