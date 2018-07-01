@@ -4,7 +4,8 @@ from socket import gethostname
 
 HOSTNAME = gethostname()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SECRET_KEY = os.getenv('SECRET_KEY')
+# SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = ')guakondc1$6r#)io(rg_czr1a&bs8+q4vw9=q63@yx^s*x5z#'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
