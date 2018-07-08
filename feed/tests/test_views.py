@@ -5,20 +5,22 @@ from accounts.models import LogueUser
 
 
 class UrlResolveTest(TestCase):
-    """
-    URLディスパッチテスト
-    """
+    """URLディスパッチテスト"""
     def test_url_resoleves_to_index_view(self):
-        """
-        [get] /logue/ → feed/index.html
+        """/logue/ にアクセス時に feed/index.html が呼ばれることを検証.
+
+        Method:
+            GET
         """
         response = self.client.get('/logue/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'feed/index.html')
 
     def test_url_resoleves_to_ch_detail_view(self):
-        """
-        [post] /logue/ch/detail → feed/ch_detail.html
+        """/logue/ch/detail にアクセス時に feed/ch_detail.html が呼ばれることを検証.
+
+        Method:
+            POST
         """
         ch = Channel.objects.create(
             feed_url='https://example.com/test.rss'
@@ -31,16 +33,11 @@ class UrlResolveTest(TestCase):
 
 
 class FeedViewTest(TestCase):
-    """
-    Viewテスト
-    """
     def setUp(self):
         self.user = LogueUser.objects.create(email='example.com')
 
     def test_redirect_login(self):
-        """
-        未ログインの場合、ログインページへリダイレクトされる
-        """
+        """未ログインの場合、ログインページへリダイレクトされる."""
         response = self.client.post(
             '/logue/channels/', {'user': 'AnonymousUser', 'password': ''})
         self.assertEqual(response.status_code, 302)
@@ -71,9 +68,7 @@ class FeedViewTest(TestCase):
             response, '/accounts/login/?next=/logue/collection_list/')
 
     def test_get_exist_url(self):
-        """
-        同一URLがあれば既存データを返す
-        """
+        """同一URLがあれば既存データを返す."""
         exist_ch = Channel.objects.create(
             feed_url='https://example.com/test.rss',
         )

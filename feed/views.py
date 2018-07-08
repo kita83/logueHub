@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views import generic
 from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
 
 from . import utils
@@ -19,9 +19,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S
 
 
 class IndexView(generic.ListView):
-    """
-    新着エピソードを表示する
-    """
+    """トップページを表示する際のロジックを処理する."""
     model = Episode
     template_name = 'feed/index.html'
     context_object_name = 'episodes'
@@ -51,13 +49,12 @@ class IndexView(generic.ListView):
 
 @require_POST
 class ChannelList(generic.DetailView):
-    """List of Channel"""
+    """チャンネル一覧ページを表示する際のロジックを処理する."""
     model = Channel
     template_name = 'feed/ch_detail.html'
     extra_context = {}
 
     def dispatch(self, request, *args, **kwargs):
-        # self.extra_context = utils.build_context(request)
         self.queryset = self.extra_context['channel_detail']
         return super(ChannelList, self).dispatch(request, *args, **kwargs)
 
@@ -73,71 +70,83 @@ class ChannelList(generic.DetailView):
 @require_POST
 @login_required
 def entry(request):
-    """
-    下記モデルにリクエストFeedを新規登録する
-    Subscription
+    """入力された Feed URL をもとにチャンネル情報を登録する.
 
-    既存データがなければ下記も併せて登録する
-    Channel, Episode, Tag
+    Note:
+        すでに登録がある場合は既存データを返す.
+
+    Arguments:
+        request(str) -- Feed URL.
+
+    Returns:
+        redirect -- チャンネル詳細ページへリダイレクト.
     """
     form = SubscriptionForm(request.POST)
 
     if form.is_valid():
+        # バリデート済の Feed URL を取得
         feed_url = form.cleaned_data['require_url']
 
         if not feed_url:
+            logger.info('Required Feed URL does not match.')
             return render(request, 'feed/index.html')
 
-        # チャンネル新規登録または、既存データ取得
         try:
+            # すでに登録がある場合は既存データを表示する
             channel = Channel.objects.get(feed_url=feed_url)
             return redirect('feed:ch_detail', pk=channel.id)
         except Channel.DoesNotExist:
-            logger.info('Save Channel by required feed url %s.', feed_url)
+            logger.info('Save channel by required Feed URL %s.', feed_url)
+            # Feed URL をもとに新規登録
             result = utils.poll_feed(feed_url)
-            # チャンネルが新規登録された場合, チャンネル、エピソードの最新情報を更新
+            # 登録成功の場合, チャンネル詳細ページへリダイレクトする
             if result == 'success':
                 channel = Channel.objects.get(feed_url=feed_url)
                 return redirect('feed:ch_detail', pk=channel.id)
 
-    logger.info('required feed url does not match.')
+    # バリデートエラーの場合、トップページに戻る
+    logger.warning('WARNING: Invalid feed URL.')
     return redirect('feed:index')
 
 
+@require_GET
 @login_required
 def change_subscription(request):
+    """選択されたチャンネルの講読登録、あるいは講読解除をする.
+    フロント側で Ajax 処理される.
+
+    Arguments:
+        request(str) -- チャンネルID.
+
+    Returns:
+        JsonResponse -- 処理結果: bool.
     """
-    下記モデルにリクエストFeedを新規登録、または購読解除する
-    Subscription
-    """
-    if request.method == 'GET':
-        query = request.GET.get('ch_id')
-        user = request.user
-        channel = Channel.objects.get(id=query)
-        sub = Subscription.objects.filter(
+    query = request.GET.get('ch_id')
+    # ユーザー情報、チャンネル情報を取得
+    user = request.user
+    channel = Channel.objects.get(id=query)
+    sub = Subscription.objects.filter(
+        channel=channel,
+        user=user
+    )
+    # 登録の有無により、登録／解除を切り替える
+    if not sub:
+        Subscription.objects.get_or_create(
             channel=channel,
             user=user
         )
-        if len(sub) == 0:
-            # 購読情報を登録
-            Subscription.objects.get_or_create(
-                channel=channel,
-                user=user
-            )
-            response = {
-                'subscription': True
-            }
-            return JsonResponse(response)
-        else:
-            # 購読解除
-            Subscription.objects.filter(
-                channel=channel,
-                user=user
-            ).delete()
-            response = {
-                'subscription': False
-            }
-            return JsonResponse(response)
+        response = {
+            'subscription': True
+        }
+    else:
+        Subscription.objects.filter(
+            channel=channel,
+            user=user
+        ).delete()
+        response = {
+            'subscription': False
+        }
+    return JsonResponse(response)
 
 
 class ChannelDetailView(generic.DetailView):
