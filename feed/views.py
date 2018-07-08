@@ -76,7 +76,7 @@ def entry(request):
         すでに登録がある場合は既存データを返す.
 
     Arguments:
-        request(str) -- Feed URL.
+        request (str) -- Feed URL.
 
     Returns:
         redirect -- チャンネル詳細ページへリダイレクト.
@@ -116,43 +116,38 @@ def change_subscription(request):
     フロント側で Ajax 処理される.
 
     Arguments:
-        request(str) -- チャンネルID.
+        channel_id (str) -- チャンネルID.
 
     Returns:
         JsonResponse -- 処理結果: bool.
     """
     query = request.GET.get('ch_id')
+
     # ユーザー情報、チャンネル情報を取得
     user = request.user
     channel = Channel.objects.get(id=query)
-    sub = Subscription.objects.filter(
-        channel=channel,
-        user=user
-    )
+    sub = Subscription.objects.filter(channel=channel, user=user)
+
     # 登録の有無により、登録／解除を切り替える
     if not sub:
-        Subscription.objects.get_or_create(
-            channel=channel,
-            user=user
-        )
-        response = {
-            'subscription': True
-        }
+        Subscription.objects.get_or_create(channel=channel, user=user)
+        response = {'subscription': True}
     else:
-        Subscription.objects.filter(
-            channel=channel,
-            user=user
-        ).delete()
-        response = {
-            'subscription': False
-        }
+        Subscription.objects.filter(channel=channel, user=user).delete()
+        response = {'subscription': False}
+
     return JsonResponse(response)
 
 
 class ChannelDetailView(generic.DetailView):
-    """
-    チャンネル詳細画面
-    指定された登録チャンネルの最新エピソードを表示する
+    """チャンネルの最新エピソードを表示する.
+
+    Arguments:
+        channel_id (str) -- チャンネルID.
+
+    Returns:
+        context -- エピソードリスト.
+        redirect -- チャンネル詳細ページへリダイレクト.
     """
     model = Channel
     template_name = 'feed/ch_detail.html'
@@ -160,51 +155,73 @@ class ChannelDetailView(generic.DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         user = self.request.user
-        # 登録用フォーム
+
+        # ヘッダ部登録用フォーム
         context['subscription_form'] = SubscriptionForm
-        # コレクションタイトル
+        # エピソードリスト
+        context['episodes'] = Episode.objects.filter(
+            channel=context['channel']).order_by('-published_time')[:8]
+
+        # ログイン済の場合、登録状況に応じたデータを返す
         if hasattr(user, 'email'):
+            # コレクション情報
             context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
+            # 講読情報
             context['subscription'] = Subscription.objects.filter(
                 channel=context['channel'], user=user)
-        context['episodes'] = Episode.objects.filter(
-            channel=context['channel']
-        ).order_by('-published_time')[:8]
+
         return context
 
 
 class EpisodeDetailView(generic.DetailView):
-    """
-    エピソード詳細画面
+    """エピソード詳細を表示する.
+
+    Arguments:
+        episode_id (str) -- チャンネルID.
+
+    Returns:
+        context -- エピソード詳細.
+        redirect -- エピソード詳細ページへリダイレクト.
     """
     model = Episode
     template_name = 'feed/ep_detail.html'
 
     def get_context_data(self, *args, **kwargs):
-        """エピソードが Like されている場合は Like データを渡す"""
         context = super().get_context_data(*args, **kwargs)
         user = self.request.user
-        # 登録用フォーム
+
+        # ヘッダ部登録用フォーム
         context['subscription_form'] = SubscriptionForm
+        # ShowNote の内容を Markdown 形式で渡す
+        des = context['episode'].description
+        context['parsed_description'] = markdown.markdown(des)
+
+        # ログイン済の場合、登録状況に応じたデータを返す
         if hasattr(user, 'email'):
-            # コレクションタイトル
+            # コレクション情報
             context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
             # コレクション追加フォーム
             col_form = AddCollectionForm()
             col_form.fields['add_collection'].queryset = MstCollection.objects.filter(user=user)
             context['add_collection'] = col_form
-            context['like'] = Like.objects.filter(
-                episode=context['episode'], user=user)
+            # Like 情報
+            context['like'] = Like.objects.filter(episode=context['episode'], user=user)
+            # 講読情報
             context['subscription'] = Subscription.objects.filter(
                 channel=context['episode'].channel, user=user)
-        des = context['episode'].description
-        context['parsed_description'] = markdown.markdown(des)
+
         return context
 
 
 class ChannelAllView(generic.ListView):
-    """
-    登録チャンネルを表示
+    """チャンネル一覧を表示する.
+
+    Arguments:
+        user_id (str) -- ユーザーID.
+
+    Returns:
+        context -- チャンネルリスト.
+        redirect -- チャンネル一覧ページへリダイレクト.
     """
     model = Subscription
     template_name = 'feed/ch_all.html'
@@ -220,16 +237,22 @@ class ChannelAllView(generic.ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        # コレクションタイトル
-        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
-        # 登録用フォーム
+        # ヘッダ部登録用フォーム
         context['subscription_form'] = SubscriptionForm
+        # コレクション情報
+        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
         return context
 
 
 class CollectionListView(generic.ListView):
-    """
-    コレクション一覧を表示
+    """コレクション一覧を表示する.
+
+    Arguments:
+        user_id (str) -- ユーザーID.
+
+    Returns:
+        context -- コレクションリスト.
+        redirect -- コレクション一覧ページへリダイレクト.
     """
     model = MstCollection
     template_name = 'feed/col_list.html'
@@ -251,8 +274,14 @@ class CollectionListView(generic.ListView):
 
 
 class CollectionDetailView(generic.ListView):
-    """
-    Collectionされたエピソードリストを表示
+    """コレクション詳細を表示する.
+
+    Arguments:
+        mst_collection_id (str) -- コレクションID.
+
+    Returns:
+        context -- コレクション詳細.
+        redirect -- コレクション詳細ページへリダイレクト.
     """
     model = Collection
     template_name = 'feed/col_detail.html'
@@ -268,17 +297,24 @@ class CollectionDetailView(generic.ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        # コレクションタイトル
-        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
-        # 登録用フォーム
+        # ヘッダ部登録用フォーム
         context['subscription_form'] = SubscriptionForm
+        # コレクション情報
+        context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
+        # コレクションタイトル
         context['title'] = context['collection'][0].mst_collection.title
         return context
 
 
 class LikeListView(generic.ListView):
-    """
-    Likeされた全エピソードリストを表示
+    """Likeされた全エピソードリストを表示する.
+
+    Arguments:
+        mst_collection_id (str) -- コレクションID.
+
+    Returns:
+        context -- コレクション詳細.
+        redirect -- Like 済のエピソード一覧ページへリダイレクト.
     """
     model = Like
     template_name = 'feed/like_list.html'
@@ -293,16 +329,18 @@ class LikeListView(generic.ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        # コレクションタイトル
+        # コレクション情報
         context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
-        # 登録用フォーム
+        # ヘッダ部登録用フォーム
         context['subscription_form'] = SubscriptionForm
         return context
 
 
 class SettingsView(generic.TemplateView):
-    """
-    各種設定項目を表示
+    """各種設定項目を表示する.
+
+    Todo:
+        未実装.
     """
     template_name = 'feed/settings.html'
 
@@ -316,110 +354,117 @@ class SettingsView(generic.TemplateView):
 
 
 class termsView(generic.TemplateView):
-    """
-    利用規約を表示
+    """利用規約を表示する.
+
+    Returns:
+        redirect -- 利用規約ページへリダイレクト.
     """
     template_name = 'feed/terms.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         user = self.request.user
+
+        # ヘッダ部登録用フォーム
+        context['subscription_form'] = SubscriptionForm
+
         # ログイン後であればコレクションタイトル取得
         if hasattr(user, 'email'):
             context['mst_collection'] = MstCollection.objects.filter(user=user)
-        # 登録用フォーム
-        context['subscription_form'] = SubscriptionForm
+
         return context
 
 
 class privacyView(generic.TemplateView):
-    """
-    プラバシーポリシーを表示
+    """プラバシーポリシーを表示する.
+
+    Returns:
+        redirect -- プラバシーポリシーページへリダイレクト.
     """
     template_name = 'feed/privacy.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         user = self.request.user
+
+        # ヘッダ部登録用フォーム
+        context['subscription_form'] = SubscriptionForm
+
         # ログイン後であればコレクションタイトル取得
         if hasattr(user, 'email'):
             context['mst_collection'] = MstCollection.objects.filter(user=user)
-        # 登録用フォーム
-        context['subscription_form'] = SubscriptionForm
+
         return context
 
 
+@require_GET
 @login_required
 def change_like(request):
+    """選択されたチャンネルの Like 登録、あるいは Like 解除をする.
+    フロント側で Ajax 処理される.
+
+    Arguments:
+        episode_id (str) -- エピソードID.
+
+    Returns:
+        JsonResponse -- 処理結果: bool.
     """
-    エピソードをLike登録する
-    すでにLikeされている場合は削除する
-    """
-    if request.method == 'GET':
-        query = request.GET.get('ep_id')
-        # 登録エピソード取得
-        episode = Episode.objects.get(id=query)
-        # 登録ユーザー取得
-        user = request.user
-        # 登録Likeデータ取得
-        like = Like.objects.filter(episode=episode, user=user)
+    query = request.GET.get('ep_id')
 
-        if len(like) == 0:
-            # Like登録
-            Like.objects.create(
-                episode=episode,
-                user=user
-            )
-            response = {
-                'liked': True
-            }
-            return JsonResponse(response)
-        else:
-            # Likeから削除
-            Like.objects.filter(
-                episode=episode,
-                user=user
-            ).delete()
-            response = {
-                'liked': False
-            }
-            return JsonResponse(response)
+    # ユーザー情報、エピソード情報を取得
+    episode = Episode.objects.get(id=query)
+    user = request.user
+    # 登録 Like データ取得
+    like = Like.objects.filter(episode=episode, user=user)
+
+    # 登録の有無により、登録／解除を切り替える
+    if not like:
+        Like.objects.create(episode=episode, user=user)
+        response = {'liked': True}
+    else:
+        Like.objects.filter(episode=episode, user=user).delete()
+        response = {'liked': False}
+
+    return JsonResponse(response)
 
 
+@require_GET
 @login_required
 def add_collection(request):
-    """
-    エピソードをコレクションに追加する
-    """
-    if request.method == 'GET':
-        new_title = request.GET.get('new_title')
-        ep_id = request.GET.get('ep_id')
-        mst_id = request.GET.get('col_id')
-        if new_title and mst_id:
-            return JsonResponse({'result': 'no_args'})
-        # 登録ユーザー取得
-        user = request.user
-        # 登録エピソード取得
-        episode = Episode.objects.get(id=ep_id)
-        if not new_title:
-            # 登録コレクション取得
-            mst = MstCollection.objects.get(id=mst_id)
-        else:
-            # 新規コレクション追加
-            mst = MstCollection.objects.create(
-                title=new_title,
-                user=user
-            )
+    """エピソードをコレクションに追加する.
+    フロント側で Ajax 処理される.
 
-        # エピソード登録
-        col, created = Collection.objects.get_or_create(
-            mst_collection=mst,
-            episode=episode
-        )
-        if created:
-            return JsonResponse({'result': 'success'})
-        else:
-            return JsonResponse({'result': 'registerd'})
+    Arguments:
+        episode_id (str) -- エピソードID.
+
+    Returns:
+        JsonResponse -- 処理結果
+    """
+
+    # 新規登録用タイトルを取得
+    new_title = request.GET.get('new_title')
+    # 登録対象のエピソードID、コレクションIDを取得
+    ep_id = request.GET.get('ep_id')
+    mst_id = request.GET.get('col_id')
+
+    # 新規登録用タイトル、または既存コレクションIDが取得できない場合
+    if new_title and mst_id:
+        return JsonResponse({'result': 'no_args'})
+
+    # ユーザー情報、エピソード情報を取得
+    user = request.user
+    episode = Episode.objects.get(id=ep_id)
+
+    # 新規登録用タイトルの有無により、新規登録／既存コレクションに追加 を振り分ける
+    if not new_title:
+        mst = MstCollection.objects.get(id=mst_id)
+    else:
+        mst = MstCollection.objects.create(title=new_title, user=user)
+
+    # エピソード登録
+    col, created = Collection.objects.get_or_create(mst_collection=mst, episode=episode)
+
+    return JsonResponse({'result': 'success'}) if created else JsonResponse({'result': 'registerd'})
 
 
 @login_required
