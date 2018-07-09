@@ -353,7 +353,7 @@ class SettingsView(generic.TemplateView):
         return context
 
 
-class termsView(generic.TemplateView):
+class TermsView(generic.TemplateView):
     """利用規約を表示する.
 
     Returns:
@@ -375,7 +375,7 @@ class termsView(generic.TemplateView):
         return context
 
 
-class privacyView(generic.TemplateView):
+class PrivacyView(generic.TemplateView):
     """プラバシーポリシーを表示する.
 
     Returns:
@@ -438,7 +438,7 @@ def add_collection(request):
         episode_id (str) -- エピソードID.
 
     Returns:
-        JsonResponse -- 処理結果
+        JsonResponse -- 処理結果.
     """
 
     # 新規登録用タイトルを取得
@@ -467,38 +467,40 @@ def add_collection(request):
     return JsonResponse({'result': 'success'}) if created else JsonResponse({'result': 'registerd'})
 
 
+@require_GET
 @login_required
 def remove_collection(request):
-    """
-    コレクションからエピソードを削除する
-    """
+    """コレクションに登録されたエピソードを削除する.
 
-    if request.method == 'GET':
-        mst_id = request.GET.get('mst_id')
-        ep_id = request.GET.get('ep_id')
-        # 登録マスタコレクション取得
-        mst = MstCollection.objects.get(id=mst_id)
-        # 登録エピソード取得
-        episode = Episode.objects.get(id=ep_id)
+    Arguments:
+        episode_id (str) -- エピソードID.
+        collection_id (str) -- コレクションID.
 
-        if mst:
-            # コレクションからエピソード削除
-            Collection.objects.filter(
-                mst_collection=mst,
-                episode=episode
-            ).delete()
-            response = {
-                'isSuccess': True
-            }
-            return JsonResponse(response)
-        else:
-            response = {
-                'isSuccess': False
-            }
-            return JsonResponse(response)
+    Returns:
+        JsonResponse -- 処理結果: bool.
+    """
+    # 登録マスタコレクション、エピソード取得
+    mst_id = request.GET.get('mst_id')
+    ep_id = request.GET.get('ep_id')
+    mst = MstCollection.objects.get(id=mst_id)
+    episode = Episode.objects.get(id=ep_id)
+
+    # コレクションに登録があれば削除する
+    if mst:
+        Collection.objects.filter(mst_collection=mst, episode=episode).delete()
+        response = {'isSuccess': True}
+    else:
+        response = {'isSuccess': False}
+
+    return JsonResponse(response)
 
 
 class ContactView(generic.FormView):
+    """コンタクトページを表示する.
+
+    Returns:
+        redirect -- コンタクトページへリダイレクト.
+    """
     template_name = 'feed/contact.html'
     form_class = ContactForm
     success_url = '/'
@@ -510,9 +512,9 @@ class ContactView(generic.FormView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         user = self.request.user
+        # ヘッダ部登録用フォーム
+        context['subscription_form'] = SubscriptionForm
         # ログイン後であればコレクションタイトル取得
         if hasattr(user, 'email'):
             context['mst_collection'] = MstCollection.objects.filter(user=self.request.user)
-        # 登録用フォーム
-        context['subscription_form'] = SubscriptionForm
         return context

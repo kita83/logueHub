@@ -1,13 +1,12 @@
 from django import forms
-from . import models
 from django.conf import settings
 from django.core.mail import send_mail
 
+from . import models
+
 
 class SubscriptionForm(forms.Form):
-    """
-    購読Feedを取得する
-    """
+    """購読Feedを取得する."""
     require_url = forms.URLField(
         label='',
         required=False,
@@ -22,9 +21,7 @@ class SubscriptionForm(forms.Form):
 
 
 class AddCollectionForm(forms.Form):
-    """
-    登録済のコレクションリストの選択フォーム
-    """
+    """登録済のコレクションリストの選択フォーム."""
     add_collection = forms.ModelChoiceField(
         required=True,
         label='選択してください',
@@ -50,9 +47,7 @@ class AddCollectionForm(forms.Form):
 
 
 class ContactForm(forms.Form):
-    """
-    問い合わせ用
-    """
+    """問い合わせフォーム."""
     email = forms.EmailField(
         label='メールアドレス',
         required=True,
@@ -83,9 +78,7 @@ class ContactForm(forms.Form):
 
     # メール送信処理
     def send_email(self):
-        """
-        メールを送信する
-        """
+        """メールを送信する."""
         subject = self.cleaned_data['subject']
         message = self.cleaned_data['message']
         from_email = self.cleaned_data['email']

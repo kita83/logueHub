@@ -10,9 +10,7 @@ from django.dispatch import receiver
 
 
 class EpisodeManager(models.Manager):
-    """
-    20日以内に配信されたエピソードを取得する
-    """
+    """20日以内に配信されたエピソードを取得する Manager クラス."""
     def recently_published(self):
         return self.filter(
             published_time__gt=datetime.date.today() - datetime.timedelta(
@@ -20,9 +18,7 @@ class EpisodeManager(models.Manager):
 
 
 class TimeStampModel(models.Model):
-    """
-    作成日時と変更日時フィールドを提供する Abstract クラス
-    """
+    """作成日時と変更日時フィールドを提供する Abstract クラス."""
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
@@ -31,9 +27,7 @@ class TimeStampModel(models.Model):
 
 
 class Channel(TimeStampModel):
-    """
-    チャンネル情報を保持する
-    """
+    """チャンネル情報を保持する."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=2000, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -59,9 +53,7 @@ class Channel(TimeStampModel):
         return reverse('feed:ch_detail', kwargs={'pk': self.pk})
 
     def save(self, *args, **kwargs):
-        """
-        チャンネルを登録する
-        """
+        """チャンネルを登録する."""
         try:
             Channel.objects.get(feed_url=self.feed_url)
             super(Channel, self).save(*args, **kwargs)
@@ -71,14 +63,12 @@ class Channel(TimeStampModel):
 
 @receiver(post_delete, sender=Channel)
 def delete_file(sender, instance, **kwargs):
-    """Channelモデル削除後に画像ファイルを削除する"""
+    """Channelモデル削除後に画像ファイルを削除する."""
     instance.cover_image.delete(False)
 
 
 class Episode(TimeStampModel):
-    """
-    エピソード情報を保持する
-    """
+    """エピソード情報を保持する."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
     title = models.CharField(max_length=200, null=True, blank=True)
@@ -105,9 +95,7 @@ class Episode(TimeStampModel):
 
 
 class Subscription(TimeStampModel):
-    """
-    登録されたチャンネルを保持する
-    """
+    """登録されたチャンネルを保持する."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     channel = models.ForeignKey(Channel, on_delete=models.PROTECT)
     user = models.ForeignKey(
@@ -120,9 +108,7 @@ class Subscription(TimeStampModel):
 
 
 class Like(TimeStampModel):
-    """
-    likeされたエピソードとユーザー情報を関連づける
-    """
+    """Like されたエピソードとユーザー情報を関連づける."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
     user = models.ForeignKey(
@@ -135,9 +121,7 @@ class Like(TimeStampModel):
 
 
 class MstCollection(TimeStampModel):
-    """
-    コレクション情報を保持する
-    """
+    """コレクション情報を保持する."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=100)
     user = models.ForeignKey(
@@ -151,9 +135,7 @@ class MstCollection(TimeStampModel):
 
 
 class Collection(TimeStampModel):
-    """
-    コレクションに入れるチャンネルを管理する
-    """
+    """コレクションに入れるチャンネルを管理する."""
     mst_collection = models.ForeignKey(
         MstCollection,
         on_delete=models.CASCADE
@@ -166,9 +148,7 @@ class Collection(TimeStampModel):
 
 
 class MstPlaylist(TimeStampModel):
-    """
-    プレイリスト情報を保持する
-    """
+    """プレイリスト情報を保持する."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=100)
     user = models.ForeignKey(
@@ -183,9 +163,7 @@ class MstPlaylist(TimeStampModel):
 
 
 class Playlist(TimeStampModel):
-    """
-    プレイリストに入れるエピソードを管理する
-    """
+    """プレイリストに入れるエピソードを管理する."""
     mst_playlist = models.ForeignKey(
         MstPlaylist,
         on_delete=models.CASCADE
@@ -199,9 +177,7 @@ class Playlist(TimeStampModel):
 
 
 class MstTag(TimeStampModel):
-    """
-    タグの名前を保持する
-    """
+    """タグの名前を保持する."""
     name = models.CharField(max_length=30)
     is_active = models.BooleanField(default=True)
 
@@ -210,9 +186,7 @@ class MstTag(TimeStampModel):
 
 
 class Tag(TimeStampModel):
-    """
-    タグ付けされた情報を管理する
-    """
+    """タグ付けされた情報を管理する."""
     mst_tag = models.ForeignKey(MstTag, on_delete=models.CASCADE)
     episode = models.ForeignKey(Episode, on_delete=models.CASCADE)
 
