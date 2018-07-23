@@ -45,6 +45,14 @@ class AddCollectionForm(forms.Form):
         )
     )
 
+    def clean(self):
+        if not self.cleaned_data["add_collection"] and not self.cleaned_data["new"]:
+            raise forms.ValidationError(
+                "追加したいコレクション名を選択、または新規入力してください"
+            )
+
+        return self.cleaned_data
+
 
 class ContactForm(forms.Form):
     """問い合わせフォーム."""

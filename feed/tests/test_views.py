@@ -1,11 +1,11 @@
 from django.urls import reverse
-from django.test import TestCase, Client
+from django.test import TestCase
 from feed.models import Channel
 from accounts.models import LogueUser
 
 
 class UrlResolveTest(TestCase):
-    """URLディスパッチテスト"""
+    """URLディスパッチテスト."""
     def test_url_resoleves_to_index_view(self):
         """/logue/ にアクセス時に feed/index.html が呼ばれることを検証.
 

@@ -15,7 +15,6 @@ from .models import (Channel, Collection, Episode, Like, MstCollection,
                      Subscription)
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
 class IndexView(generic.ListView):
@@ -82,6 +81,7 @@ def entry(request):
         redirect -- チャンネル詳細ページへリダイレクト.
     """
     form = SubscriptionForm(request.POST)
+    logger.info('entryにアクセス')
 
     if form.is_valid():
         # バリデート済の Feed URL を取得
