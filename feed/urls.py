@@ -17,7 +17,7 @@ urlpatterns = [
     path('remove_collection', views.remove_collection, name='remove_collection'),
     path('add_collection', views.add_collection, name='add_collection'),
     path('settings/', views.SettingsView.as_view(), name='settings'),
-    path('terms/', views.termsView.as_view(), name='terms'),
-    path('privacy/', views.privacyView.as_view(), name='privacy'),
+    path('terms/', views.TermsView.as_view(), name='terms'),
+    path('privacy/', views.PrivacyView.as_view(), name='privacy'),
     path('contact/', views.ContactView.as_view(), name='contact'),
 ]

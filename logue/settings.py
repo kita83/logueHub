@@ -4,7 +4,6 @@ from socket import gethostname
 
 HOSTNAME = gethostname()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# SECRET_KEY = os.getenv('SECRET_KEY')
 SECRET_KEY = ')guakondc1$6r#)io(rg_czr1a&bs8+q4vw9=q63@yx^s*x5z#'
 
 INSTALLED_APPS = [
@@ -214,7 +213,7 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 # HTTP 500 error. Depending on DEBUG, all other log records are either sent to
 # the console (DEBUG=True) or discarded (DEBUG=False) by means of the
 # require_debug_true filter.
-DEFAULT_LOGGING = {
+LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'filters': {
@@ -228,39 +227,30 @@ DEFAULT_LOGGING = {
     'formatters': {
         'django.server': {
             '()': 'django.utils.log.ServerFormatter',
-            'format': '[%(server_time)s] %(message)s a',
-        }
+            'format': '[%(server_time)s] %(message)s',
+        },
+        'production': {
+            'format': '%(asctime)s [%(levelname)s] %(process)d %(thread)d '
+                      '%(pathname)s:%(lineno)d %(message)s'
+        },
     },
     'handlers': {
         'console': {
             'level': 'INFO',
-            'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
+            'formatter': 'production',
         },
-        'django.server': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'django.server',
-        },
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
     },
     'loggers': {
-        'django': {
-            'handlers': ['console', 'mail_admins'],
-            'level': 'INFO',
-        },
-        'django.server': {
-            'handlers': ['django.server'],
+        '': {
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
-        'django.db.backends': {
+        'django': {
             'handlers': ['console'],
             'level': 'INFO',
+            'propagate': False,
         },
     }
 }

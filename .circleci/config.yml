@@ -11,6 +11,9 @@ jobs:
         environment:
           POSTGRES_USER: admin001
           POSTGRES_DB: logue_db
+    branches:
+        only:
+          - master
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
