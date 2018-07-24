@@ -81,7 +81,7 @@ def entry(request):
         redirect -- チャンネル詳細ページへリダイレクト.
     """
     form = SubscriptionForm(request.POST)
-    logger.info('entryにアクセス')
+    logger.info('Start Get Entry process...')
 
     if form.is_valid():
         # バリデート済の Feed URL を取得

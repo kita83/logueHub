@@ -87,8 +87,6 @@ def save_image(image_url, db_channel):
         if os.path.exists(old_path):
             os.remove(old_path)
 
-    logger.info('rel_path: ' + rel_path)
-
     with default_storage.open(rel_path, 'wb') as file:
         file.write(res.content)
 
@@ -127,7 +125,6 @@ def poll_feed(feed_url):
         msg = 'logue poll_feeds found Malformed feed, "%s": %s'\
             % (feed_url, parsed.feed.bozo_exception)
         logger.warning(msg)
-        print(msg)
         return ''
 
     # タイトル、リンクの属性存在確認
@@ -136,7 +133,6 @@ def poll_feed(feed_url):
         if not hasattr(parsed.feed, attr):
             msg = 'Channel "%s" has no %s' % (feed_url, attr)
             logger.error(msg)
-            print(msg)
             return ''
 
     # 音声ファイルURL有無チェック
@@ -150,7 +146,6 @@ def poll_feed(feed_url):
     if not is_audiofeed:
         msg = 'Channel "%s" has no audio link' % (feed_url)
         logger.error(msg)
-        print(msg)
         return ''
 
     db_channel, created = models.Channel.objects.get_or_create(
@@ -201,9 +196,6 @@ def poll_feed(feed_url):
     # チャンネル保存
     db_channel.save()
 
-    print('%d entries to process in %s' % (
-        len(parsed.entries), db_channel.title))
-
     # エピソード登録処理
     for i, entry in enumerate(parsed.entries):
         # 属性存在判定フラグ
@@ -212,7 +204,6 @@ def poll_feed(feed_url):
             if not hasattr(entry, attr):
                 msg = 'logue poll_feeds. Episode has no %s' % (attr)
                 logger.error(msg)
-                print(msg)
                 missing_attr = True
 
         if missing_attr:
@@ -222,7 +213,6 @@ def poll_feed(feed_url):
         if entry.title == '':
             msg = 'logue poll_feeds. Entry "%s" has a blank title'\
                 % (entry.title)
-            print(msg)
             logger.warning(msg)
             continue
 
@@ -236,7 +226,6 @@ def poll_feed(feed_url):
         if not audio_url:
             msg = 'logue poll_feeds. Episode %s in %s has a no audio URL'\
                 % (entry.title, db_channel.title)
-            print(msg)
             logger.warning(msg)
             continue
 

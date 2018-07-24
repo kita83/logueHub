@@ -229,42 +229,28 @@ LOGGING = {
             '()': 'django.utils.log.ServerFormatter',
             'format': '[%(server_time)s] %(message)s',
         },
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        'production': {
+            'format': '%(asctime)s [%(levelname)s] %(process)d %(thread)d '
+                      '%(pathname)s:%(lineno)d %(message)s'
         },
     },
     'handlers': {
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'filters': ['require_debug_true'],
-        },
-        'django.server': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'log/process.log'),
-            'filters': ['require_debug_true'],
-            'formatter': 'verbose',
+            'formatter': 'production',
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-        },
-        'django.server': {
-            'handlers': ['django.server', 'file'],
+        '': {
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
-        'django.db.backends': {
-            'handlers': ['console', 'file'],
+        'django': {
+            'handlers': ['console'],
             'level': 'INFO',
+            'propagate': False,
         },
     }
 }
