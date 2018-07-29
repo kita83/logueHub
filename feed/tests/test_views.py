@@ -1,5 +1,7 @@
+import nose.tools as nt
 from django.urls import reverse
 from django.test import TestCase
+
 from feed.models import Channel
 from accounts.models import LogueUser
 
@@ -83,12 +85,10 @@ class FeedViewTest(TestCase):
         # 取得したIDが同じであることを確認
         self.assertEqual(actual, get_ch[0].id)
 
-    # def test_did_not_save(self):
-    #     """
-    #     チャンネル情報に不備がある場合に登録されない.
-    #     """
-    #     feed_url = 'http://存在しない/testfm'
-    #     ch = None
-    #     utils.save_channel(ch, feed_url)
-    #     actual = Channel.objects.filter(feed_url='http://feeds.test.fm/testfm')
-    #     self.assertEqual(actual.count(), 0)
+    def test_did_not_exist_feed(self):
+        """チャンネルFeedが存在しない場合に登録されない."""
+        feed_url = 'http://存在しない/testfm'
+        self.client.post(
+            '/logue/entry/', {'user': self.user, 'password': '', 'feed_url': feed_url})
+        actual = Channel.objects.filter(feed_url=feed_url)
+        self.assertEqual(actual.count(), 0)

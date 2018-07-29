@@ -200,9 +200,7 @@ TEST_APPS = (
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = [
-    # coverage を取る
     '--with-coverage',
-    # coverage を html で cover/ に出力する
     '--cover-html',
     '--cover-package=' + ",".join(TEST_APPS),
 ]

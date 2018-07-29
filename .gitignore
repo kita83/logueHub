@@ -4,7 +4,8 @@ __pycache__/
 *$py.class
 
 # Django stuff:
-*.log
+log/
+shell/
 logue/local_settings.py
 
 db.sqlite3
@@ -49,6 +50,7 @@ cover/
 nosetests.xml
 coverage.xml
 *.cover
+htmlcov/
 
 # Environments
 .env
