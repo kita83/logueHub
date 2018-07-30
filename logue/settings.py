@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
-    'django_nose',
+    # 'django_nose',
     'accounts',
     'feed',
     'storages',
@@ -193,17 +193,17 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # django-nose, coverage configure
-TEST_APPS = (
-    'feed',
-    'accounts',
-)
+# TEST_APPS = (
+#     'feed',
+#     'accounts',
+# )
 
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-NOSE_ARGS = [
-    '--with-coverage',
-    '--cover-html',
-    '--cover-package=' + ",".join(TEST_APPS),
-]
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+# NOSE_ARGS = [
+#     '--with-coverage',
+#     '--cover-html',
+#     '--cover-package=' + ",".join(TEST_APPS),
+# ]
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 

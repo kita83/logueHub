@@ -98,7 +98,7 @@ def entry(request):
         except Channel.DoesNotExist:
             logger.info('Save channel by required Feed URL %s.', feed_url)
             # Feed URL をもとに新規登録
-            result = utils.poll_feed(feed_url)
+            result = utils.get_feed(feed_url)
             # 登録成功の場合, チャンネル詳細ページへリダイレクトする
             if result == 'success':
                 channel = Channel.objects.get(feed_url=feed_url)

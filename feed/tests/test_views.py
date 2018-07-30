@@ -1,4 +1,5 @@
-import nose.tools as nt
+from unittest import mock
+
 from django.urls import reverse
 from django.test import TestCase
 
@@ -33,11 +34,6 @@ class UrlResolveTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'feed/ch_detail.html')
 
-
-class FeedViewTest(TestCase):
-    def setUp(self):
-        self.user = LogueUser.objects.create(email='example.com')
-
     def test_redirect_login(self):
         """未ログインの場合、ログインページへリダイレクトされる."""
         response = self.client.post(
@@ -69,26 +65,66 @@ class FeedViewTest(TestCase):
         self.assertRedirects(
             response, '/accounts/login/?next=/logue/collection_list/')
 
-    def test_get_exist_url(self):
-        """同一URLがあれば既存データを返す."""
-        exist_ch = Channel.objects.create(
+
+class FeedViewTest(TestCase):
+    """Feed登録時に関するテスト."""
+    def setUp(self):
+        self.user = LogueUser.objects.create(email='example.com')
+        self.exist_ch = Channel.objects.create(
             feed_url='https://example.com/test.rss',
         )
-        actual = exist_ch.id
+
+    def test_get_exist_url(self):
+        """登録済の Feed URL 登録リクエストがあれば、既存のデータを返す."""
+        actual = self.exist_ch.id
         self.client.post(
             reverse('feed:entry'), {
                 'user': self.user,
-                'require_url': exist_ch.feed_url
+                'require_url': self.exist_ch.feed_url
             }
         )
         get_ch = Channel.objects.filter(feed_url='https://example.com/test.rss')
         # 取得したIDが同じであることを確認
         self.assertEqual(actual, get_ch[0].id)
 
-    def test_did_not_exist_feed(self):
-        """チャンネルFeedが存在しない場合に登録されない."""
+    def test_did_not_exist_feed_url(self):
+        """リクエスト Feed URL が存在しない場合に登録されない."""
         feed_url = 'http://存在しない/testfm'
         self.client.post(
-            '/logue/entry/', {'user': self.user, 'password': '', 'feed_url': feed_url})
+            reverse('feed:entry'), {
+                'user': self.user,
+                'feed_url': feed_url
+            }
+        )
         actual = Channel.objects.filter(feed_url=feed_url)
+        # 登録件数が0件であることを確認
+        self.assertEqual(actual.count(), 0)
+
+    def test_can_not_get_audio_url(self):
+        """オーティオURLが存在しない場合に登録されない."""
+        m = mock.MagicMock()
+        m.get_feed('request_feed')
+        m.get_feed.return_value = {
+            'feed': {
+                'title': 'test',
+                'title_detail': {
+                    'type': 'text/plain',
+                    'value': 'test title detail'
+                },
+                'entries': [
+                    {'links': []}
+                ]
+            }
+        }
+
+        feed_url = 'http://存在しない/testfm'
+        self.client.post(
+            reverse('feed:entry'), {
+                'user': self.user,
+                'feed_url': feed_url
+
+            }
+        )
+        actual = Channel.objects.filter(feed_url=feed_url)
+        # 登録件数が0件であることを確認
         self.assertEqual(actual.count(), 0)

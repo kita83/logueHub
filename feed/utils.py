@@ -111,21 +111,48 @@ def get_image_name(filename):
     return name + extension
 
 
-def poll_feed(feed_url):
-    """
-    新規にフィードを取得する.
+def get_feed(feed_url):
+    """新規にフィードを取得し、登録する.
 
-    :param db_channel: Channelモデルインスタンス
-    :return str: 処理成功の場合'success'を返す
+    Arguments:
+        db_channel -- Channelモデルインスタンス
+    Return:
+        result(str) -- 処理成功の場合 'success' を返す
     """
+    # リクエストURLをもとにパース処理
     parsed = feedparser.parse(feed_url)
+    # 取得フィードステータス確認
+    is_valid_feed = check_feed_status(parsed, feed_url)
+    # ステータス異常があれば、処理終了
+    if not is_valid_feed:
+        return ''
 
-    # パース失敗の場合、処理終了
+    # チャンネルデータを先に登録する。既に登録があれば既存データを取得する
+    stored_channel, created = models.Channel.objects.get_or_create(
+        feed_url=feed_url)
+
+    # チャンネルデータ更新
+    save_channel(parsed, stored_channel)
+    # エピソード登録
+    save_episodes(parsed, stored_channel)
+
+    return 'success'
+
+def check_feed_status(parsed, feed_url):
+    """取得フィードの状態をチェックする.
+
+    Arguments:
+        parsed(json) -- パース済 Json データ
+        feed_url(str) -- リクエストFeed URL
+    Return:
+        result(boolean) -- ステータス異常なし: True
+    """
+    # パース成否確認
     if hasattr(parsed.feed, 'bozo_exception'):
-        msg = 'logue poll_feeds found Malformed feed, "%s": %s'\
+        msg = 'logue get_feeds found Malformed feed, "%s": %s'\
             % (feed_url, parsed.feed.bozo_exception)
         logger.warning(msg)
-        return ''
+        return False
 
     # タイトル、リンクの属性存在確認
     for attr in ['title', 'title_detail']:
@@ -133,7 +160,7 @@ def poll_feed(feed_url):
         if not hasattr(parsed.feed, attr):
             msg = 'Channel "%s" has no %s' % (feed_url, attr)
             logger.error(msg)
-            return ''
+            return False
 
     # 音声ファイルURL有無チェック
     entry = parsed.entries[0]
@@ -146,63 +173,81 @@ def poll_feed(feed_url):
     if not is_audiofeed:
         msg = 'Channel "%s" has no audio link' % (feed_url)
         logger.error(msg)
-        return ''
+        return False
 
-    db_channel, created = models.Channel.objects.get_or_create(
-        feed_url=feed_url)
+    return True
 
-    # タイトル: 'text/plain'の場合、htmlエスケープする
+
+def save_channel(parsed, stored_channel):
+    """チャンネルデータを登録・更新する.
+
+    Arguments:
+        parsed(json) -- パース済 Json データ
+        stored_channel(quryset) -- Channelモデルインスタンス
+    Return:
+    """
+    # タイトル取得
     if parsed.feed.title_detail.type == 'text/plain':
-        db_channel.title = html.escape(parsed.feed.title)
+        # 'text/plain' の場合、htmlエスケープ処理する
+        stored_channel.title = html.escape(parsed.feed.title)
     else:
-        db_channel.title = parsed.feed.title
+        stored_channel.title = parsed.feed.title
 
-    # リンク
-    db_channel.link = parsed.feed.link
+    # link取得
+    stored_channel.link = parsed.feed.link
 
-    # author
+    # author取得
     if hasattr(parsed.feed, 'author'):
-        db_channel.author = parsed.feed.author
+        stored_channel.author = parsed.feed.author
     else:
-        db_channel.author = ''
+        stored_channel.author = ''
 
+    # チャンネル説明取得
     if hasattr(parsed.feed, 'description_detail')\
             and hasattr(parsed.feed, 'description'):
-        # チャンネル説明: 'text/plain'の場合、htmlエスケープする
+        # 'text/plain'の場合、htmlエスケープ処理する
         if parsed.feed.description_detail.type == 'text/plain':
-            db_channel.description = html.escape(parsed.feed.description)
+            stored_channel.description = html.escape(parsed.feed.description)
         else:
-            db_channel.description = parsed.feed.description
+            stored_channel.description = parsed.feed.description
     else:
-        db_channel.description = ''
+        stored_channel.description = ''
 
     # 最終取得日
-    db_channel.last_polled_time = timezone.now()
+    stored_channel.last_polled_time = timezone.now()
 
     # 画像
     if hasattr(parsed.feed, 'image'):
         # ストレージにイメージ画像を保存
         image_url = parsed.feed.image.href
-        path = save_image(image_url, db_channel)
-        db_channel.cover_image = path
+        path = save_image(image_url, stored_channel)
+        stored_channel.cover_image = path
 
-        db_channel.width_field = '400'
-        db_channel.height_field = '400'
+        stored_channel.width_field = '400'
+        stored_channel.height_field = '400'
 
         # img = Image.open(settings.MEDIA_URL + '/' + path)
         # img.thumbnail((400, 400), Image.ANTIALIAS)
         # img.save(settings.MEDIA_URL + '/' + path)
 
-    # チャンネル保存
-    db_channel.save()
+    # データ更新
+    stored_channel.save()
 
+def save_episodes(parsed, stored_channel):
+    """エピソードを登録する.
+
+    Arguments:
+        parsed(json) -- パース済 Json データ
+        stored_channel(quryset) -- Channelモデルインスタンス
+    Return:
+    """
     # エピソード登録処理
     for i, entry in enumerate(parsed.entries):
         # 属性存在判定フラグ
         missing_attr = False
         for attr in ['title', 'title_detail', 'description']:
             if not hasattr(entry, attr):
-                msg = 'logue poll_feeds. Episode has no %s' % (attr)
+                msg = 'logue get_feeds. Episode has no %s' % (attr)
                 logger.error(msg)
                 missing_attr = True
 
@@ -211,7 +256,7 @@ def poll_feed(feed_url):
 
         # タイトル
         if entry.title == '':
-            msg = 'logue poll_feeds. Entry "%s" has a blank title'\
+            msg = 'logue get_feeds. Entry "%s" has a blank title'\
                 % (entry.title)
             logger.warning(msg)
             continue
@@ -224,13 +269,13 @@ def poll_feed(feed_url):
                     audio_url = link.href
 
         if not audio_url:
-            msg = 'logue poll_feeds. Episode %s in %s has a no audio URL'\
-                % (entry.title, db_channel.title)
+            msg = 'logue get_feeds. Episode %s in %s has a no audio URL'\
+                % (entry.title, stored_channel.title)
             logger.warning(msg)
             continue
 
         db_entry, created = models.Episode.objects.get_or_create(
-            channel=db_channel, audio_url=audio_url)
+            channel=stored_channel, audio_url=audio_url)
 
         # エピソードが初回登録の場合、発行日時、タイトル、説明を追加する
         if created:
@@ -283,4 +328,3 @@ def poll_feed(feed_url):
 
             # エピソード保存
             db_entry.save()
-    return 'success'

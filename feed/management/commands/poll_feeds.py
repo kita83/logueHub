@@ -2,7 +2,7 @@
 
 from django.core.management.base import BaseCommand
 from feed.models import Channel
-from feed.utils import poll_feed
+from feed.utils import get_feed
 from datetime import datetime
 
 import logging
@@ -47,11 +47,11 @@ class Command(BaseCommand):
                 print('(%d/%d) Processing Channels' % (
                     i + 1, num_channels))
             # feed取得
-            poll_feed(channel.feed_url)
+            get_feed(channel.feed_url)
 
         end = datetime.now()
         end_time = end.strftime('%Y/%m/%d %H:%M:%S')
-        print('[%s] logue poll_feeds completed successfully' % (
+        print('[%s] logue get_feeds completed successfully' % (
             end_time))
-        logger.info('[%s] logue poll_feeds completed successfully' % (
+        logger.info('[%s] logue get_feeds completed successfully' % (
             end_time))

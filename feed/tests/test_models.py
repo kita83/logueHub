@@ -1,7 +1,11 @@
 """モデル単位のテスト"""
+import pytest
+
 from django.utils import timezone
 from django.test import TestCase
-from feed.models import Channel, Episode, Subscription, Like
+
+from django import forms
+from feed.models import Channel, Episode, Subscription, Like, MstCollection
 from accounts.models import LogueUser
 
 

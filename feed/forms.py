@@ -37,6 +37,7 @@ class AddCollectionForm(forms.Form):
     new = forms.CharField(
         required=False,
         label='または',
+        max_length=100,
         widget=forms.TextInput(
             attrs={
                 'class': 'form-control',

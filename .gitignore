@@ -45,12 +45,15 @@ docs/
 # Unit test / coverage reports
 cover/
 .coverage
+.coveragerc
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *.cover
 htmlcov/
+.pytest_cache/
+pytest.ini
 
 # Environments
 .env
