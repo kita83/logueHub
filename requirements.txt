@@ -6,7 +6,7 @@ beautifulsoup4==4.6.0
 better-exceptions==0.2.1
 boto3==1.7.19
 botocore==1.10.27
-certifi==2018.4.16
+certifi==2022.12.7
 chardet==3.0.4
 Collectfast==0.6.2
 colorama==0.3.9
